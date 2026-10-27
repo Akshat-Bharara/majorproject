@@ -60,6 +60,9 @@ int main(int argc, char** argv) {
         for (int v : h) p.push_back(raw[v]);
         if ((int)p.size() < k || k < 3) continue;
         ++inst;
+        if (inst % 50 == 0)
+            std::cout << "instances " << inst << " tests " << total << " failures " << fails
+                      << std::endl;
         ConvexDispersion solver(p, k);
         const i64 opt = solver.solve(Algo::CappedDP).squared_distance;
         std::vector<i64> cand;

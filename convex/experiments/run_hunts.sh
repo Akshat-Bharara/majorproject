@@ -12,7 +12,7 @@ for s in 1 2 3 4; do
 done
 wait
 for s in 21 22 23 24; do
-  python3 experiments/v5_hunt.py $s 1500 30 12 | ./build/v5check --c1 > results/hunts/c1_$s.log &
+  python3 experiments/v5_hunt.py $s 500 30 12 | ./build/v5check --c1 > results/hunts/c1_$s.log &
 done
 wait
 python3 experiments/hunt_macros.py

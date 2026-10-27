@@ -11,8 +11,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 def total(prefix):
     tests = fails = inst = 0
     for path in glob.glob(os.path.join(ROOT, "results", "hunts", prefix + "_*.log")):
-        m = re.search(r"instances (\d+) tests (\d+) failures (\d+)", open(path).read())
-        if m:
+        found = re.findall(r"instances (\d+) tests (\d+) failures (\d+)", open(path).read())
+        if found:
+            m = re.match(r"(\d+) (\d+) (\d+)", " ".join(found[-1]))
             inst += int(m.group(1)); tests += int(m.group(2)); fails += int(m.group(3))
     return inst, tests, fails
 
