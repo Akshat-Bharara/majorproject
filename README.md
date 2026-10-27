@@ -45,3 +45,29 @@ g++ -O2 -std=c++17 *.cpp -o dispersion
 ```
 
 Input: `n d k` followed by n lines of d integer coordinates.
+
+Verification against an exhaustive solver: `verify/` (see `report/report.pdf`).
+
+## Points in convex position (`convex/`)
+
+A specialised exact solver for planar points in convex position, with the
+research write-up in `convex/paper/paper.pdf`.
+
+- `convex_dispersion.{hpp,cpp}`: the capped Delaunay DP (decision in
+  O(n^3 log k) time, O(n^2 k) space, exact integer predicates), the
+  Tkachenko–Wang DP (STACS 2025) as a baseline, a seeded greedy, and the
+  certified algorithm (greedy plus one exact decision; always exact).
+- `gen_convex_dataset.py`: random points → convex hull → convex instances.
+- `run_convex_experiments.py`: cross-checks all solvers (including the
+  exhaustive oracle and the FMM solver) and times them.
+- `experiments/`: tests of structural conjectures, counterexample search,
+  minimisation and independent re-verification.
+
+```
+g++ -O2 -std=c++17 convex/geometry.cpp convex/convex_dispersion.cpp \
+    convex/main_convex.cpp -o convex_dispersion
+./convex_dispersion [--algo=capped|certified|tw] [--hull] [--stats] < points.txt
+```
+
+The input format is the same (`n 2 k`). The points must be in strictly convex
+position; with `--hull` the solver runs on the hull vertices instead.

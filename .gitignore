@@ -3,3 +3,9 @@ report/*.aux
 report/*.log
 report/*.out
 report/*.toc
+convex/build/
+convex/paper/*.aux
+convex/paper/*.log
+convex/paper/*.out
+convex/paper/*.toc
+__pycache__/
