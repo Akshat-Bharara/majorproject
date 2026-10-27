@@ -8,7 +8,8 @@
 // frontier, that is far from every chosen point; a step that finds nothing
 // fails the run.
 //
-// With --c1 it instead checks conjecture C1 (tight pair) exactly with the DP.
+// With --c1 it instead checks conjecture C1 (tight pair) exactly with the DP;
+// with --v4 it checks V4 (tight-pair seed, every left/right pattern).
 //
 // Input: a sequence of instances "n 2 k" + n points (ccw convex order not
 // required). For each instance prints "ok <tests>" or "FAIL r2 <r2>".
@@ -46,10 +47,45 @@ static bool v5_run(const std::vector<Pt>& p, int k, i64 r2, int q, int first) {
     return true;
 }
 
+// V4: seeded with {q, a(q)}, every left/right pattern (depth-first search;
+// patterns sharing a prefix share their work).
+static bool v4_dfs(const std::vector<Pt>& p, int k, i64 r2, std::vector<int>& chosen,
+                   int x, int y) {
+    if ((int)chosen.size() >= k) return true;
+    const int n = (int)p.size();
+    for (int side = 0; side < 2; ++side) {
+        const int step = side == 0 ? 1 : n - 1;
+        const int from = side == 0 ? x : y, to = side == 0 ? y : x;
+        for (int c = (from + step) % n; c != to; c = (c + step) % n) {
+            bool ok = true;
+            for (int v : chosen) if (dist2(p[c], p[v]) < r2) { ok = false; break; }
+            if (!ok) continue;
+            chosen.push_back(c);
+            const bool res = side == 0 ? v4_dfs(p, k, r2, chosen, c, y)
+                                       : v4_dfs(p, k, r2, chosen, x, c);
+            chosen.pop_back();
+            if (res) return true;
+            break;  // only the first far point beyond the frontier is a candidate
+        }
+    }
+    return false;
+}
+
+static bool v4_seed(const std::vector<Pt>& p, int k, i64 r2, int q) {
+    const int n = (int)p.size();
+    int a = -1;
+    for (int s = 1; s < n && a < 0; ++s)
+        if (dist2(p[q], p[(q + s) % n]) >= r2) a = (q + s) % n;
+    if (a < 0) return false;
+    std::vector<int> chosen{q, a};
+    return v4_dfs(p, k, r2, chosen, a, q);
+}
+
 int main(int argc, char** argv) {
     // --c1: test conjecture C1 (some feasible k-set contains a tight pair
     // q, a(q)) with the capped DP restricted to tight base chords.
     const bool c1 = argc > 1 && std::string(argv[1]) == "--c1";
+    const bool v4 = argc > 1 && std::string(argv[1]) == "--v4";
     int n, d, k;
     long long total = 0, fails = 0, inst = 0;
     while (std::cin >> n >> d >> k) {
@@ -77,8 +113,11 @@ int main(int argc, char** argv) {
             ++total;
             bool ok = false;
             if (c1) ok = solver.decide_capped(r2, nullptr, true);
-            for (int q = 0; q < (int)p.size() && !ok && !c1; ++q)
-                ok = v5_run(p, k, r2, q, 0) || v5_run(p, k, r2, q, 1);
+            else if (v4)
+                for (int q = 0; q < (int)p.size() && !ok; ++q) ok = v4_seed(p, k, r2, q);
+            else
+                for (int q = 0; q < (int)p.size() && !ok; ++q)
+                    ok = v5_run(p, k, r2, q, 0) || v5_run(p, k, r2, q, 1);
             if (!ok) {
                 ++fails;
                 std::cout << "FAIL n " << p.size() << " k " << k << " r2 " << r2

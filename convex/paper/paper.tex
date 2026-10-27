@@ -72,8 +72,10 @@ farthest-first greedy set and the perimeter of the hull.
 behind the $O(n\log n)$ algorithm for $k=3$ fails for every $k\ge4$, and that
 several natural seeded greedy rules are incomplete. Each claim comes with a
 small explicit counterexample that is verified exhaustively. One property,
-that some optimal set contains a ``tight'' pair, survived more than
-\ConeTests{} exact tests, and we state it as a conjecture.
+that some optimal set contains a ``tight'' pair, survived \ConeAllTests{}
+exact tests, including adversarial perturbations of all counterexamples. A
+search-tree strengthening of it also survived every test and would give an
+$O(2^kn^2k\log n)$ algorithm. We state both as conjectures.
 These observations give a \emph{certified} algorithm. It runs an $O(n^2k)$
 greedy and then makes one exact decision; whenever the greedy value is optimal
 the total time is $O(n^2k\log n+n^3\log k)$, and the output is exact on every
@@ -487,22 +489,58 @@ Property & $k$ & tests & failures \\
 \midrule
 \inputrows{generated/structure.tex}
 $V_5$ (hunt, $n\le22$, $k\le9$) & 3--9 & \VFiveTests & \VFiveFails \\
-$C_1$ (hunt, $n\le30$, $k\le12$) & 3--12 & \ConeTests & \ConeFails \\
+$C_1$ (hunts, $n\le30$, $k\le12$, incl.\ two-chain only) & 3--12 & \ConeTests & \ConeFails \\
+$C_1$ (perturbations of all counterexamples) & 3--10 & \ConePertTests & \ConePertFails \\
+$V_4$ (hunts, $n\le26$, $k\le12$, incl.\ two-chain only) & 3--12 & \VFourTests & \VFourFails \\
+$V_4$ (perturbations of all counterexamples) & 3--10 & \VFourPertTests & \VFourPertFails \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+The $C_1$ and $V_4$ checks are exact. $C_1$ is decided by the capped DP
+restricted to top-level chords $(a(q),q)$: a tight pair in a solution is a
+hull edge of it, with all other points in $\arc{a(q)}{q}$. $V_4$ is decided
+by a depth-first search over extension patterns. The perturbation runs jitter,
+delete and insert points of every known counterexample (to $G_4$, $V_1$ and
+$V_5$), which keeps the search near configurations where weaker rules fail.
 
 \begin{conjecture}[tight pair]\label{conj:tight}
 If $P$ (in convex position) has an $r$-far $k$-set, then it has one containing
 a pair $q,a(q)$.
 \end{conjecture}
 
+\begin{conjecture}[tight-pair search tree]\label{conj:v4}
+If $P$ has an $r$-far $k$-set, then for some $q$ the search that starts from
+$\{q,a(q)\}$ and repeatedly adds, on a side of its choice, the first point
+beyond that side's frontier that is $r$-far from all chosen points, reaches $k$
+points.
+\end{conjecture}
+
+Conjecture~\ref{conj:v4} implies Conjecture~\ref{conj:tight}, and for $k=3$
+the two are equivalent: after the seed a single step is needed, and it
+succeeds iff some point is $r$-far from both $q$ and $a(q)$.
+
+\begin{proposition}\label{prop:v4alg}
+If Conjecture~\ref{conj:v4} holds, the decision problem can be solved in
+$O(2^kn^2k)$ time and $k$-dispersion in $O(2^kn^2k\log n)$ time.
+\end{proposition}
+\begin{proof}
+For a seed $q$ the search tree has depth $k-2$ and at most two children per
+node, hence at most $2^{k-1}$ nodes. A node scans at most $n$ points beyond a
+frontier and tests each against at most $k$ chosen points. With $n$ seeds this
+gives $O(2^kn^2k)$. The search only outputs $r$-far sets, so it is sound;
+Conjecture~\ref{conj:v4} makes it complete. Binary search over the candidate
+distances adds the $\log n$ factor.
+\end{proof}
+
 Conjecture~\ref{conj:tight} would let the top level of the DP use only the
-$n$ chords $(a(q),q)$. More importantly, it is the first step of any
-seed-and-grow algorithm. Property $V_4$ (all patterns from a tight pair) also
-had no failures in our tests; if true, it yields an $O(2^kn^2k)$ algorithm.
-The counterexamples show that a correct proof of such a property must use more
-than alternation or a three-point seed.
+$n$ chords $(a(q),q)$; Conjecture~\ref{conj:v4} would give a self-contained
+FPT algorithm, improving the $O(2^kn^2\log^2n)$ bound in
+Table~\ref{tab:prior} by a factor $\log n/k$ (i.e.\ when $k=o(\log n)$). The counterexamples show that a correct proof must use
+more than alternation ($V_5$) or a three-point seed ($C_1'$, $V_3$). The
+natural extremal argument already fails for $k=3$: choosing a feasible triple
+with the smallest gap between consecutive points forces $a(z)$ to be close to
+the third point, but this is geometrically consistent.
 
 \subsection{A certified algorithm}
 
@@ -632,8 +670,8 @@ $k$ & $n$ & TW & capped & certified & TW/capped & dec.\ (no window) & dec.\ (win
 %======================================================================
 
 \begin{enumerate}[leftmargin=*]
-\item Prove or refute Conjecture~\ref{conj:tight} and property $V_4$. A proof
-  of $V_4$ would give an $O(2^kn^2k)$ algorithm with a self-contained proof;
+\item Prove or refute Conjectures~\ref{conj:tight} and~\ref{conj:v4}. A proof
+  of the latter would give an $O(2^kn^2k\log n)$ algorithm (Proposition~\ref{prop:v4alg});
   our counterexamples rule out the simpler alternation-based variants.
 \item Is there an $o(n^3)$ algorithm for fixed $k\ge4$, matching the
   near-linear algorithm for $k=3$? $G_k$ fails, so a new characterisation is

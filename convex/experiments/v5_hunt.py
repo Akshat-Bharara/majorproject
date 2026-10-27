@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Generate many random convex instances and stream them to v5check.
 
-usage: v5_hunt.py SEED COUNT NMAX KMAX | build/v5check
+usage: v5_hunt.py SEED COUNT NMAX KMAX [FAMILY] | build/v5check
+
+FAMILY restricts generation to one family (e.g. twochain, the source of all
+counterexamples found so far).
 """
 
 import os
@@ -13,11 +16,12 @@ from greedy_stress import family  # noqa: E402
 from structure import gen         # noqa: E402
 
 seed, count, nmax, kmax = map(int, sys.argv[1:5])
+only = sys.argv[5] if len(sys.argv) > 5 else None
 rng = random.Random(seed)
 out = sys.stdout
 for _ in range(count):
-    kind = rng.choice(["twochain", "twochain", "valtr", "triangle", "clusters",
-                       "ellipse", "thin", "disk"])
+    kind = only or rng.choice(["twochain", "twochain", "valtr", "triangle", "clusters",
+                               "ellipse", "thin", "disk"])
     n = rng.randint(8, nmax)
     pts = gen(rng, n, kind) if kind in ("ellipse", "thin", "disk") else family(rng, n, kind)
     k = rng.randint(3, min(kmax, len(pts) - 1))

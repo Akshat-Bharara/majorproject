@@ -25,6 +25,9 @@ def fmt(x):
 def main():
     vi, vt, vf = total("v5")
     ci, ct, cf = total("c1")
+    fi, ft, ff = total("v4")
+    pi, pt, pf = total("v4p")
+    qi, qt, qf = total("c1p")
     os.makedirs(os.path.join(ROOT, "paper", "generated"), exist_ok=True)
     with open(os.path.join(ROOT, "paper", "generated", "c1_macros.tex"), "w") as fh:
         fh.write(f"\\newcommand{{\\VFiveInst}}{{{fmt(vi)}}}\n")
@@ -33,7 +36,14 @@ def main():
         fh.write(f"\\newcommand{{\\ConeInst}}{{{fmt(ci)}}}\n")
         fh.write(f"\\newcommand{{\\ConeTests}}{{{fmt(ct)}}}\n")
         fh.write(f"\\newcommand{{\\ConeFails}}{{{cf}}}\n")
-    print(f"V5: {vi} instances, {vt} tests, {vf} failures; C1: {ci} instances, {ct} tests, {cf} failures")
+        for name, (a, b, c) in {"VFour": (fi, ft, ff), "VFourPert": (pi, pt, pf),
+                                "ConePert": (qi, qt, qf)}.items():
+            fh.write(f"\\newcommand{{\\{name}Inst}}{{{fmt(a)}}}\n")
+            fh.write(f"\\newcommand{{\\{name}Tests}}{{{fmt(b)}}}\n")
+            fh.write(f"\\newcommand{{\\{name}Fails}}{{{c}}}\n")
+        fh.write(f"\\newcommand{{\\ConeAllTests}}{{{fmt(ct + qt)}}}\n")
+    print(f"V5 {vi}/{vt}/{vf}  C1 {ci}/{ct}/{cf}  V4 {fi}/{ft}/{ff}  "
+          f"V4-perturbed {pi}/{pt}/{pf}  C1-perturbed {qi}/{qt}/{qf}")
 
 
 if __name__ == "__main__":
