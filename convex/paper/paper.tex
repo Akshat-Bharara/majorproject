@@ -106,7 +106,8 @@ Table~\ref{tab:prior} summarises the state of the art as far as we know it
 \centering
 \caption{Exact algorithms for $k$-dispersion of $n$ points in convex position.}
 \label{tab:prior}
-\begin{tabular}{@{}l l l@{}}
+\small
+\begin{tabular}{@{}p{0.33\textwidth} p{0.3\textwidth} p{0.31\textwidth}@{}}
 \toprule
 Reference & Time & Remarks \\
 \midrule
@@ -280,10 +281,10 @@ $\ang p_ilp_j\le\pi-\ang p_ip_tp_j$.
 
 \begin{lemma}[recurrence]\label{lem:rec}
 For every admissible chord $(i,j)$ and $\varphi\in(0,\pi]$,
-\[
-F(i,j\mid\varphi)=\max\Bigl(\{0\}\cup\bigl\{\,1+F(i,l\mid\pi-\ang p_ip_jp_l)+F(l,j\mid\pi-\ang p_lp_ip_j)
+\begin{multline*}
+F(i,j\mid\varphi)=\max\Bigl(\{0\}\cup\bigl\{\,1+F(i,l\mid\pi-\ang p_ip_jp_l)+F(l,j\mid\pi-\ang p_lp_ip_j)\\
  \;:\; l \text{ admissible apex},\ \ang p_ilp_j\le\varphi\bigr\}\Bigr).
-\]
+\end{multline*}
 \end{lemma}
 \begin{proof}
 ($\ge$) Given $l$ and optimal configurations $(X_1,T_1)$ for $(i,l)$ and
@@ -604,6 +605,7 @@ $k$ & $n$ & TW & capped & certified & TW/capped & dec.\ (no window) & dec.\ (win
 \begin{tikzpicture}
 \begin{groupplot}[group style={group size=3 by 1, horizontal sep=1.1cm},
   width=0.35\textwidth, height=0.32\textwidth, ymode=log, xlabel={$n$},
+  unbounded coords=jump,
   grid=major, title style={font=\small}, tick label style={font=\scriptsize},
   legend style={font=\scriptsize, at={(0.03,0.97)}, anchor=north west}]
 \nextgroupplot[title={$k=4$}, ylabel={time [ms]}]
