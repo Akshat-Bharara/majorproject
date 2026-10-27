@@ -114,6 +114,10 @@ FMMKDispersion::FeasibleResult FMMKDispersion::fmm_clique(const ThresholdGraph& 
     const auto V2 = enumerate_cliques(G, k2);
     const auto V3 = enumerate_cliques(G, k3);
 
+    stats_.max_V1 = std::max(stats_.max_V1, V1.size());
+    stats_.max_V2 = std::max(stats_.max_V2, V2.size());
+    stats_.max_V3 = std::max(stats_.max_V3, V3.size());
+
     if (V1.empty() || V2.empty() || V3.empty()) return {};
 
     // M12[a,b] = 1 iff V1[a] and V2[b] are compatible.
@@ -143,6 +147,7 @@ FMMKDispersion::FeasibleResult FMMKDispersion::fmm_clique(const ThresholdGraph& 
     // V1[a] -> V2[b] -> V3[c]. A triangle exists exactly when
     // M13[a,c] = 1 and P[a,c] > 0.
     const Matrix P = multiply_blocked(M12, M23, gemm_block_);
+    ++stats_.matrix_products;
 
     for (std::size_t a = 0; a < V1.size(); ++a) {
         for (std::size_t c = 0; c < V3.size(); ++c) {
@@ -170,10 +175,12 @@ FMMKDispersion::FeasibleResult FMMKDispersion::fmm_clique(const ThresholdGraph& 
 }
 
 DispersionResult FMMKDispersion::solve() {
+    stats_ = {};
     build_distances();
     build_candidates();
+    stats_.candidate_distances = candidate_thresholds_.size();
 
-    if (candidate_thresholds_.empty()) return {false, 0, {}};
+    if (candidate_thresholds_.empty()) return {false, 0, {}, stats_};
 
     // The optimum minimum pairwise distance is one of the pairwise distances
     // in the input set. Feasibility is monotone as r decreases, so binary
@@ -188,6 +195,7 @@ DispersionResult FMMKDispersion::solve() {
         const auto r2 = candidate_thresholds_[mid];
         const ThresholdGraph G = build_graph(r2);
         const auto res = fmm_clique(G);
+        ++stats_.feasibility_tests;
 
         if (res.yes) {
             best = mid;
@@ -198,8 +206,8 @@ DispersionResult FMMKDispersion::solve() {
         }
     }
 
-    if (best < 0) return {false, 0, {}};
-    return {true, candidate_thresholds_[best], std::move(best_witness)};
+    if (best < 0) return {false, 0, {}, stats_};
+    return {true, candidate_thresholds_[best], std::move(best_witness), stats_};
 }
 
 } // namespace fmm

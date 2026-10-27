@@ -1,0 +1,670 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{pgfplots}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\setlength{\emergencystretch}{3em}
+\pgfplotsset{compat=1.17}
+\usepgfplotslibrary{groupplots}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\lstset{basicstyle=\ttfamily\small, columns=fullflexible, frame=single,
+        breaklines=true, keepspaces=true}
+
+% ------------------------------------------------------------------
+% Edit these for the title page.
+\newcommand{\ProjectAuthors}{Project Team}
+\newcommand{\ProjectInstitution}{Major Project}
+% ------------------------------------------------------------------
+
+% Numbers and table rows produced by verify/run_verification.py.
+% \inputrows uses the primitive \input so it can be used inside a tabular.
+\input{generated/summary_macros.tex}
+\makeatletter
+\newcommand{\inputrows}[1]{\@@input #1 }
+\makeatother
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Kk}{K_k}
+\newcommand{\dist}{\operatorname{dist}}
+\newcommand{\cl}{\mathcal{C}}
+
+\title{Exact $k$-Dispersion via Fast-Matrix-Multiplication\\
+       Based Clique Detection\\[0.5em]
+       \large Implementation and Verification of Section~3 of\\
+       Chen and Dumitrescu, \emph{A Couple of Simple Algorithms for $k$-Dispersion}}
+\author{\ProjectAuthors\\ \ProjectInstitution}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Given $n$ points in $\R^d$ and an integer $k\le n$, the $k$-dispersion
+problem asks for $k$ of the points whose minimum pairwise distance is as large
+as possible. Chen and Dumitrescu~\cite{CD25} show (Theorem~2) that for
+$2\le k\le 8$ the problem can be solved by reducing it to $k$-clique detection
+in threshold graphs and then to triangle detection, solved with fast
+rectangular matrix multiplication in the style of Ne\v{s}et\v{r}il--Poljak
+\cite{NP85} and Eisenbrand--Grandoni \cite{EG04}. This report describes a C++
+implementation of that algorithm: the notation, the algorithms, the
+implementation choices (exact integer arithmetic, bitset graphs, the
+per-$k$ clique split taken from the paper's proof of Theorem~2, and an isolated
+matrix-multiplication backend), and a cross-verification against an
+independent exhaustive solver on a deterministic dataset of \NumInstances{}
+instances drawn from \NumFamilies{} point distributions. The FMM-based solver
+returned the same optimum as the exhaustive solver on
+\NumOptMatch{}/\NumInstances{} instances, and every returned point set was
+independently confirmed to achieve the reported optimum.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+%======================================================================
+\section{Introduction}
+%======================================================================
+
+The \emph{(max-min) $k$-dispersion problem} asks to place $k$ facilities at
+$k$ of $n$ candidate locations so that the facilities are as far apart as
+possible, measured by the smallest pairwise distance. It is NP-hard already in
+the plane when $k$ is part of the input~\cite{WK88}, so research focuses on
+running times of the form $n^{f(k)}$ for fixed $k$.
+
+The paper of Chen and Dumitrescu~\cite{CD25} contributes three kinds of
+algorithms:
+\begin{enumerate}
+  \item a recursive \emph{combinatorial} algorithm running in
+        $O(n^{k-1}\log n)$ time in the plane (Theorem~1) and a similar bound
+        in $\R^3$ (Theorem~3);
+  \item \emph{FMM based} algorithms (Section~3, Theorem~2) that improve the
+        earlier bounds of Akagi et al.~\cite{Akagi18} for $k=4,5,7,8$ by
+        choosing suitable \emph{rectangular} matrix products;
+  \item a linear-time $0.99$-approximation for random points
+        (Theorem~4).
+\end{enumerate}
+
+\paragraph{Scope of this project.} This project implements the FMM based
+algorithm of item~2 (Section~3 / Theorem~2 of~\cite{CD25}), which works for
+points in any dimension $d$ and, more generally, for any complete graph with
+positive edge weights. We additionally implement an exhaustive solver that is
+used purely as a correctness oracle. The combinatorial algorithm $A(k)$ and
+the approximation algorithm $B(k)$ are out of scope.
+
+\paragraph{Contributions.}
+\begin{itemize}
+  \item An exact solver for $k$-dispersion with integer coordinates in any
+        dimension, built on the triangle-detection reduction with the
+        clique split $(k_1,k_2,k_3)$ prescribed by the proof of Theorem~2.
+  \item An instrumented driver reporting binary-search steps, clique-list sizes
+        and solve time.
+  \item An independent exhaustive oracle, a reproducible dataset of
+        \NumInstances{} instances, and a verification harness that checks
+        every answer.
+\end{itemize}
+
+%======================================================================
+\section{Notation}
+%======================================================================
+
+Table~\ref{tab:notation} lists the symbols used throughout the report. The
+same names appear in the source code wherever possible.
+
+\begin{table}[h]
+\centering
+\caption{Notation.}
+\label{tab:notation}
+\small
+\begin{tabular}{@{}l p{0.5\textwidth} l@{}}
+\toprule
+Symbol & Meaning & In code \\
+\midrule
+$P=\{p_0,\dots,p_{n-1}\}$ & input point set, $p_i\in\mathbb{Z}^d$ & \texttt{points\_} \\
+$n,\ d,\ k$ & number of points, dimension, number of points to select & \texttt{n\_, d\_, k\_} \\
+$D(i,j)$ & squared Euclidean distance $\lVert p_i-p_j\rVert^2$ & \texttt{dist2\_[i][j]} \\
+$S\subseteq P$, $|S|=k$ & a candidate solution & \\
+$\delta(S)$ & $\min_{p\neq q\in S}\lVert p-q\rVert^2$, value of $S$ & \\
+$\mathrm{OPT}$ & $\max_{|S|=k}\delta(S)$, the optimum (squared) & \texttt{squared\_distance} \\
+$\mathcal{R}$ & sorted set of distinct values $D(i,j)$, $i<j$ & \texttt{candidate\_thresholds\_} \\
+$G_r$ & threshold graph on $P$: $\{i,j\}\in E \iff D(i,j)\ge r$ & \texttt{ThresholdGraph} \\
+$\Kk$ & complete graph on $k$ vertices ($k$-clique) & \\
+$(k_1,k_2,k_3)$ & clique split, $k_1+k_2+k_3=k$ & \texttt{CliqueSplit} \\
+$\cl_q(G)$ & set of all $q$-cliques of $G$ & \texttt{enumerate\_cliques} \\
+$V_1,V_2,V_3$ & $\cl_{k_1}(G),\cl_{k_2}(G),\cl_{k_3}(G)$ & \texttt{V1, V2, V3} \\
+$A\sim B$ & $A\cup B$ is a clique of $G$ (implies $A\cap B=\emptyset$) & \texttt{compatible} \\
+$M_{12},M_{23},M_{13}$ & 0/1 compatibility matrices between $V_a$ and $V_b$ & \texttt{M12, M23, M13} \\
+$\Pi = M_{12}M_{23}$ & integer product; $\Pi[a,c]$ counts $2$-paths & \texttt{P} \\
+$\omega$ & matrix multiplication exponent, $\omega<2.372$~\cite{VXXZ24} & \\
+$\omega(p,q,r)$ & exponent for multiplying an $n^p\times n^q$ by an $n^q\times n^r$ matrix & \\
+$e(k)$ & exponent of the running time in Theorem~2 of~\cite{CD25} & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+We work exclusively with \emph{squared} distances. Since $x\mapsto x^2$ is
+strictly increasing on $[0,\infty)$, maximising the minimum distance and
+maximising the minimum squared distance select the same sets, and squared
+distances of integer points are integers, so all comparisons are exact.
+
+%======================================================================
+\section{Background from the paper}
+%======================================================================
+
+\subsection{From dispersion to cliques}
+
+\begin{lemma}\label{lem:candidates}
+$\mathrm{OPT}\in\mathcal{R}$, i.e.\ the optimum is one of the pairwise
+(squared) distances.
+\end{lemma}
+\begin{proof}
+$\delta(S)$ is a minimum over pairs of $S$, hence equals $D(i,j)$ for some
+pair; in particular for an optimal $S$.
+\end{proof}
+
+\begin{lemma}\label{lem:clique}
+For every $r$, there is $S$ with $|S|=k$ and $\delta(S)\ge r$ if and only if
+$G_r$ contains a $\Kk$. Moreover, feasibility is monotone: if $G_r$ contains a
+$\Kk$ and $r'\le r$, then so does $G_{r'}$.
+\end{lemma}
+\begin{proof}
+$\delta(S)\ge r$ means every pair of $S$ is at squared distance $\ge r$, i.e.\
+every pair is an edge of $G_r$. Monotonicity follows from
+$E(G_r)\subseteq E(G_{r'})$.
+\end{proof}
+
+By Lemmas~\ref{lem:candidates} and~\ref{lem:clique}, $\mathrm{OPT}$ is the
+largest $r\in\mathcal{R}$ for which $G_r$ contains a $\Kk$, which can be
+found by binary search over $\mathcal{R}$ with
+$\lceil\log_2(|\mathcal{R}|+1)\rceil = O(\log n)$ clique tests. This is the
+framework of Akagi et al.~\cite{Akagi18}, which~\cite{CD25} builds on.
+
+\subsection{From cliques to triangles}
+
+Let $k=k_1+k_2+k_3$ with $k_i\ge 0$. Build the tripartite auxiliary graph $H$
+whose parts are $V_1,V_2,V_3$ (the $k_i$-cliques of $G$), with an edge between
+clique-nodes $A\in V_a$ and $B\in V_b$ ($a\ne b$) iff $A\sim B$.
+
+\begin{lemma}[Ne\v{s}et\v{r}il--Poljak~\cite{NP85}]\label{lem:triangle}
+$G$ contains a $\Kk$ if and only if $H$ contains a triangle
+$(A_1,A_2,A_3)$ with $A_i\in V_i$. In that case $A_1\cup A_2\cup A_3$ is a $\Kk$.
+\end{lemma}
+\begin{proof}
+($\Leftarrow$) Pairwise compatibility means every pair of vertices from
+different $A_i$ is an edge; within each $A_i$ every pair is an edge since $A_i$
+is a clique. Compatibility forces the $A_i$ to be disjoint (a vertex is not
+adjacent to itself), so the union has exactly $k$ vertices.
+($\Rightarrow$) Split the vertices of a $\Kk$ into parts of sizes
+$k_1,k_2,k_3$.
+\end{proof}
+
+A triangle exists iff there are $a,c$ with $M_{13}[a,c]=1$ and
+$(M_{12}M_{23})[a,c]>0$. Computing $\Pi=M_{12}M_{23}$ is a product of an
+$|V_1|\times|V_2|$ by a $|V_2|\times|V_3|$ matrix, i.e.\ of shape
+$n^{k_1}\times n^{k_2}$ by $n^{k_2}\times n^{k_3}$ in the worst case,
+which costs $O(n^{\omega(k_1,k_2,k_3)})$ with fast rectangular matrix
+multiplication.
+
+\subsection{The splits used in Theorem~2}
+
+Nešetřil and Poljak use the balanced split; the improvement of~\cite{CD25}
+comes from using the rectangular product that is cheapest for each $k$,
+following Eisenbrand and Grandoni~\cite{EG04}. Table~\ref{tab:split}
+reproduces the exponents stated in the proof of Theorem~2 and the
+split that realises each one. These are the splits used by our implementation
+(function \texttt{clique\_split}).
+
+\begin{table}[h]
+\centering
+\caption{Exponents $e(k)$ from the proof of Theorem~2 in~\cite{CD25}, compared
+with the earlier bound $\omega\lfloor k/3\rfloor + (k \bmod 3)$ of~\cite{Akagi18}
+(both without the $\log n$ factor), and the clique split implemented.}
+\label{tab:split}
+\begin{tabular}{@{}c l c c c@{}}
+\toprule
+$k$ & $e(k)$ in~\cite{CD25} & bound & previous~\cite{Akagi18} & split $(k_1,k_2,k_3)$ \\
+\midrule
+2 & (diameter) & -- & -- & $(0,1,1)$ \\
+3 & (triangle) & $\omega$ & -- & $(1,1,1)$ \\
+4 & $\omega(1,1,2)$ & $<3.251$ & $3.372$ & $(1,1,2)$ \\
+5 & $\omega(2,1,2)=2\omega(1,0.5,1)$ & $<4.086$ & $4.372$ & $(2,1,2)$ \\
+6 & $2\omega$ & $<4.744$ & $4.744$ & $(2,2,2)$ \\
+7 & $\omega(2,3,2)=2\omega(1,1.5,1)$ & $<5.590$ & $5.744$ & $(2,3,2)$ \\
+8 & $2\omega(1,1,2)=\omega(2,2,4)$ & $<6.502$ & $6.744$ & $(2,2,4)$ \\
+$\ge 9$ & not covered & -- & -- & $(\lfloor\frac k3\rfloor,\lceil\frac{k-1}3\rceil,\lceil\frac k3\rceil)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For $k\ge 9$ the paper gives no instantiation; we fall back to the balanced
+split of Ne\v{s}et\v{r}il and Poljak. For $k=2$ the empty clique forms $V_1$ and
+the triangle test degenerates into an edge test.
+
+%======================================================================
+\section{Algorithms implemented}
+%======================================================================
+
+\subsection{Algorithm 1: k-dispersion by binary search}
+
+\begin{algorithm}[H]
+\caption{\textsc{Dispersion}$(P,k)$ \quad (\texttt{FMMKDispersion::solve})}
+\label{alg:solve}
+\begin{algorithmic}[1]
+\State compute $D(i,j)$ for all $i<j$ \Comment{exact, 128-bit}
+\State $\mathcal{R}\gets$ sorted distinct values of $D$
+\State $lo\gets 0$, $hi\gets|\mathcal{R}|-1$, $best\gets\bot$
+\While{$lo\le hi$}
+  \State $mid\gets\lfloor(lo+hi)/2\rfloor$, $r\gets\mathcal{R}[mid]$
+  \State build $G_r$ \Comment{bitset adjacency}
+  \State $(found, W)\gets\textsc{FMMClique}(G_r,k)$
+  \If{$found$} $best\gets(r,W)$; $lo\gets mid+1$
+  \Else\ $hi\gets mid-1$
+  \EndIf
+\EndWhile
+\State \Return $best$ \Comment{$\mathrm{OPT}=r$, $W$ is an optimal $k$-set}
+\end{algorithmic}
+\end{algorithm}
+
+The smallest value of $\mathcal{R}$ is always feasible ($G_r$ is complete),
+so $best\neq\bot$ whenever $n\ge k\ge 2$.
+
+\subsection{Algorithm 2: FMM-based k-clique detection}
+
+\begin{algorithm}[H]
+\caption{\textsc{FMMClique}$(G,k)$ \quad (\texttt{FMMKDispersion::fmm\_clique})}
+\label{alg:clique}
+\begin{algorithmic}[1]
+\State $(k_1,k_2,k_3)\gets\textsc{CliqueSplit}(k)$ \Comment{Table~\ref{tab:split}}
+\State $V_i\gets\textsc{EnumerateCliques}(G,k_i)$ for $i=1,2,3$
+\If{some $V_i=\emptyset$} \Return (\textbf{false}, --) \EndIf
+\State $M_{12}[a,b]\gets[V_1[a]\sim V_2[b]]$
+\State $M_{23}[b,c]\gets[V_2[b]\sim V_3[c]]$
+\State $M_{13}[a,c]\gets[V_1[a]\sim V_3[c]]$
+\State $\Pi\gets M_{12}\cdot M_{23}$ \Comment{the matrix multiplication step}
+\For{each $(a,c)$ with $M_{13}[a,c]=1$ and $\Pi[a,c]>0$}
+  \State find $b$ with $M_{12}[a,b]=M_{23}[b,c]=1$ \Comment{witness recovery}
+  \State \Return (\textbf{true}, $V_1[a]\cup V_2[b]\cup V_3[c]$)
+\EndFor
+\State \Return (\textbf{false}, --)
+\end{algorithmic}
+\end{algorithm}
+
+Correctness follows from Lemma~\ref{lem:triangle}. Witness recovery scans one
+row/column pair, $O(|V_2|)$, once; it is needed only to output the selected
+points, not to decide feasibility.
+
+\subsection{Algorithm 3: clique enumeration}
+
+\textsc{EnumerateCliques}$(G,q)$ (\texttt{clique.cpp}) is a depth-first search
+that extends a partial clique $C$ only with candidate vertices of larger index
+that are adjacent to every vertex of $C$. The candidate list is filtered on
+each extension, so every $q$-clique is produced exactly once, in increasing
+vertex order. For $q=0$ it returns the single empty clique.
+
+\subsection{Algorithm 4: exhaustive oracle}
+
+\texttt{verify/brute\_force.cpp} enumerates all $\binom nk$ subsets in
+lexicographic order and keeps the first one of maximum $\delta(S)$. It reuses
+prefix minima $\mathrm{cur}[i]=\delta(\{p_{\mathrm{idx}[0]},\dots,p_{\mathrm{idx}[i]}\})$
+so that advancing to the next subset only recomputes the changed suffix.
+It shares no code with the FMM solver and runs in $O(\binom nk k^2)$ time,
+which is fast enough for the instance sizes used in verification.
+
+%======================================================================
+\section{Implementation}
+%======================================================================
+
+\subsection{Code organisation}
+
+\begin{center}
+\begin{tabular}{@{}l p{0.6\textwidth}@{}}
+\toprule
+File & Content \\
+\midrule
+\texttt{dispersion.hpp/.cpp} & \texttt{FMMKDispersion}: distances, candidate set
+  $\mathcal{R}$, threshold graphs, \texttt{clique\_split}, Algorithm~\ref{alg:clique},
+  binary search (Algorithm~\ref{alg:solve}), instrumentation (\texttt{SolveStats}). \\
+\texttt{clique.hpp/.cpp} & \texttt{ThresholdGraph} (bitset adjacency),
+  \texttt{enumerate\_cliques}, \texttt{compatible}. \\
+\texttt{matrix.hpp/.cpp} & dense row-major \texttt{Matrix} and the
+  multiplication backend \texttt{multiply\_blocked}. \\
+\texttt{main.cpp} & command-line driver; \texttt{-{}-stats} prints the
+  instrumentation to \texttt{stderr}. \\
+\texttt{verify/brute\_force.cpp} & exhaustive oracle (Algorithm~4). \\
+\texttt{verify/generate\_dataset.py} & deterministic dataset generator. \\
+\texttt{verify/run\_verification.py} & cross-verification and timing harness;
+  writes \texttt{verify/results/*.csv} and the tables in this report. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Design decisions}
+
+\paragraph{Exact arithmetic.} Coordinates are signed 64-bit integers and
+squared distances are stored as \texttt{unsigned \_\_int128}. No square roots
+or floating point are used anywhere, so ties (common on grids) are resolved
+exactly. The result is exact as long as
+$d\cdot(2\max|x|)^2<2^{128}$; e.g.\ $|x|<2^{61}$ for $d\le 16$.
+
+\paragraph{Threshold graphs as bitsets.} Row $i$ of the adjacency matrix of
+$G_r$ is stored as $\lceil n/64\rceil$ 64-bit words, so each edge query in
+clique enumeration and in \texttt{compatible} is a shift and a mask.
+
+\paragraph{Compatibility.} $A\sim B$ is tested by checking all
+$|A|\cdot|B|$ cross pairs. Because \texttt{edge(u,u)} is false, overlapping
+cliques are automatically incompatible, which enforces disjointness without
+an extra test.
+
+\paragraph{Clique split.} \texttt{clique\_split(k)} returns exactly the splits
+of Table~\ref{tab:split}. The product computed is $\Pi=M_{12}M_{23}$, so its
+shape $|V_1|\times|V_2|$ by $|V_2|\times|V_3|$ matches the rectangular
+product $\omega(k_1,k_2,k_3)$ used in the paper's exponent.
+
+\paragraph{Matrix-multiplication backend.} All matrix multiplication goes
+through one function, \texttt{multiply\_blocked}: an exact, cache-blocked
+($64\times64$ tiles) classical product over 64-bit unsigned integers that
+skips zero entries of the left operand. The paper's asymptotic bounds rely on
+fast rectangular matrix multiplication algorithms~\cite{EG04,LGU18,VXXZ24},
+which have very large constants and are not used in practice; the paper does
+not prescribe a concrete implementation. Isolating the product means a fast
+algorithm can be substituted without touching the rest of the code.
+Entries of $\Pi$ are at most $|V_2|\le\binom{n}{k_2}$, far below $2^{64}$.
+
+\paragraph{Instrumentation.} \texttt{SolveStats} records
+$|\mathcal{R}|$, the number of binary-search steps (clique tests), the number of
+matrix products, and the largest $|V_1|,|V_2|,|V_3|$ seen. With
+\texttt{-{}-stats} the driver prints these together with the split and the
+solve time.
+
+\subsection{Complexity of the implementation}
+
+Each clique test costs $O(n^{\max k_i}k)$ for enumeration,
+$O(|V_a||V_b|k_ak_b)$ to fill the three matrices, and the product. With the
+classical backend the product costs $O(|V_1||V_2||V_3|)=O(n^k)$, so the total is
+$O(n^k\log n)$. Replacing \texttt{multiply\_blocked} by a fast rectangular
+algorithm gives the $O(n^{e(k)}\log n)$ bound of Table~\ref{tab:split}. The
+paper notes that the $\log n$ factor disappears once the exponents are rounded up.
+The memory used is dominated by the three matrices,
+$O(|V_1||V_2|+|V_2||V_3|+|V_1||V_3|)$ words.
+
+\subsection{Usage}
+
+\begin{lstlisting}
+g++ -O2 -std=c++17 *.cpp -o dispersion
+./dispersion [--stats] < input.txt
+
+# input:  n d k, then n lines of d integers
+# output:
+optimal_squared_distance 1261
+selected_indices 2 8 11 13 19 23
+selected_points
+6 9
+...
+\end{lstlisting}
+
+%======================================================================
+\section{Verification methodology}
+%======================================================================
+
+\subsection{Approach}
+
+The FMM solver is verified \emph{differentially} against the exhaustive oracle
+of Algorithm~4. The two programs share no code (distance computation, search,
+and output are written independently) and read the same input files. For every
+instance the harness \texttt{verify/run\_verification.py} checks:
+\begin{enumerate}
+  \item \textbf{Optimum agreement:} both programs report the same
+        $\mathrm{OPT}$.
+  \item \textbf{Witness validity:} each returned index set has exactly $k$
+        distinct indices in $[0,n)$.
+  \item \textbf{Witness value:} $\delta(S)$ of each returned set, recomputed in
+        Python with arbitrary-precision integers, equals the reported optimum.
+        This independently confirms the FMM solver's certificate.
+  \item \textbf{Split conformance:} the split reported by the solver equals
+        the one in Table~\ref{tab:split}.
+\end{enumerate}
+Whether the two programs return the \emph{same} set is also recorded. This is
+informational only, since optimal sets need not be unique.
+
+\subsection{Dataset}
+
+The dataset is produced by \texttt{verify/generate\_dataset.py} with a fixed
+seed and stored in \texttt{verify/dataset/} (one file per instance plus
+\texttt{manifest.csv}). For every family and dimension it contains
+$k=2,\dots,9$ with three values of $n$ each (smallest, middle, largest of
+the range $8\le n\le 40$ for $k=2$ down to $10\le n\le 15$ for $k=9$),
+\NumInstances{} instances in total.
+
+\begin{table}[h]
+\centering
+\caption{Point families in the verification dataset.}
+\begin{tabular}{@{}l p{0.62\textwidth} c@{}}
+\toprule
+Family & Construction and purpose & $d$ \\
+\midrule
+\texttt{uniform} & integer points uniform in $[0,1000]^d$; generic case & 1,2,3 \\
+\texttt{clustered} & Gaussian clusters ($\sigma=40$) around 3--4 centres;
+  skewed distance distribution & 2,3 \\
+\texttt{grid} & random subset of an integer lattice; many tied distances & 2,3 \\
+\texttt{duplicate} & points drawn with repetition from a small pool;
+  coincident points ($D=0$) & 2 \\
+\texttt{collinear} & points on a line $y=ax+b$; degenerate geometry & 2 \\
+\texttt{circle} & points near a circle of radius 1000; almost-equal distances & 2 \\
+\texttt{large} & coordinates in $[-10^9,10^9]$; squared distances beyond
+  $2^{32}$, exercising 128-bit arithmetic & 2,3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Reproducing}
+
+\begin{lstlisting}
+python3 verify/generate_dataset.py      # (re)creates verify/dataset/
+python3 verify/run_verification.py      # builds, verifies, times
+\end{lstlisting}
+The harness exits with a non-zero status if any check fails. It also writes the
+LaTeX fragments in \texttt{report/generated/} used by the tables and plots below.
+
+%======================================================================
+\section{Results}
+%======================================================================
+
+\subsection{Correctness}
+
+\begin{center}
+\begin{tabular}{@{}l r@{}}
+\toprule
+Check (all \NumInstances{} instances) & passed \\
+\midrule
+Same optimum from FMM solver and oracle & \textbf{\NumOptMatch{}/\NumInstances{}} \\
+FMM witness valid and achieves the optimum & \textbf{\NumFmmValid{}/\NumInstances{}} \\
+Oracle witness valid and achieves the optimum & \textbf{\NumBfValid{}/\NumInstances{}} \\
+Identical selected sets (informational) & \NumSameSet{}/\NumInstances{} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Table~\ref{tab:byk} breaks the results down by $k$, together with the solver
+statistics. Table~\ref{tab:byfam} breaks them down by point family, and
+Table~\ref{tab:sample} lists individual instances side by side.
+
+\begin{table}[h]
+\centering
+\caption{Verification by $k$. ``Tests'' is the mean number of clique tests
+(binary-search steps); ``max $|V|$'' the largest clique list built; times
+are mean in-process solve times in milliseconds.}
+\label{tab:byk}
+\small
+\begin{tabular}{@{}c c c c c c c c r r@{}}
+\toprule
+$k$ & split & inst. & $n$ & OPT match & FMM witness ok & tests & max $|V|$ &
+  FMM ms & oracle ms \\
+\midrule
+\inputrows{generated/table_by_k.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Verification by point family. $|\mathcal{R}|$ is the mean number of
+distinct pairwise distances; it is small for \texttt{grid} and
+\texttt{duplicate} because of ties.}
+\label{tab:byfam}
+\begin{tabular}{@{}l c c c c c@{}}
+\toprule
+Family & $d$ & instances & OPT match & same set & mean $|\mathcal{R}|$ \\
+\midrule
+\inputrows{generated/table_by_family.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Sample instances (\texttt{uniform}, $d=2$, largest $n$ for each $k$):
+optimal squared distance reported by both solvers.}
+\label{tab:sample}
+\small
+\begin{tabular}{@{}l c c r r c c c@{}}
+\toprule
+Instance & $n$ & $k$ & OPT (FMM) & OPT (oracle) & match & witness ok & tests \\
+\midrule
+\inputrows{generated/table_sample.tex}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Observations.}
+\begin{itemize}
+  \item No mismatches were found in any family, including the degenerate ones
+        (coincident, collinear, tied, near-equal and very large values).
+  \item The number of clique tests is $\lceil\log_2(|\mathcal{R}|+1)\rceil$ or one
+        less, as expected from binary search. It is about 5--10 even for
+        $|\mathcal{R}|$ in the hundreds.
+  \item The largest clique lists occur for the largest part, e.g.\
+        $\binom{16}{4}=1820$ $4$-cliques for $k=8$ with split $(2,2,4)$. This
+        shows how the split determines the matrix shapes.
+\end{itemize}
+
+\subsection{Running time}
+
+Figure~\ref{fig:scaling} shows the median (over three runs) in-process solve
+time for uniform planar points as $n$ grows, for $k=3,4,6$.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=3 by 1, horizontal sep=1.1cm},
+  width=0.34\textwidth, height=0.32\textwidth, ymode=log,
+  xlabel={$n$}, grid=major, legend style={font=\scriptsize, at={(0.03,0.97)},
+  anchor=north west}, title style={font=\small}, tick label style={font=\scriptsize}]
+\nextgroupplot[title={$k=3$}, ylabel={time [ms]}]
+  \addplot[mark=*, blue] table[x=n, y=fmm] {generated/scaling_k3.dat};
+  \addplot[mark=square*, red] table[x=n, y=bf] {generated/scaling_k3.dat};
+  \legend{FMM solver, exhaustive}
+\nextgroupplot[title={$k=4$}]
+  \addplot[mark=*, blue] table[x=n, y=fmm] {generated/scaling_k4.dat};
+  \addplot[mark=square*, red] table[x=n, y=bf] {generated/scaling_k4.dat};
+\nextgroupplot[title={$k=6$}]
+  \addplot[mark=*, blue] table[x=n, y=fmm] {generated/scaling_k6.dat};
+  \addplot[mark=square*, red] table[x=n, y=bf] {generated/scaling_k6.dat};
+\end{groupplot}
+\end{tikzpicture}
+\caption{Solve time vs.\ $n$ (log scale), uniform points in $[0,10^6]^2$,
+classical matrix-multiplication backend. Optima agreed on every run.}
+\label{fig:scaling}
+\end{figure}
+
+\paragraph{Discussion.} With the classical backend the FMM-based solver is
+\emph{not} faster than exhaustive search at these sizes, and for $k=6$ it is
+several times slower. This is consistent with the analysis: each clique test
+performs about $|V_1||V_2||V_3|\approx n^k/(k_1!\,k_2!\,k_3!)$ operations, and there are
+$\Theta(\log n)$ tests. Exhaustive search performs about $n^k/k!$ subset
+steps. For $k=6$, $k_1!k_2!k_3!=8$ while $k!=720$. The asymptotic gain of
+Theorem~2 comes entirely from replacing the classical product with fast
+rectangular matrix multiplication. The paper itself notes that FMM-based
+algorithms are generally considered impractical because of their large
+constants, and that it is unclear from which $k$ they win in practice. The
+experiments confirm that the reduction is \emph{correct}; demonstrating its
+\emph{speed} would need a fast multiplication backend and much larger inputs.
+
+%======================================================================
+\section{Limitations and future work}
+%======================================================================
+
+\begin{itemize}
+  \item \textbf{Fast matrix multiplication.} The backend is classical; plugging
+        in Strassen-like or rectangular algorithms, or a bit-packed Boolean
+        product (only $\Pi[a,c]>0$ is needed), is the natural next step.
+  \item \textbf{Memory.} $M_{13}$ and $M_{23}$ have up to
+        $\binom n{k_2}\binom n{k_3}$ entries stored as 64-bit words;
+        bit-packing would cut memory by $64\times$.
+  \item \textbf{Other algorithms of the paper.} The combinatorial algorithm
+        $A(k)$ of Theorems~1 and~3 ($O(n^{k-1}\log n)$ in the plane) and the
+        approximation algorithm $B(k)$ of Theorem~4 are not implemented.
+  \item \textbf{Input range.} Exactness requires $d(2\max|x|)^2<2^{128}$, see
+        Section~5.2.
+\end{itemize}
+
+%======================================================================
+\section{Conclusion}
+%======================================================================
+
+We implemented the FMM based exact algorithm for $k$-dispersion from Section~3
+of Chen and Dumitrescu~\cite{CD25}: binary search over pairwise distances,
+reduction of each decision problem to $k$-clique detection in a threshold
+graph, and reduction of $k$-clique detection to triangle detection via a single
+matrix product with the clique split $(k_1,k_2,k_3)$ prescribed by the proof of
+Theorem~2. A differential test against an independent exhaustive solver on
+\NumInstances{} instances from \NumFamilies{} families (including degenerate
+inputs) found no discrepancy, and every returned solution was independently
+certified. The running-time experiments show that, as the authors anticipate,
+the asymptotic advantage depends on fast matrix multiplication and does not
+appear with a classical backend at practical sizes.
+
+%======================================================================
+\begin{thebibliography}{99}
+\bibitem{CD25} K.~Chen and A.~Dumitrescu,
+  \emph{A Couple of Simple Algorithms for $k$-Dispersion},
+  arXiv:2511.00692, 2025.
+\bibitem{Akagi18} T.~Akagi, T.~Araki, T.~Horiyama, S.~Nakano, Y.~Okamoto,
+  Y.~Otachi, T.~Saitoh, R.~Uehara, T.~Uno, and K.~Wasa,
+  Exact algorithms for the max-min dispersion problem,
+  \emph{FAW 2018}, LNCS 10823, pp.~263--272, 2018.
+\bibitem{EG04} F.~Eisenbrand and F.~Grandoni,
+  On the complexity of fixed parameter clique and dominating set,
+  \emph{Theoretical Computer Science} 326(1--3):57--67, 2004.
+\bibitem{NP85} J.~Ne\v{s}et\v{r}il and S.~Poljak,
+  On the complexity of the subgraph problem,
+  \emph{Commentationes Mathematicae Universitatis Carolinae} 26(2):415--419, 1985.
+\bibitem{LGU18} F.~Le~Gall and F.~Urrutia,
+  Improved rectangular matrix multiplication using powers of the
+  Coppersmith--Winograd tensor, \emph{SODA 2018}, pp.~1029--1046.
+\bibitem{VXXZ24} V.~Vassilevska~Williams, Y.~Xu, Z.~Xu, and R.~Zhou,
+  New bounds for matrix multiplication: from alpha to omega,
+  \emph{SODA 2024}, pp.~3792--3835.
+\bibitem{WK88} D.-W.~Wang and Y.-S.~Kuo,
+  A study on two geometric location problems,
+  \emph{Information Processing Letters} 28(6):281--286, 1988.
+\end{thebibliography}
+
+\end{document}

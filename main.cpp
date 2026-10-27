@@ -1,10 +1,14 @@
 #include "dispersion.hpp"
+#include <chrono>
 #include <iostream>
 #include <string>
 
 using namespace fmm;
 
-int main() {
+int main(int argc, char** argv) {
+    // Optional flag --stats prints solver instrumentation to stderr.
+    const bool want_stats = argc > 1 && std::string(argv[1]) == "--stats";
+
     // Input format:
     // n d k
     // x_1 ... x_d
@@ -38,7 +42,10 @@ int main() {
 
     try {
         FMMKDispersion solver(points, k);
+        const auto t0 = std::chrono::steady_clock::now();
         const auto ans = solver.solve();
+        const double solve_ms =
+            std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
 
         if (!ans.feasible) {
             std::cout << "NO SOLUTION\n";
@@ -55,6 +62,17 @@ int main() {
         for (int v : ans.selected) {
             for (int j = 0; j < d; ++j) std::cout << (j ? " " : "") << points[v].x[j];
             std::cout << '\n';
+        }
+
+        if (want_stats) {
+            const auto& st = ans.stats;
+            const auto sp = clique_split(k);
+            std::cerr << "split " << sp.k1 << ' ' << sp.k2 << ' ' << sp.k3 << '\n'
+                      << "candidate_distances " << st.candidate_distances << '\n'
+                      << "feasibility_tests " << st.feasibility_tests << '\n'
+                      << "matrix_products " << st.matrix_products << '\n'
+                      << "max_V " << st.max_V1 << ' ' << st.max_V2 << ' ' << st.max_V3 << '\n'
+                      << "solve_ms " << solve_ms << '\n';
         }
     } catch (const std::exception& e) {
         std::cerr << "error: " << e.what() << '\n';

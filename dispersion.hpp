@@ -20,10 +20,19 @@ struct CliqueSplit {
 
 CliqueSplit clique_split(int k);
 
+// Instrumentation of one solve() call.
+struct SolveStats {
+    std::size_t candidate_distances = 0;   // distinct pairwise distances
+    int feasibility_tests = 0;             // binary-search steps
+    std::size_t max_V1 = 0, max_V2 = 0, max_V3 = 0; // largest clique lists
+    std::size_t matrix_products = 0;       // calls to multiply_blocked
+};
+
 struct DispersionResult {
     bool feasible = false;
     unsigned __int128 squared_distance = 0;
     std::vector<int> selected;
+    SolveStats stats;
 };
 
 class FMMKDispersion {
@@ -47,6 +56,7 @@ private:
     std::size_t gemm_block_;
     std::vector<std::vector<unsigned __int128>> dist2_;
     std::vector<unsigned __int128> candidate_thresholds_;
+    mutable SolveStats stats_;
 
     void build_distances();
     void build_candidates();
