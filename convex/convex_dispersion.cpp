@@ -252,6 +252,69 @@ bool ConvexDispersion::decide_greedy(i64 r2, std::vector<int>* witness) {
     return false;
 }
 
+// Farthest pair of points given in strictly convex ccw order (rotating
+// calipers, Shamos 1978). Returns the pair or {-1,-1} if fewer than 2 points.
+static std::pair<int, int> farthest_pair(const std::vector<Pt>& p, const std::vector<int>& F) {
+    const int m = (int)F.size();
+    if (m < 2) return {-1, -1};
+    if (m == 2) return {F[0], F[1]};
+    auto area2 = [&](int a, int b, int c) { return orient(p[F[a]], p[F[b]], p[F[c]]); };
+    std::pair<int, int> best{F[0], F[1]};
+    i64 bd = dist2(p[F[0]], p[F[1]]);
+    auto consider = [&](int a, int b) {
+        const i64 v = dist2(p[F[a]], p[F[b]]);
+        if (v > bd) { bd = v; best = {F[a], F[b]}; }
+    };
+    int j = 1;
+    for (int i = 0; i < m; ++i) {
+        const int ni = (i + 1) % m;
+        while (area2(i, ni, (j + 1) % m) > area2(i, ni, j)) j = (j + 1) % m;
+        consider(i, j);
+        consider(ni, j);
+        // with a parallel edge pair both j and j+1 are antipodal to (i, ni)
+        consider(i, (j + 1) % m);
+        consider(ni, (j + 1) % m);
+    }
+    return best;
+}
+
+bool ConvexDispersion::decide_tight4(i64 r2, std::vector<int>* witness) {
+    if (k_ != 4) throw std::invalid_argument("TightK4 requires k = 4");
+    ++stats_.decisions;
+    const int n = n_;
+    auto far = [&](int a, int b) { return D(a, b) >= r2; };
+    std::vector<int> F;
+    F.reserve(n);
+    for (int q = 0; q < n; ++q) {
+        for (int orient_ = 0; orient_ < 2; ++orient_) {
+            // orient_ 0: pair (q, a(q)), remaining points ccw from a(q) to q.
+            // orient_ 1: pair (b(q), q), remaining points ccw from q to b(q).
+            const int step = orient_ == 0 ? 1 : n - 1;
+            int partner = -1;
+            for (int s = 1; s < n && partner < 0; ++s) {
+                const int v = (q + step * s) % n;
+                if (far(q, v)) partner = v;
+            }
+            if (partner < 0) break;
+            const int from = orient_ == 0 ? partner : q;
+            const int to = orient_ == 0 ? q : partner;
+            F.clear();
+            for (int v = nxt(from, 1); v != to; v = nxt(v, 1))
+                if (far(v, q) && far(v, partner)) F.push_back(v);
+            stats_.inner_steps += F.size();
+            const auto fp = farthest_pair(p_, F);
+            if (fp.first >= 0 && far(fp.first, fp.second)) {
+                if (witness) {
+                    *witness = {q, partner, fp.first, fp.second};
+                    std::sort(witness->begin(), witness->end());
+                }
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 std::vector<int> ConvexDispersion::greedy() const {
     int a = 0, b = 1;
     for (int x = 0; x < n_; ++x)
@@ -302,7 +365,11 @@ ConvexResult ConvexDispersion::solve(Algo algo, bool use_bounds) {
     stats_.candidates_window = win.size();
 
     auto decide = [&](i64 r2, std::vector<int>* w) {
-        return algo == Algo::CappedDP ? decide_capped(r2, w) : decide_tw(r2, w);
+        switch (algo) {
+            case Algo::TWNaive: return decide_tw(r2, w);
+            case Algo::TightK4: return decide_tight4(r2, w);
+            default: return decide_capped(r2, w);
+        }
     };
 
     // Largest feasible candidate; win.front() (= L2 when bounds are used, or

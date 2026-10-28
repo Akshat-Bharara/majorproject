@@ -9,7 +9,8 @@
 // fails the run.
 //
 // With --c1 it instead checks conjecture C1 (tight pair) exactly with the DP;
-// with --v4 it checks V4 (tight-pair seed, every left/right pattern).
+// with --v4 it checks V4 (tight-pair seed, every left/right pattern);
+// with --v4pm it checks V4+- (seeds of both orientations).
 //
 // Input: a sequence of instances "n 2 k" + n points (ccw convex order not
 // required). For each instance prints "ok <tests>" or "FAIL r2 <r2>".
@@ -81,11 +82,24 @@ static bool v4_seed(const std::vector<Pt>& p, int k, i64 r2, int q) {
     return v4_dfs(p, k, r2, chosen, a, q);
 }
 
+// V4+-: like V4 but also seeded with cw-tight pairs {b(q), q}.
+static bool v4pm_seed(const std::vector<Pt>& p, int k, i64 r2, int q) {
+    if (v4_seed(p, k, r2, q)) return true;
+    const int n = (int)p.size();
+    int b = -1;
+    for (int s = 1; s < n && b < 0; ++s)
+        if (dist2(p[q], p[(q - s + n) % n]) >= r2) b = (q - s + n) % n;
+    if (b < 0) return false;
+    std::vector<int> chosen{b, q};
+    return v4_dfs(p, k, r2, chosen, q, b);
+}
+
 int main(int argc, char** argv) {
     // --c1: test conjecture C1 (some feasible k-set contains a tight pair
     // q, a(q)) with the capped DP restricted to tight base chords.
     const bool c1 = argc > 1 && std::string(argv[1]) == "--c1";
     const bool v4 = argc > 1 && std::string(argv[1]) == "--v4";
+    const bool v4pm = argc > 1 && std::string(argv[1]) == "--v4pm";
     int n, d, k;
     long long total = 0, fails = 0, inst = 0;
     while (std::cin >> n >> d >> k) {
@@ -115,6 +129,8 @@ int main(int argc, char** argv) {
             if (c1) ok = solver.decide_capped(r2, nullptr, true);
             else if (v4)
                 for (int q = 0; q < (int)p.size() && !ok; ++q) ok = v4_seed(p, k, r2, q);
+            else if (v4pm)
+                for (int q = 0; q < (int)p.size() && !ok; ++q) ok = v4pm_seed(p, k, r2, q);
             else
                 for (int q = 0; q < (int)p.size() && !ok; ++q)
                     ok = v5_run(p, k, r2, q, 0) || v5_run(p, k, r2, q, 1);

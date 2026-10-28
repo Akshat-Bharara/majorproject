@@ -47,7 +47,11 @@ struct ConvexResult {
 // is always valid), then one exact CappedDP decision just above it. If that
 // decision fails the greedy value is optimal; otherwise the exact binary search
 // continues above it. Always exact.
-enum class Algo { CappedDP, TWNaive, Certified };
+// TightK4: k = 4 only. By the oriented tight-pair theorem some optimal set
+// contains {q, a(q)} or {b(q), q}; the other two points are a far pair among
+// the points of the opposite arc far from both, found by rotating calipers.
+// O(n^2) per decision, O(n^2 log n) overall.
+enum class Algo { CappedDP, TWNaive, Certified, TightK4 };
 
 class ConvexDispersion {
 public:
@@ -67,6 +71,9 @@ public:
     // {q, a(q)} for every q, frontiers extended alternately (both orders).
     // True only if it found k points pairwise >= r (returned in witness).
     bool decide_greedy(i64 r2, std::vector<int>* witness);
+
+    // k = 4 decision via oriented tight pairs (Algo::TightK4), O(n^2).
+    bool decide_tight4(i64 r2, std::vector<int>* witness);
 
     // Greedy farthest-first k-set (deterministic start: a diametral point).
     std::vector<int> greedy() const;

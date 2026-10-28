@@ -29,4 +29,11 @@ wait
 for s in 71 72; do python3 experiments/perturb_hunt.py $s 20000 | ./build/v5check --v4 > $H/v4p_$s.log & done
 for s in 81 82; do python3 experiments/perturb_hunt.py $s 20000 | ./build/v5check --c1 > $H/c1p_$s.log & done
 wait
+for s in 91 92; do python3 experiments/v5_hunt.py $s 3000 22 10 | ./build/v5check --v4pm > $H/v4pm_$s.log & done
+for s in 93 94; do python3 experiments/perturb_hunt.py $s 20000 | ./build/v5check --v4pm > $H/v4pmp_$s.log & done
+wait
 python3 experiments/hunt_macros.py
+# The C1 counterexample (results/counterexamples/C1_n8_k4.txt) was constructed,
+# not found by the hunts above:
+#   python3 experiments/cap_lemma.py 4 60        # quadrilateral whose caps are all bad
+#   python3 experiments/build_from_cap.py "<Q>"  # one blocking point per cap, then exact check

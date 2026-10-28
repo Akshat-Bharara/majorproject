@@ -1,6 +1,7 @@
 // k-dispersion for points in convex position.
 //
-// usage: convex_dispersion [--algo=capped|tw|certified] [--no-bounds] [--hull] [--stats]
+// usage: convex_dispersion [--algo=capped|tw|certified|tight4] [--no-bounds] [--hull] [--stats]
+// (tight4: the O(n^2 log n) algorithm for k = 4)
 //
 // Input (same format as the general solver, d must be 2):
 //   n 2 k
@@ -26,6 +27,7 @@ int main(int argc, char** argv) {
         if (s == "--algo=capped") algo = Algo::CappedDP;
         else if (s == "--algo=tw") algo = Algo::TWNaive;
         else if (s == "--algo=certified") algo = Algo::Certified;
+        else if (s == "--algo=tight4") algo = Algo::TightK4;
         else if (s == "--stats") stats = true;
         else if (s == "--no-bounds") bounds = false;
         else if (s == "--hull") take_hull = true;

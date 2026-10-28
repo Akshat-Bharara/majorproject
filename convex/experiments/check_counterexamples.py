@@ -8,6 +8,8 @@ named property fails and writes paper/generated/counterexamples.tex.
   G4  "k points pairwise >= r exist  <=>  some arc A(i) holds k-1 such points"
   V1  alternating greedy seeded with {q, a(q), b(q)} finds k points
   V5  alternating greedy seeded with {q, a(q)} finds k points
+  C1  some r-far k-set contains a tight pair q, a(q) (also refutes V4,
+      which implies C1)
 """
 
 import glob
@@ -41,6 +43,11 @@ def failures(prop, I, k):
             rhs = any(I.feasible(I.arc(i, r2), k - 1, r2) for i in range(I.n))
             if feas != rhs:
                 out.append((r2, feas, rhs))
+        elif prop == "C1":
+            if feas:
+                A = [I.a(i, r2, 1) for i in range(I.n)]
+                if not any(A[q] in s for s in I.far_sets(range(I.n), k, r2) for q in s):
+                    out.append((r2, feas, False))
         else:
             f = v1 if prop == "V1" else v5
             if feas and not any(f(I, q, k, r2) for q in range(I.n)):

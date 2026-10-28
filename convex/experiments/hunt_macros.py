@@ -28,6 +28,8 @@ def main():
     fi, ft, ff = total("v4")
     pi, pt, pf = total("v4p")
     qi, qt, qf = total("c1p")
+    m1 = total("v4pm"); m2 = total("v4pmp")
+    mi, mt, mf = (m1[0] + m2[0], m1[1] + m2[1], m1[2] + m2[2])
     os.makedirs(os.path.join(ROOT, "paper", "generated"), exist_ok=True)
     with open(os.path.join(ROOT, "paper", "generated", "c1_macros.tex"), "w") as fh:
         fh.write(f"\\newcommand{{\\VFiveInst}}{{{fmt(vi)}}}\n")
@@ -37,7 +39,8 @@ def main():
         fh.write(f"\\newcommand{{\\ConeTests}}{{{fmt(ct)}}}\n")
         fh.write(f"\\newcommand{{\\ConeFails}}{{{cf}}}\n")
         for name, (a, b, c) in {"VFour": (fi, ft, ff), "VFourPert": (pi, pt, pf),
-                                "ConePert": (qi, qt, qf)}.items():
+                                "ConePert": (qi, qt, qf),
+                                "VFourPM": (mi, mt, mf)}.items():
             fh.write(f"\\newcommand{{\\{name}Inst}}{{{fmt(a)}}}\n")
             fh.write(f"\\newcommand{{\\{name}Tests}}{{{fmt(b)}}}\n")
             fh.write(f"\\newcommand{{\\{name}Fails}}{{{c}}}\n")
