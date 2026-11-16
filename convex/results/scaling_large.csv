@@ -1,0 +1,2 @@
+file,n,k,r2,ok,t_capped,t_nowindow,t_uncapped,t_triple,t_certified,dec_window,dec_nowindow,dec_certified,greedy_calls,certified_by_greedy,cand_total,cand_window,far_triples_at_opt,incircle_per_decision,r2_brute,r2_triple,r2_uncapped,r2_certified,r2_nowindow,greedy_ff_r2,set_capped,set_certified
+data/scaling/annulus_n300_k04_s0.txt,300,4,1995552868180,1,108.839,93.2557,-1,-1,20.9857,12,15,1,12,1,44850,3939,281964,252221,-1,-1,-1,1995552868180,1995552868180,1925643611873,49 119 190 264,48 119 190 264

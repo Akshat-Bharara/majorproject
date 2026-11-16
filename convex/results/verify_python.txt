@@ -1,0 +1,1 @@
+320/320 instances agree with Python brute force; FMM solver agrees on 320/320

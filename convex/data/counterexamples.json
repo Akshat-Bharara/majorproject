@@ -1,0 +1,224 @@
+{
+ "_comment": "Explicit instances behind the structural claims of Section 6. Points are listed counterclockwise; r2 is the squared radius. Every entry is re-verified by experiments/check_counterexamples.py (exhaustive search, exact integers).",
+ "instances": [
+  {
+   "name": "G4-rhombus",
+   "k": 4,
+   "r2": 10,
+   "points": [
+    [-1,0],
+    [0,-3],
+    [1,0],
+    [0,3]
+   ],
+   "expect": {
+    "feasible": false,
+    "G": false
+   }
+  },
+  {
+   "name": "C1prime-small",
+   "k": 4,
+   "r2": 50,
+   "points": [
+    [-11,0],
+    [-9,-1],
+    [1,-2],
+    [3,-2],
+    [10,0],
+    [8,1],
+    [1,2],
+    [-4,2]
+   ],
+   "expect": {
+    "feasible": true,
+    "C1": true,
+    "C1p": false,
+    "V1": false,
+    "V3": false,
+    "V4": true
+   }
+  },
+  {
+   "name": "V5-small",
+   "k": 6,
+   "r2": 26,
+   "points": [
+    [-13,0],
+    [-9,-1],
+    [0,-2],
+    [2,-2],
+    [8,-1],
+    [13,0],
+    [11,1],
+    [1,2],
+    [-2,2],
+    [-8,1]
+   ],
+   "expect": {
+    "feasible": true,
+    "C1": true,
+    "V5": false,
+    "V4": true
+   }
+  },
+  {
+   "name": "tightpair-k4",
+   "k": 4,
+   "r2": 10240,
+   "points": [
+    [16,48],
+    [-83,26],
+    [-114,18],
+    [-30,-39],
+    [-16,-48],
+    [83,-26],
+    [114,-18],
+    [30,39]
+   ],
+   "expect": {
+    "feasible": true,
+    "num_far_sets": 1,
+    "C1": false,
+    "C1p": false,
+    "V1": false,
+    "V3": false,
+    "V5": false,
+    "V4": false,
+    "optimum_r2": 10240
+   }
+  },
+  {
+   "name": "tightpair-k5",
+   "k": 5,
+   "r2": 1000000,
+   "points": [
+    [-512,859],
+    [-995,-25],
+    [-1009,-52],
+    [-10,-1],
+    [2,0],
+    [1006,163],
+    [1367,222],
+    [554,833],
+    [518,858],
+    [-492,864]
+   ],
+   "expect": {
+    "feasible": true,
+    "num_far_sets": 1,
+    "C1": false,
+    "V4": false
+   }
+  },
+  {
+   "name": "tightpair-k6",
+   "k": 6,
+   "r2": 418609,
+   "points": [
+    [851,88],
+    [215,259],
+    [-175,352],
+    [-820,491],
+    [-1031,524],
+    [-687,-38],
+    [-649,-92],
+    [-13,-263],
+    [377,-356],
+    [1024,-495],
+    [1233,-528],
+    [889,34]
+   ],
+   "expect": {
+    "feasible": true,
+    "C1": false,
+    "V4": false
+   }
+  },
+  {
+   "name": "tightpair-k7",
+   "k": 7,
+   "r2": 13155129,
+   "points": [
+    [5936,1558],
+    [2254,1872],
+    [-36,2004],
+    [-3872,2121],
+    [-4826,2102],
+    [-7427,-517],
+    [-8045,-1226],
+    [-4359,-1442],
+    [-3984,-1457],
+    [763,-1433],
+    [3767,-1353],
+    [7528,-1170],
+    [8805,-1040],
+    [6069,1446]
+   ],
+   "expect": {
+    "feasible": true,
+    "C1": false,
+    "V4": false
+   }
+  },
+  {
+   "name": "draft-G4",
+   "k": 4,
+   "r2": 320756,
+   "points": [
+    [-976,42],
+    [4,-49],
+    [971,-41],
+    [979,4],
+    [964,29],
+    [398,49]
+   ],
+   "expect": {
+    "feasible": false,
+    "G": false
+   }
+  },
+  {
+   "name": "draft-V1",
+   "k": 4,
+   "r2": 2556513005,
+   "points": [
+    [-90482,144],
+    [-45601,-629],
+    [13859,-779],
+    [38501,-677],
+    [97951,32],
+    [57181,535],
+    [4941,792],
+    [-19180,765]
+   ],
+   "expect": {
+    "feasible": true,
+    "C1p": false,
+    "V1": false,
+    "V3": false
+   }
+  },
+  {
+   "name": "draft-V5",
+   "k": 6,
+   "r2": 878078401,
+   "points": [
+    [-94942,276],
+    [-57395,-1876],
+    [-27771,-2581],
+    [-2908,-2795],
+    [62044,-1720],
+    [87508,-655],
+    [48547,2138],
+    [2056,2796],
+    [-24473,2629],
+    [-70081,1423]
+   ],
+   "expect": {
+    "feasible": true,
+    "V5": false
+   }
+  }
+ ]
+}

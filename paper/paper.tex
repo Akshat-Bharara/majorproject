@@ -1,0 +1,1197 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{calc}
+\usepackage{microtype}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\usepackage[capitalise,noabbrev]{cleveref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\floatstyle{ruled}
+\newfloat{algorithm}{tb}{loa}
+\floatname{algorithm}{Algorithm}
+\crefname{algorithm}{Algorithm}{Algorithms}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\far}{\mathrm{far}}
+\newcommand{\per}{\mathrm{per}}
+\newcommand{\conv}{\mathrm{conv}}
+\newcommand{\ang}{\angle}
+\newcommand{\rstar}{r^{*}}
+\newcommand{\circlethree}[3]{\bigcirc(#1,#2,#3)}
+\newcommand{\Arc}{\mathrm{A}}
+\newcommand{\Tr}{T_r}
+\newcommand{\nil}{\bot}
+\newcommand{\AlgCapped}{\textsc{CappedDecision}}
+\newcommand{\AlgCert}{\textsc{Certified}}
+\newcommand{\code}[1]{\texttt{#1}}
+
+\input{generated/macros}
+
+\title{Exact $k$-Dispersion for Points in Convex Position:\\
+A Capped Delaunay Dynamic Program\\ and the Limits of Greedy Structure}
+\author{Project Team}
+\date{November 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Given $n$ points in convex position in the plane and an integer $k$, the
+\emph{$k$-dispersion} problem asks for $k$ of the points whose minimum pairwise
+distance $\rstar$ is as large as possible. The best known bound is
+$O(n^3\log^2 n)$ (Tkachenko and Wang, SWAT~2026), obtained by binary search over
+a maximum-independent-set procedure. We make three contributions.
+
+\emph{(1) A simple exact algorithm.} We show that a set in convex position has
+all pairwise distances at least $r$ if and only if it admits a triangulation
+whose edges all have length at least $r$ and whose diagonals are all locally
+Delaunay. This certificate turns the decision problem into a dynamic program
+over triangulations, and because a dispersion query only asks whether $k$
+points fit, every chord needs to remember just $k-2$ apex points. The
+resulting decision procedure runs in $O(n^2k+n^3/w+\Tr\log k)\subseteq
+O(n^3\log k)$ time and $O(n^2k)$ space, where $\Tr\le\binom n3$ is the number
+of triples with pairwise distances at least $r$ and $w$ is the word size; it
+uses no geometric data structure and only one geometric predicate, the
+in-circle test. Binary search inside a window $g\le \rstar\le\min\{2g,\per(P)/k\}$
+gives an $O(n^3\log k\log n)$ algorithm for $k$-dispersion, and the same
+program computes a maximum independent set of size $\alpha$ of the unit-disk
+graph of points in convex position in $O(n^3\log\alpha)$ time.
+
+\emph{(2) The limits of greedy structure.} Near-linear algorithms are known
+for $k=3$, and they rest on the fact that a solution can be grown from a point
+$q$ and the first points $a(q)$, $b(q)$ at distance at least $r$ on either
+side of it. We give short proofs of three such properties for $k=3$ and show
+that each of them fails for $k\ge 4$: the arc characterisation fails for every
+$k\ge4$, and the weakest property of this kind---some solution contains a
+\emph{tight pair} $\{q,a(q)\}$---fails for $k=4,5,6,7$, even at the optimal
+radius. The counterexample for $k=4$ has eight points and can be checked by
+hand. It refutes a conjecture that had survived more than $5.5\cdot 10^{7}$
+exact randomised tests, and was found only by adversarial optimisation.
+
+\emph{(3) Implementation and experiments.} Greedy rules remain useful as
+\emph{sound} heuristics: a certified variant runs a greedy search followed by
+a single exact decision and is exact on every input. All algorithms are
+implemented with exact integer arithmetic and cross-checked against exhaustive
+search and an independent solver; on instances with up to $400$ points the
+certified variant is typically several times faster than plain binary search.
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+
+\paragraph{Problem.}
+Let $P$ be a set of $n$ points in the plane in \emph{convex position}, that
+is, every point of $P$ is a vertex of the convex hull $\conv(P)$. For an
+integer $2\le k\le n$, the \emph{$k$-dispersion} problem (also called max--min
+dispersion, or the maximally separated set problem) asks for a subset
+$S\subseteq P$ with $|S|=k$ that maximises
+$\delta(S)=\min_{p\ne q\in S}|pq|$. We write $\rstar=\rstar_k(P)$ for the
+optimum. Dispersion is a classical facility-location problem: the selected
+points model facilities that should be far from one another, such as mutually
+interfering transmitters or obnoxious facilities. For general planar point sets
+the problem is NP-hard~\cite{wangkuo}, and the best exact algorithms run in
+$n^{O(\sqrt k)}$ time~\cite{akagi}; see also~\cite{chendumitrescu} for recent
+simple algorithms for small~$k$. Convex position makes the problem polynomial.
+
+\paragraph{Known results for convex position.}
+\Cref{tab:known} summarises the state of the art. Singireddy, Basappa and
+Mitchell~\cite{sbm} gave a fixed-parameter algorithm and the first polynomial
+algorithm. Tkachenko and Wang~\cite{tw25} observed that the decision version
+(is $\rstar\ge r$?) is a maximum-independent-set problem in the unit-disk graph
+of points in convex position and solved it by dynamic programming over
+triangulations, accelerated by cuttings; their recent
+algorithm~\cite{tw26} computes a maximum-weight independent set of arbitrary
+disks in convex position in $O(n^3\log n)$ time, which yields
+$O(n^3\log^2 n)$ for dispersion. For $k=3$ much faster algorithms are
+known~\cite{kobayashi,tw25}.
+
+\begin{table}[tb]
+\centering
+\caption{Exact algorithms for $k$-dispersion of $n$ points in convex position.}
+\label{tab:known}
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Reference & Time & Remarks\\
+\midrule
+Singireddy, Basappa, Mitchell~\cite{sbm} & $O(2^k n^2\log^2 n)$ & bounded search tree\\
+Singireddy, Basappa, Mitchell~\cite{sbm} & $O(n^4k^2)$ & first polynomial algorithm\\
+Tkachenko, Wang~\cite{tw25} & $O(n^{7/2}\log n)$ & cuttings; $O(n^{37/11}\log n)$ expected\\
+Tkachenko, Wang~\cite{tw26} & $O(n^3\log^2 n)$ & via weighted independent set of disks\\
+Kobayashi et al.~\cite{kobayashi} & $O(n^2)$ & $k=3$\\
+Tkachenko, Wang~\cite{tw25} & $O(n\log^2 n)$ & $k=3$; $O(n\log n)$ expected\\
+\midrule
+\textbf{This work} (\cref{thm:opt}) & $O(n^3\log k\log n)$ & decision in $O(n^2k+n^3/w+\Tr\log k)$\\
+\textbf{This work} (\cref{thm:cert}) & $O(n^2k\log n+n^3\log k)$ & when a greedy bound is tight; always exact\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Contributions.}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \textbf{Delaunay certificate} (\cref{thm:cert-delaunay}). A set $S$ in
+convex position is \emph{$r$-far} (all pairwise distances are at least $r$) if
+and only if it has a triangulation in which every edge has length at least $r$
+and every diagonal is locally Delaunay. Both conditions are local, which is
+what a dynamic program needs, and the proof is a few lines on top of the
+classical Delaunay lemma.
+
+\item \textbf{Capped Delaunay dynamic program} (\cref{sec:dp}). The value of a
+chord, as a function of the angle constraint imposed by its parent triangle, is
+a step function. For a dispersion query only its first $k-2$ steps matter
+(\cref{lem:thresholds}), and each step can be stored as the apex point that
+attains it, so that all comparisons become exact in-circle tests. The decision
+procedure (\cref{thm:decision-alg}) takes $O(n^2k+n^3/w+\Tr\log k)$ time and
+$O(n^2k)$ space. As a by-product, a maximum $r$-far subset of size $\alpha$ is
+found in $O(n^2\alpha+n^3/w+\Tr\log\alpha)$ time (\cref{cor:mis}).
+
+\item \textbf{Search window} (\cref{lem:window}).
+$g\le\rstar\le\min\{2g,\per(P)/k\}$, where $g$ is the value of a
+farthest-first greedy $k$-set and $\per(P)$ the perimeter of the hull. In our
+experiments the window keeps a few percent of the candidate distances.
+
+\item \textbf{Greedy structure: true for $k=3$, false for $k\ge4$}
+(\cref{sec:greedy}). For a radius $r$ let $a(q)$ and $b(q)$ be the first
+points at distance at least $r$ from $q$ in counterclockwise and clockwise
+order. We prove that for $k=3$ every $r$-far triple can be turned into an
+$r$-far triple of the form $\{q,a(q),b(q)\}$ and into one of the form
+$\{q,a(q),z\}$ by a single replacement (\cref{thm:k3}), and that the arc
+characterisation behind the $k=3$ algorithms holds
+(\cref{prop:g3}). For $k\ge4$ everything breaks: the arc characterisation fails
+for every $k\ge4$ (\cref{prop:gk}), and there are point sets in which no $r$-far
+$k$-set contains a tight pair $\{q,a(q)\}$ at all, for $k=4,\dots,7$
+(\cref{thm:tightpair}). Consequently no algorithm that grows a solution from a
+tight pair---alternating greedy or full search tree---is complete. The
+tight-pair property is the natural candidate for extending the $k=3$
+approach; it passed $\huntCone$ exact randomised tests, including targeted
+perturbations of all counterexamples to weaker properties, before an
+optimisation-based search refuted it. We regard this as a useful caution about
+randomised evidence for geometric conjectures.
+
+\item \textbf{Certified algorithm and experiments} (\cref{sec:certified,sec:experiments}).
+Greedy rules only ever output $r$-far sets. \Cref{alg:certified} uses them to
+find a lower bound and certifies it with one exact decision; it is exact on
+every input and takes $O(n^2k\log n+n^3\log k)$ time whenever the greedy bound
+is tight. We provide a complete implementation with exact $128$-bit
+predicates, an exhaustive cross-validation, and a running-time study.
+\end{enumerate}
+
+\paragraph{Relation to previous work.}
+The subproblems of our dynamic program---a chord together with a constraint
+coming from the triangle on its other side---are in substance those of
+Tkachenko and Wang~\cite{tw25}. What is new on the algorithmic side is the
+certificate-based correctness proof, the $k$-capped threshold representation
+with its exact, predicate-only evaluation, and the search window. In the worst
+case our optimisation bound improves on $O(n^3\log^2 n)$~\cite{tw26} by a
+factor $\log n/\log k$, and the decision bound $O(n^3\log k)$ improves on
+$O(n^3\log n)$ whenever $k=n^{o(1)}$; the algorithm of~\cite{tw26} is more
+general (weighted disks of arbitrary radii). Compared with the search-tree
+bound $O(2^kn^2\log^2n)$ of~\cite{sbm}, ours is better once
+$2^k\gtrsim n\log k/\log n$. We stress that the main merits of the algorithm are
+its simplicity and exactness: the whole decision procedure is a triple loop
+with a binary search inside. The structural results of \cref{sec:greedy} are
+new.
+
+\paragraph{Organisation.}
+\Cref{sec:prelim} fixes notation. \Cref{sec:certificate} proves the Delaunay
+certificate, \cref{sec:dp} develops the dynamic program, and
+\cref{sec:opt} treats optimisation. \Cref{sec:greedy} studies greedy
+structure, \cref{sec:experiments} reports experiments, and
+\cref{sec:conclusion} lists open problems.
+
+\section{Preliminaries}\label{sec:prelim}
+
+Throughout, $P=(p_0,\dots,p_{n-1})$ is a sequence of $n\ge3$ points in
+\emph{strictly} convex position (no three collinear), listed counterclockwise
+(ccw); indices are taken modulo~$n$. We write $|pq|$ for the Euclidean
+distance. For $i\ne j$, $P(i,j)$ denotes the points strictly between $p_i$ and
+$p_j$ when going ccw from $p_i$ to $p_j$. For $r>0$, a set is \emph{$r$-far}
+if all its pairwise distances are at least $r$, and $\far_r(i,j)$ is the
+predicate $|p_ip_j|\ge r$. For three points, $\ang abc\in(0,\pi)$ is the angle
+at $b$ in the triangle $abc$, and $\circlethree abc$ is the circle through
+them. $\per(P)$ is the perimeter of $\conv(P)$.
+
+A \emph{triangulation} of a set $S$ in convex position, $|S|\ge3$, is a
+maximal set of pairwise non-crossing segments (\emph{edges}) between points of
+$S$; its edges are the sides of $\conv(S)$ and the \emph{diagonals}. A
+diagonal $ab$ with incident triangles $abc$ and $bad$ is \emph{locally
+Delaunay} if $d$ is not strictly inside $\circlethree abc$. Since $acbd$ is a
+convex quadrilateral, this is equivalent to
+\begin{equation}\label{eq:ld}
+\ang acb+\ang adb\le\pi .
+\end{equation}
+A triangulation is \emph{Delaunay} if no point of $S$ lies strictly inside the
+circumcircle of any of its triangles. Delaunay triangulations exist for every
+finite point set not contained in a line (triangulate the cells of the
+Delaunay subdivision arbitrarily).
+
+We repeatedly use two elementary facts.
+\begin{description}[leftmargin=1.5em,itemsep=1pt]
+\item[(Q)] In a convex quadrilateral $abcd$ the diagonals are together longer
+than either pair of opposite sides: $|ac|+|bd|>|ab|+|cd|$ and
+$|ac|+|bd|>|bc|+|da|$. (Apply the triangle inequality at the crossing point of
+the diagonals.)
+\item[(A)] Seen from a vertex $v$ of a convex polygon, the other vertices
+appear in their cyclic order within an angle smaller than $\pi$. Hence, if
+$v,u_1,u_2,u_3$ occur in this ccw order, $\ang u_1vu_3=\ang u_1vu_2+\ang u_2vu_3$.
+\end{description}
+
+\paragraph{Model of computation and exact predicates.}
+Our algorithms compare distances and evaluate the in-circle predicate; no other
+geometric primitive is used. The analysis holds on a real RAM, where the term
+$n^3/w$ below is to be read as $n^3$, and on a word RAM with word size
+$w=\Omega(\log n)$ for integer input. For integer coordinates of absolute value
+at most $2^{29}$, squared distances fit into $62$ bits and the in-circle
+determinant is smaller than $2^{124}$ in absolute value, so that signed
+$128$-bit integers suffice; this is what our implementation does. All angle
+comparisons below reduce to in-circle tests by the inscribed angle theorem:
+\begin{description}[leftmargin=1.5em,itemsep=1pt]
+\item[(I1)] if $x$ and $y$ lie on the same side of the line $ab$, then
+$\ang axb>\ang ayb$ iff $x$ is strictly inside $\circlethree ayb$;
+\item[(I2)] if $x$ and $c$ lie on opposite sides of the line $ab$, then
+$\ang axb+\ang acb>\pi$ iff $x$ is strictly inside $\circlethree acb$.
+\end{description}
+
+\section{A Delaunay certificate for \texorpdfstring{$r$}{r}-far sets}\label{sec:certificate}
+
+\begin{lemma}[Delaunay lemma {\cite{delaunay,edelsbrunner}}]\label{lem:delaunay}
+If every diagonal of a triangulation $T$ of a finite point set $S$ is locally
+Delaunay, then $T$ is a Delaunay triangulation of $S$.
+\end{lemma}
+
+It is well known that a closest pair of a point set is joined by an edge of
+its Delaunay triangulation. We need the statement for an \emph{arbitrary}
+Delaunay triangulation in the presence of cocircular points, and give the
+short proof for sets in convex position.
+
+\begin{lemma}\label{lem:closest}
+Let $T$ be a Delaunay triangulation of a set $S$ in strictly convex position,
+$|S|\ge3$. Then every closest pair of $S$ is joined by an edge of $T$.
+\end{lemma}
+\begin{proof}
+Let $p,q$ be a closest pair and suppose that $pq$ is not an edge of $T$. Then
+$pq$ is not a side of $\conv(S)$, and it does not pass through a third point
+of $S$. Hence, starting at $p$, the segment $pq$ runs through the interior of
+a triangle $puv$ of $T$ and leaves it through an interior point of the side
+$uv$. So $u$ and $v$ lie strictly on opposite sides of the line $pq$, and
+$p,u,q,v$ are the vertices of a convex quadrilateral in this cyclic order,
+with diagonals $pq$ and $uv$. Because $T$ is Delaunay, $q$ is not strictly
+inside $\circlethree puv$, that is, $\ang upv+\ang uqv\le\pi$ by~(I2). The
+angles of the quadrilateral sum to $2\pi$, so $\ang puq+\ang pvq\ge\pi$, and
+one of them, say $\ang puq$, is at least $\pi/2$. Then $pq$ is the strictly
+longest side of the triangle $puq$, so $|pu|<|pq|$, contradicting the choice
+of $p,q$.
+\end{proof}
+
+\begin{theorem}[Delaunay certificate]\label{thm:cert-delaunay}
+Let $S$ be a set in strictly convex position, $|S|\ge3$, and let $r>0$. Then
+$S$ is $r$-far if and only if $S$ has a triangulation $T$ such that
+\begin{enumerate}[label=(\alph*),itemsep=0pt,topsep=2pt]
+\item every edge of $T$ has length at least $r$, and
+\item every diagonal of $T$ is locally Delaunay.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+($\Leftarrow$) By (b) and \cref{lem:delaunay}, $T$ is a Delaunay
+triangulation. By \cref{lem:closest} the minimum pairwise distance of $S$ is
+the length of an edge of $T$, which is at least $r$ by~(a).
+($\Rightarrow$) Take any Delaunay triangulation $T$ of $S$. It satisfies (b)
+by definition, and (a) because all its edges join points of the $r$-far
+set~$S$.
+\end{proof}
+
+Conditions (a) and (b) are \emph{local}: (a) concerns single edges and (b)
+pairs of adjacent triangles. The dynamic program of
+Tkachenko and Wang~\cite{tw25} is built on the same idea of gluing triangles
+under a local compatibility condition; \cref{thm:cert-delaunay} isolates the
+statement that makes such a program correct and reduces its proof to the
+Delaunay lemma.
+
+\section{The capped Delaunay dynamic program}\label{sec:dp}
+
+Fix $r>0$ and write $\far$ for $\far_r$. For the decision problem it suffices
+to consider \emph{chords} $(i,j)$ with $0\le i<j\le n-1$. A chord is
+\emph{admissible} if $\far(i,j)$, and a point $p_l\in P(i,j)$ is an
+\emph{admissible apex} of $(i,j)$ if $\far(i,l)$ and $\far(l,j)$. Let
+\[
+\Tr=\bigl|\{(i,l,j): 0\le i<l<j\le n-1,\ \far(i,l),\ \far(l,j),\ \far(i,j)\}\bigr|\le\tbinom n3
+\]
+be the number of $r$-far triples.
+
+\begin{definition}\label{def:config}
+Let $(i,j)$ be an admissible chord. An \emph{$(i,j)$-configuration} is a pair
+$(X,T)$ where $X\subseteq P(i,j)$ and, if $X\neq\emptyset$, $T$ is a
+triangulation of $X\cup\{p_i,p_j\}$ that satisfies (a) and (b) of
+\cref{thm:cert-delaunay}. If $X\ne\emptyset$, the \emph{apex} of $(X,T)$ is
+the third vertex $p_l$ of the triangle of $T$ containing the edge $p_ip_j$.
+For $\varphi\in(0,\pi]$ let $F(i,j\mid\varphi)$ be the maximum of $|X|$ over
+all $(i,j)$-configurations with $X=\emptyset$ or $\ang p_ip_lp_j\le\varphi$.
+\end{definition}
+
+The bound $\varphi$ encodes the triangle on the other side of the chord: if
+$p_ip_j$ is a diagonal of a larger triangulation whose other triangle at
+$p_ip_j$ is $p_ip_jp_t$, then by~\eqref{eq:ld} the diagonal is locally
+Delaunay exactly if $\ang p_ip_lp_j\le\pi-\ang p_ip_tp_j$. See
+\cref{fig:dp}.
+
+\begin{figure}[tb]
+\centering
+\begin{tikzpicture}[scale=1.0,>=stealth]
+  \coordinate (i) at (-2.6,0);
+  \coordinate (j) at (2.6,0);
+  \coordinate (l) at (0.5,-2.2);
+  \coordinate (x) at (-1.75,-1.75);
+  \coordinate (y) at (2.05,-1.45);
+  \coordinate (t) at (0.2,1.9);
+  % circle through i, l, j: centre (0, c) with c = (0.25+4.84-6.76)/(-4.4)
+  \draw[gray!70,dashed] (0,0.3795) circle (2.6276);
+  \fill[blue!8] (i)--(l)--(j)--cycle;
+  \draw[thick] (i)--(j);
+  \draw[thick] (i)--(l)--(j);
+  \draw (i)--(x)--(l);
+  \draw (l)--(y)--(j);
+  \draw[gray] (i)--(t)--(j);
+  \foreach \p/\pos/\lab in {i/left/{$p_i$}, j/right/{$p_j$}, l/below/{$p_l$}, x/below left/{$x=L_c(i,l)$}, y/below right/{$y=L_{c'}(l,j)$}, t/above/{$p_t$}}
+    {\fill (\p) circle (1.6pt); \node[\pos] at (\p) {\lab};}
+  \node at (0.15,-0.75) {\small apex triangle};
+  \node[gray] at (2.75,2.25) {\small $\circlethree{p_i}{p_l}{p_j}$};
+\end{tikzpicture}
+\caption{A chord $(i,j)$ with apex $p_l$. The sub-configuration of $(i,l)$
+with apex $x$ is compatible with the triangle $p_ip_lp_j$ iff $x$ is not
+strictly inside $\circlethree{p_i}{p_l}{p_j}$ (here: $x$ is outside); likewise
+for $y$ and $(l,j)$. The parent triangle $p_ip_jp_t$ constrains $p_l$ in the
+same way.}
+\label{fig:dp}
+\end{figure}
+
+\begin{lemma}[Recurrence]\label{lem:rec}
+For every admissible chord $(i,j)$ and every $\varphi\in(0,\pi]$,
+\[
+F(i,j\mid\varphi)=\max\Bigl(\{0\}\cup\bigl\{\,v(l) : p_l\text{ admissible apex of }(i,j),\ \ang p_ip_lp_j\le\varphi\bigr\}\Bigr),
+\]
+where
+$v(l)=1+F\bigl(i,l\mid\pi-\ang p_ip_jp_l\bigr)+F\bigl(l,j\mid\pi-\ang p_lp_ip_j\bigr)$.
+\end{lemma}
+\begin{proof}
+($\ge$) Let $p_l$ be an admissible apex with $\ang p_ip_lp_j\le\varphi$, and
+let $(X_1,T_1)$ and $(X_2,T_2)$ be optimal configurations of $(i,l)$ and
+$(l,j)$ under the bounds in the definition of $v(l)$. Put
+$X=X_1\cup X_2\cup\{p_l\}$ and let $T$ consist of $T_1$, $T_2$ and the
+triangle $p_ip_lp_j$. The three sides of this triangle have length at least
+$r$. If $X_1\ne\emptyset$, then $p_ip_l$ is a diagonal of $T$ whose two
+triangles are $p_ip_lp_j$ and the apex triangle of $T_1$, and
+by~\eqref{eq:ld} the bound $\pi-\ang p_ip_jp_l$ on the apex angle of $T_1$ is
+exactly its local Delaunay condition; symmetrically for $p_lp_j$. All other
+diagonals of $T$ are diagonals of $T_1$ or $T_2$. So $(X,T)$ is an
+$(i,j)$-configuration with apex $p_l$ and $|X|=v(l)$.
+
+($\le$) Let $(X,T)$ be an optimal configuration with $X\ne\emptyset$ and apex
+$p_l$. By (a), $p_l$ is an admissible apex. Removing the triangle $p_ip_lp_j$
+splits $T$ into triangulations of $(X\cap P(i,l))\cup\{p_i,p_l\}$ and
+$(X\cap P(l,j))\cup\{p_l,p_j\}$, which are configurations of $(i,l)$ and
+$(l,j)$, and by (b) their apex angles obey the bounds in $v(l)$. Hence
+$|X|\le v(l)$.
+\end{proof}
+
+\begin{theorem}[Decision]\label{thm:decision}
+Let $k\ge3$. $P$ has an $r$-far $k$-set if and only if some admissible chord
+$(i,j)$ has $F(i,j\mid\pi)\ge k-2$.
+\end{theorem}
+\begin{proof}
+($\Rightarrow$) Let $S$ be an $r$-far $k$-set, let $p_i$ and $p_j$ be its
+points of smallest and largest index, and let $T$ be a Delaunay triangulation
+of $S$. Then $X=S\setminus\{p_i,p_j\}\subseteq P(i,j)$ and $(X,T)$ is an
+$(i,j)$-configuration by \cref{thm:cert-delaunay}, with $|X|=k-2$.
+($\Leftarrow$) A configuration $(X,T)$ with $|X|\ge k-2\ge 1$ is a
+triangulation of $X\cup\{p_i,p_j\}$ satisfying (a) and (b). By
+\cref{thm:cert-delaunay} this set is $r$-far, and any $k$ of its points form
+an $r$-far $k$-set.
+\end{proof}
+
+\subsection{Thresholds: \texorpdfstring{$k-2$}{k-2} apex points per chord}
+
+Evaluating the recurrence naively needs one table entry per chord and apex and
+$O(n)$ work per entry, that is, $O(n^4)$ time. The following observation
+removes a factor~$n$ and, with capping, replaces $\log n$ by $\log k$.
+
+Fix an admissible chord $(i,j)$. For $c\ge1$ define the \emph{$c$-th
+threshold}
+\[
+\tau_c(i,j)=\min\bigl\{\ang p_ip_lp_j : p_l\text{ admissible apex of }(i,j),\ v(l)\ge c\bigr\},
+\]
+with $\tau_c(i,j)=+\infty$ if no such apex exists, and put $\tau_0=0$.
+
+\begin{lemma}\label{lem:thresholds}
+For every admissible chord, $\tau_1\le\tau_2\le\cdots$ and
+$F(i,j\mid\varphi)=\max\{c\ge0:\tau_c(i,j)\le\varphi\}$. Moreover, for every
+integer $K\ge1$, the thresholds $\tau_1,\dots,\tau_K$ of a chord are determined
+by the thresholds $\tau_1,\dots,\tau_K$ of shorter chords.
+\end{lemma}
+\begin{proof}
+The sets $\{l:v(l)\ge c\}$ shrink as $c$ grows, which gives monotonicity. By
+\cref{lem:rec}, $F(i,j\mid\varphi)\ge c$ iff some admissible apex $p_l$ with
+$\ang p_ip_lp_j\le\varphi$ has $v(l)\ge c$, iff $\tau_c\le\varphi$. For the
+last claim write $F_K=\min(F,K)$. The thresholds $\tau_1,\dots,\tau_K$ depend
+on $v$ only through $\min(K,v)$, and
+$\min(K,v(l))=\min\bigl(K,1+F_K(i,l\mid\cdot)+F_K(l,j\mid\cdot)\bigr)$, where
+$F_K$ of a chord is determined by its first $K$ thresholds.
+\end{proof}
+
+For a dispersion query we only need to know whether $F\ge k-2$, so we set
+$K=k-2$ and keep $K$ thresholds per chord. We do not store angles: we store
+$\tau_c(i,j)$ as an apex $L_c(i,j)$ that attains it ($L_c=\nil$ if
+$\tau_c=+\infty$). Then, for an admissible apex $p_l$ of $(i,j)$ and
+$x=L_c(i,l)$,
+\[
+F_K\bigl(i,l\mid\pi-\ang p_ip_jp_l\bigr)\ge c
+\iff \ang p_ixp_l+\ang p_ip_jp_l\le\pi
+\iff x\text{ is not strictly inside }\circlethree{p_i}{p_l}{p_j}
+\]
+by (I2), since $x$ and $p_j$ lie on opposite sides of the line $p_ip_l$. The
+same circle answers the query for the chord $(l,j)$. Each query is monotone in
+$c$, so the number of thresholds that pass is found by binary search with
+$O(\log K)$ in-circle tests. Comparing the apex angles of two apexes $p_l$,
+$p_{l'}$ of the same chord is the in-circle test~(I1). \Cref{alg:capped}
+gives the complete procedure.
+
+\begin{algorithm}
+\caption{$\AlgCapped(P,k,r)$\quad ($k\ge3$, $K=k-2$)}\label{alg:capped}
+\begin{tabbing}
+\hspace{1.4em}\=\hspace{1.4em}\=\hspace{1.4em}\=\hspace{1.4em}\=\kill
+\textbf{for} $g=2,\dots,n-1$ \textbf{do}\` \emph{chords by increasing length $j-i$}\\
+\>\textbf{for each} admissible chord $(i,j)$ with $j=i+g$ \textbf{do}\\
+\>\>$best[1..K]\gets\nil$\\
+\>\>\textbf{for each} admissible apex $p_l$ of $(i,j)$ \textbf{do}\` \emph{bit-parallel enumeration}\\
+\>\>\>$q_1\gets\#\{c: L_c(i,l)\ne\nil\text{ is not strictly inside }\circlethree{p_i}{p_l}{p_j}\}$\` \emph{binary search}\\
+\>\>\>$q_2\gets\#\{c: L_c(l,j)\ne\nil\text{ is not strictly inside }\circlethree{p_i}{p_l}{p_j}\}$\` \emph{binary search}\\
+\>\>\>$v\gets\min(K,1+q_1+q_2)$\\
+\>\>\>\textbf{if} $best[v]=\nil$ or $\ang p_ip_lp_j<\ang p_i\,best[v]\,p_j$ \textbf{then} $best[v]\gets p_l$\\
+\>\>\textbf{for} $c=K,\dots,1$ \textbf{do} $L_c(i,j)\gets$ apex of smallest angle among $best[c..K]$\` \emph{suffix minima}\\
+\>\>\textbf{if} $L_K(i,j)\ne\nil$ \textbf{then return} \textsc{true}\\
+\textbf{return} \textsc{false}
+\end{tabbing}
+\end{algorithm}
+
+\begin{theorem}\label{thm:decision-alg}
+\Cref{alg:capped} decides whether $P$ has an $r$-far $k$-set in
+\[
+O\bigl(n^2k+n^3/w+\Tr\log k\bigr)\ \subseteq\ O(n^3\log k)
+\]
+time and $O(n^2k)$ space. If the answer is positive, an $r$-far $k$-set can be
+reported in $O(k\log k)$ additional time.
+\end{theorem}
+\begin{proof}
+\emph{Correctness.} By induction on $j-i$, after the chord $(i,j)$ has been
+processed, $L_c(i,j)$ attains $\tau_c(i,j)$ for $1\le c\le K$: the counts
+$q_1,q_2$ equal $F_K$ of the two sub-chords under the bounds of
+\cref{lem:rec} by the discussion above, so $v=\min(K,v(l))$; $best[v]$ is an
+apex of smallest angle among the apexes with capped value exactly $v$, and the
+suffix minima give the apexes of smallest angle with capped value at least
+$c$. By \cref{lem:thresholds} and \cref{thm:decision}, an $r$-far $k$-set
+exists iff $\tau_K(i,j)\le\pi$, i.e.\ $L_K(i,j)\ne\nil$, for some chord.
+
+\emph{Running time.} Initialising and finishing a chord costs $O(K)$. The
+admissible apexes of $(i,j)$ are the positions $l\in(i,j)$ where the rows of
+$p_i$ and $p_j$ in the bit matrix of the relation $\far$ both have a one; they
+are enumerated in $O(n/w)$ time plus $O(1)$ per apex. The body of the inner
+loop is executed once per $r$-far triple and costs $O(\log K)$.
+
+\emph{Witness.} Starting from a chord with $L_K\ne\nil$ and demand $c=K$,
+take $p_l=L_c(i,j)$, recompute $q_1$ for $p_l$, and recurse on $(i,l)$ with
+demand $c_1=\min(q_1,c-1)$ and on $(l,j)$ with demand $c-1-c_1\le q_2$. The
+recursion visits at most $K$ chords and performs one binary search in each.
+The reported points together with $p_i,p_j$ form the vertex set of a
+configuration and are $r$-far by \cref{thm:cert-delaunay}.
+\end{proof}
+
+\begin{remark}[The role of the cap]\label{rem:cap}
+With $K=n-2$ nothing is truncated and $2+\max_{(i,j)}F(i,j\mid\pi)$ is the
+maximum size of an $r$-far subset, in $O(n^3\log n)$ time and $O(n^3)$ space;
+this matches the bound of~\cite{tw26} in the unweighted unit case. Capping
+reduces the logarithm to $\log k$, the space to $O(n^2k)$, and allows the
+early exit in the last line of the loop. The $\log k$ factor is only paid on
+$r$-far triples; in the upper part of the search window many triples are not
+$r$-far.
+\end{remark}
+
+\paragraph{Maximum independent sets.}
+The cap can also be chosen adaptively. Let $\alpha=\alpha_r(P)$ be the maximum
+size of an $r$-far subset of $P$, i.e.\ the independence number of the graph on
+$P$ in which two points are adjacent iff their distance is smaller than $r$
+(the unit-disk graph, after scaling).
+
+\begin{corollary}\label{cor:mis}
+A maximum $r$-far subset of $n$ points in convex position can be computed in
+$O(n^2\alpha+n^3/w+\Tr\log\alpha)\subseteq O(n^3\log\alpha)$ time and
+$O(n^2\alpha)$ space, where $\alpha$ is its size.
+\end{corollary}
+\begin{proof}
+Compute an inclusion-maximal $r$-far set $M$ greedily in $O(n|M|)$ time. Every
+point of $P$ is at distance less than $r$ from some point of $M$, and an open
+disk of radius $r$ contains at most five points with pairwise distances at
+least $r$ besides its centre (six such points would include two that subtend
+an angle of at most $\pi/3$ at the centre and are therefore closer than $r$).
+Hence $|M|\le\alpha\le5|M|$. Run \cref{alg:capped} with
+$K=\min(n,5|M|)-1$ and without the early exit. Since $F\le\alpha-2<K$, no
+value is truncated, so the maximum number of finite thresholds over all chords
+equals $\alpha-2$ if $\alpha\ge3$, and a witness is reconstructed as in
+\cref{thm:decision-alg}. If there is no $r$-far triple, the answer is an
+$r$-far pair or a single point.
+\end{proof}
+
+\section{Optimisation and the search window}\label{sec:opt}
+
+The optimum $\rstar$ is one of the $\binom n2$ pairwise distances, and
+feasibility is monotone in $r$, so $\rstar$ can be found by binary search over
+the sorted distinct distances with \cref{alg:capped} as the oracle. The
+following window shrinks the search range before any exact decision is made.
+
+\begin{lemma}[Search window]\label{lem:window}
+Let $G$ be a farthest-first $k$-set of $P$ (start with an arbitrary point and
+repeatedly add a point whose distance to the chosen points is largest), and
+let $g=\delta(G)$. Then for $k\ge3$
+\[
+g\ \le\ \rstar\ \le\ \min\bigl\{2g,\ \per(P)/k\bigr\}.
+\]
+\end{lemma}
+\begin{proof}
+$g\le\rstar$ because $G$ is a feasible $k$-set. Let $G'$ be the set of the
+first $k-1$ points chosen. The distances at which points are added are
+non-increasing, so $g$ is the distance from the last point to $G'$, and every
+point of $P$ is within distance $g$ of $G'$ (this is Gonzalez's
+argument~\cite{gonzalez}). Two of the $k$ points of an optimal set have the
+same nearest point in $G'$, hence $\rstar\le2g$. Finally, let $S^*$ be an
+optimal set. Then $\conv(S^*)$ is a convex $k$-gon whose sides have length at
+least $\rstar$, so its perimeter is at least $k\rstar$; since
+$\conv(S^*)\subseteq\conv(P)$ and the perimeter of convex sets is monotone
+under inclusion, $k\rstar\le\per(P)$.
+\end{proof}
+
+\begin{theorem}\label{thm:opt}
+The $k$-dispersion problem for $n$ points in convex position can be solved in
+$O(n^3\log k\log n)$ time and $O(n^2k)$ space. More precisely, the time is
+$O(n^2\log n)$ plus $O(\log n)$ calls to \cref{alg:capped}.
+\end{theorem}
+\begin{proof}
+For $k=2$ the answer is the diameter. For $k\ge3$, sort the distinct pairwise
+distances, restrict them to the window of \cref{lem:window} (computing $G$
+takes $O(nk)$ time), and binary search with \cref{alg:capped}; the value $g$
+is known to be feasible. The witness of the last positive call, or $G$ if there
+is none, is an optimal set.
+\end{proof}
+
+\section{Greedy structure: true for \texorpdfstring{$k=3$}{k=3}, false for \texorpdfstring{$k\ge4$}{k>=4}}\label{sec:greedy}
+
+For $k=3$ the decision problem can be solved in near-linear
+time~\cite{tw25}, and $O(n^2)$ time suffices for the optimisation
+problem~\cite{kobayashi}. These algorithms exploit that an $r$-far triple, if
+one exists, can be found next to the ``first far points'' of some point. It is
+natural to ask how much of this structure survives for larger $k$, because any
+property of this kind immediately yields a fast greedy or bounded-search
+algorithm. This section gives a complete answer for the properties we are
+aware of.
+
+Fix $r>0$. For $q\in P$ let $a(q)$ be the first point after $q$ in ccw order
+with $|q\,a(q)|\ge r$, and $b(q)$ the first such point in clockwise order;
+both are undefined if no point is at distance at least $r$ from $q$. Note that
+the distance from $q$ is in general not unimodal along the hull, so points
+after $a(q)$ may again be close to $q$. Let $\Arc(q)$ be the set of points on
+the ccw arc from $a(q)$ to $b(q)$ (which does not contain $q$). We call
+$\{q,a(q)\}$ a \emph{tight pair}.
+
+\begin{lemma}\label{lem:arcbasic}
+Let $S$ be an $r$-far set with $|S|\ge2$, and let $s,s'$ be consecutive points
+of $S$ in ccw order. Then $a(s)$ lies in $P(s,s')\cup\{s'\}$, and
+$S\setminus\{s\}\subseteq\Arc(s)$.
+\end{lemma}
+\begin{proof}
+All points of $S\setminus\{s\}$ are at distance at least $r$ from $s$; the first
+of them in ccw order is $s'$ and the first in clockwise order is the
+predecessor of $s$ in $S$.
+\end{proof}
+
+We consider the following properties of $(P,k,r)$.
+\begin{description}[leftmargin=3.2em,labelwidth=2.6em,itemsep=2pt]
+\item[$(\mathrm{G}_k)$] \emph{Arc characterisation:} $P$ has an $r$-far $k$-set
+if and only if $\Arc(q)$ contains an $r$-far $(k-1)$-set for some $q\in P$.
+\item[$(\mathrm{TT}_k)$] \emph{Tight triple:} if $P$ has an $r$-far $k$-set,
+then it has one that contains $q$, $a(q)$ and $b(q)$ for some $q$.
+\item[$(\mathrm{TP}_k)$] \emph{Tight pair:} if $P$ has an $r$-far $k$-set, then
+it has one that contains a tight pair $\{q,a(q)\}$.
+\item[$(\mathrm{ST}_k)$] \emph{Search tree:} if $P$ has an $r$-far $k$-set, then
+for some $q$ the following search reaches $k$ points: start with
+$\{q,a(q)\}$, a ccw frontier at $a(q)$ and a clockwise frontier at $q$, and
+repeatedly add, on a side of the search's choice, the first point beyond that
+side's frontier (and before the other frontier) that is at distance at least
+$r$ from all chosen points; the added point becomes the new frontier.
+\item[$(\mathrm{AG}_k)$] \emph{Alternating greedy:} as $(\mathrm{ST}_k)$, but
+the sides strictly alternate (either side may start).
+\end{description}
+Every set produced by a search of $(\mathrm{ST}_k)$ is $r$-far and contains
+$\{q,a(q)\}$, so
+$(\mathrm{AG}_k)\Rightarrow(\mathrm{ST}_k)\Rightarrow(\mathrm{TP}_k)$, and
+trivially $(\mathrm{TT}_k)\Rightarrow(\mathrm{TP}_k)$. If $(\mathrm{ST}_k)$ held
+for all point sets, the decision problem could be solved in $O(2^kn^2k)$ time
+by exploring, for each of the $n$ seeds, a binary tree of depth $k-2$ whose
+nodes cost $O(nk)$; $(\mathrm{AG}_k)$ would even give $O(n^2k)$. Property
+$(\mathrm{TP}_k)$ is the weakest statement that ties a solution to the first
+far points, and therefore the most robust candidate.
+
+\subsection{Triples}\label{sec:k3}
+
+\begin{theorem}\label{thm:k3}
+Let $\{x,y,z\}$ be an $r$-far triple of $P$, in ccw order.
+\begin{enumerate}[label=(\roman*),itemsep=1pt,topsep=2pt]
+\item At least one of $\{x,a(x),b(x)\}$, $\{y,a(y),b(y)\}$,
+$\{z,a(z),b(z)\}$ is an $r$-far triple.
+\item At least one of $\{x,a(x),z\}$, $\{y,a(y),x\}$, $\{z,a(z),y\}$ is an
+$r$-far triple.
+\end{enumerate}
+In particular $(\mathrm{TT}_3)$, $(\mathrm{TP}_3)$, $(\mathrm{ST}_3)$ and
+$(\mathrm{AG}_3)$ hold for every point set in convex position and every $r$.
+\end{theorem}
+\begin{proof}
+(i) By \cref{lem:arcbasic}, the ccw order around the hull is
+$x,a(x),y,z,b(x)$, where $a(x)=y$ and $b(x)=z$ are allowed, and
+$a(x)\ne b(x)$. Suppose that $|a(x)b(x)|<r$. In the triangle $x\,a(x)\,b(x)$
+the side $a(x)b(x)$ is then strictly shorter than the other two, so the
+opposite angle is smaller than $\pi/3$, and by (A),
+$\ang yxz\le\ang a(x)\,x\,b(x)<\pi/3$. If the triples of $y$ and $z$ also
+failed to be $r$-far, the same argument would give $\ang zyx<\pi/3$ and
+$\ang xzy<\pi/3$, and the angles of the triangle $xyz$ would sum to less than
+$\pi$.
+
+(ii) If $a(x)=y$ the first triple is $\{x,y,z\}$. Otherwise $a(x)\in P(x,y)$
+and $|x\,a(x)|\ge r$, so the first triple is $r$-far unless $|a(x)z|<r$. In
+that case $a(x)z$ is the strictly shortest side of the triangle $x\,a(x)\,z$,
+hence $\ang a(x)\,x\,z<\pi/3$, and by (A) applied to $x,a(x),y,z$ we get
+$\ang yxz<\pi/3$. Likewise, failure of the second triple gives
+$\ang zyx<\pi/3$ and failure of the third gives $\ang xzy<\pi/3$. All three
+cannot fail.
+
+The tight triple of (i) contains the tight pair $\{q,a(q)\}$. For
+$(\mathrm{ST}_3)$ and $(\mathrm{AG}_3)$, take the triple $\{q,a(q),z'\}$
+provided by (ii): the search started from $\{q,a(q)\}$ needs a single step,
+and its ccw step succeeds because the arc beyond $a(q)$ contains a point,
+namely $z'$, at distance at least $r$ from both seeds.
+\end{proof}
+
+Part~(i) says that $P$ has an $r$-far triple if and only if
+$|a(q)b(q)|\ge r$ for some $q$, which is the kind of characterisation used by
+the fast algorithms for $k=3$~\cite{kobayashi,tw25}; we include the proof
+because it is short and because part~(ii) uses the same idea. The arc
+characterisation holds for triples as well.
+
+\begin{proposition}\label{prop:g3}
+The implication ``$\Rightarrow$'' of $(\mathrm{G}_k)$ holds for every
+$k\ge2$, and $(\mathrm{G}_3)$ holds.
+\end{proposition}
+\begin{proof}
+If $S$ is an $r$-far $k$-set and $q\in S$, then $S\setminus\{q\}$ is an
+$r$-far $(k-1)$-set contained in $\Arc(q)$ by \cref{lem:arcbasic}.
+
+For $k=3$, let $x,y\in\Arc(q)$ with $|xy|\ge r$, write $a=a(q)$, $b=b(q)$,
+and let the ccw order be $q,a,x,y,b$ with $a=x$ or $y=b$ allowed. Suppose that
+$P$ has no $r$-far triple. Since $a\ne b$ and $|qa|,|qb|\ge r$, we have
+$|ab|<r$. We distinguish cases according to the distances from $q$.
+If $|qx|\ge r$ and $|qy|\ge r$, then $\{q,x,y\}$ is an $r$-far triple.
+If $|qx|<r\le|qy|$, then $x\ne a$, and $|ay|<r$ because $\{q,a,y\}$ is not
+$r$-far. In the convex quadrilateral $q,a,x,y$ the diagonals satisfy
+$|qx|+|ay|<2r\le|qa|+|xy|$, contradicting~(Q). The case $|qy|<r\le|qx|$ is
+symmetric: $y\neq b$, $|xb|<r$, and the quadrilateral $q,x,y,b$ has diagonals
+$|qy|+|xb|<2r\le|xy|+|bq|$. Finally, if $|qx|<r$ and $|qy|<r$, then, as in the
+proof of \cref{thm:k3}, $\ang xqy\le\ang aqb<\pi/3$, so $xy$ is not a longest
+side of the triangle $qxy$ and $|xy|<\max\{|qx|,|qy|\}<r$, a contradiction.
+\end{proof}
+
+\subsection{Four or more points}\label{sec:k4}
+
+\begin{proposition}\label{prop:gk}
+$(\mathrm{G}_k)$ fails for every $k\ge4$: there is a set of $k$ points in
+convex position and a radius $r$ such that no $r$-far $k$-set exists although
+$\Arc(u)$ contains an $r$-far $(k-1)$-set for some point $u$.
+\end{proposition}
+\begin{proof}
+Let $k\ge4$, choose $k-2$ distinct non-zero integers $j$ with $|j|\le k$, at
+least one positive and one negative, and let $H=3(k+1)$. Let
+\[
+u=(-H^2,0),\qquad v=(H^2,0),\qquad w_j=\bigl(H^2-9j^2,\ 3jH^2\bigr),
+\]
+and $r=3H^2$. All points lie on the boundary of the strictly convex region
+$\{(x,y):|x|\le H^2-y^2/H^4\}$ and are therefore in strictly convex position;
+$u$ is alone on the left boundary arc, and the right arc carries $v$ and the
+$w_j$, with points above and below $v$. We have $|uv|=2H^2<r$, while any two
+other points differ by at least $3H^2=r$ in their $y$-coordinates. So the
+point set itself, the only $k$-subset, is not $r$-far. The two hull neighbours
+of $u$ are the lowest and the highest $w_j$; they are at distance at least
+$r$ from $u$, so they are $a(u)$ and $b(u)$, and $\Arc(u)$ consists of all
+points except $u$, which form an $r$-far $(k-1)$-set.
+\end{proof}
+
+\noindent For $k=4$ the idea is visible in the rhombus $(-1,0)$, $(0,-3)$,
+$(1,0)$, $(0,3)$ with $r^2=10$: the short diagonal is the only close pair.
+
+\begin{figure}[tb]
+\centering
+\begin{tikzpicture}[scale=0.047]
+  \coordinate (p0) at (16,48);   \coordinate (p1) at (-83,26);
+  \coordinate (p2) at (-114,18); \coordinate (p3) at (-30,-39);
+  \coordinate (p4) at (-16,-48); \coordinate (p5) at (83,-26);
+  \coordinate (p6) at (114,-18); \coordinate (p7) at (30,39);
+  \draw[gray!60] (p0)--(p1)--(p2)--(p3)--(p4)--(p5)--(p6)--(p7)--cycle;
+  \draw[blue!70!black,thick] (p0)--(p2)--(p4)--(p6)--cycle;
+  \draw[blue!70!black,thick] (p0)--(p4);
+  \draw[blue!70!black] (p2)--(p6);
+  \draw[red!75!black,densely dashed,thick] (p1)--(p4) (p5)--(p0) (p3)--(p0) (p7)--(p4);
+  \foreach \p/\pos/\lab in {p0/above/{$p_0=(16,48)$}, p2/left/{$p_2=(-114,18)$}, p4/below/{$p_4=(-16,-48)$}, p6/right/{$p_6=(114,-18)$}}
+    {\fill[blue!70!black] (\p) circle (38pt); \node[\pos] at (\p) {\small \lab};}
+  \foreach \p/\pos/\lab in {p1/above left/{$p_1=(-83,26)$}, p3/below left/{$p_3=(-30,-39)$}, p5/below right/{$p_5=(83,-26)$}, p7/above right/{$p_7=(30,39)$}}
+    {\draw[fill=white] (\p) circle (38pt); \node[\pos] at (\p) {\small \lab};}
+\end{tikzpicture}
+\caption{The point set $P_\star$ of \cref{thm:tightpair} (to scale),
+$r^2=10240$. Solid blue: the only $r$-far $4$-set $\{p_0,p_2,p_4,p_6\}$ and
+its six distances; $|p_0p_4|=r$. Each white point is the first far point
+$a(\cdot)$ of the blue point before it and is closer than $r$ to another blue
+point (dashed red), so it cannot replace anything.}
+\label{fig:pstar}
+\end{figure}
+
+\begin{theorem}\label{thm:tightpair}
+$(\mathrm{TP}_4)$ is false, even at the optimal radius. Let $P_\star$ be the
+eight points
+\begin{align*}
+&p_0=(16,48), &&p_1=(-83,26), &&p_2=(-114,18), &&p_3=(-30,-39),\\
+&p_4=(-16,-48), &&p_5=(83,-26), &&p_6=(114,-18), &&p_7=(30,39),
+\end{align*}
+which are in strictly convex position in this ccw order, and let
+$r^2=10240$. Then $\rstar_4(P_\star)=r$, the set $\{p_0,p_2,p_4,p_6\}$ is the
+only $r$-far $4$-set, and it contains no tight pair. Consequently
+$(\mathrm{TT}_4)$, $(\mathrm{ST}_4)$ and $(\mathrm{AG}_4)$ are false as well.
+Moreover, $(\mathrm{TP}_k)$ is false for $k=5$, $6$ and $7$; point sets with
+$2k$ points are listed in \cref{app:instances}.
+\end{theorem}
+\begin{proof}
+$P_\star$ is symmetric under $p\mapsto-p$, which maps $p_i$ to $p_{i+4}$. The
+squared distances from $p_0,\dots,p_3$ are
+\begin{center}\small
+\begin{tabular}{@{}c|cccccccc@{}}
+ & $p_0$ & $p_1$ & $p_2$ & $p_3$ & $p_4$ & $p_5$ & $p_6$ & $p_7$\\\midrule
+$p_0$ & -- & \textbf{10285} & \textbf{17800} & 9685 & \textbf{10240} & 9965 & \textbf{13960} & 277\\
+$p_1$ &  & -- & 1025 & 7034 & 9965 & \textbf{30260} & \textbf{40745} & \textbf{12938}\\
+$p_2$ &  &  & -- & \textbf{10305} & \textbf{13960} & \textbf{40745} & \textbf{53280} & \textbf{21177}\\
+$p_3$ &  &  &  & -- & 277 & \textbf{12938} & \textbf{21177} & 9684\\
+\end{tabular}
+\end{center}
+and the remaining ones follow by symmetry; entries of at least $r^2$ are in
+bold. The points at distance at least $r$ from $p_1$ are $p_0,p_5,p_6,p_7$,
+and the only pairs among these at distance at least $r$ are $\{p_0,p_6\}$ and
+$\{p_6,p_7\}$, so $p_1$ lies in no $r$-far $4$-set; by symmetry neither does
+$p_5$. The points at distance at least $r$ from $p_3$ are $p_2,p_5,p_6$, and
+$|p_5p_6|<r$, so $p_3$ and, by symmetry, $p_7$ lie in no $r$-far $4$-set
+either. Hence the only candidate is $\{p_0,p_2,p_4,p_6\}$, which is $r$-far
+with minimum distance $|p_0p_4|=r$; in particular $\rstar_4(P_\star)=r$. From
+the table, $a(p_0)=p_1$, $a(p_2)=p_3$, $a(p_4)=p_5$ and $a(p_6)=p_7$. None of
+these belongs to the set, so it contains no tight pair.
+
+For $k=5,6,7$ the instances of \cref{app:instances} were verified by
+exhaustive enumeration of all $k$-subsets in exact integer arithmetic.
+\end{proof}
+
+\paragraph{Anatomy of the counterexample.}
+The mechanism is easy to describe (\cref{fig:pstar}). The quadrilateral
+$p_0p_2p_4p_6$ is a parallelogram whose short diagonal $p_0p_4$ has length
+exactly $r$ and makes an angle of less than $\pi/3$ with the sides $p_0p_2$
+and $p_4p_6$. The first far point $a(p_0)=p_1$ sits just outside the side
+$p_0p_2$ at distance slightly more than $r$ from $p_0$; the triangle
+$p_0p_1p_4$ has two sides of length about $r$ enclosing an angle below
+$\pi/3$, so $|p_1p_4|<r$ and $p_1$ is blocked by $p_4$. The point
+$a(p_2)=p_3$ sits just before $p_4$ and is slightly closer to $p_0$ than
+$p_4$ is, so it is blocked by $p_0$.
+
+More generally, suppose $(\mathrm{TP}_k)$ fails for $(P,r)$ and let
+$S=\{s_1,\dots,s_k\}$ be an $r$-far $k$-set in ccw order. By
+\cref{lem:arcbasic}, $a_i=a(s_i)$ lies strictly between $s_i$ and $s_{i+1}$,
+and since $(S\setminus\{s_{i+1}\})\cup\{a_i\}$ would contain the tight pair
+$\{s_i,a_i\}$, each $a_i$ must be closer than $r$ to some $s_j$ with
+$j\notin\{i,i+1\}$. So every counterexample contains a convex $2k$-gon
+$s_1a_1s_2a_2\cdots s_ka_k$ with $\{s_1,\dots,s_k\}$ $r$-far, $|s_ia_i|\ge r$,
+and every $a_i$ blocked in this way; in particular it has at least $2k$
+points, and our instances are smallest possible. For $k=3$ no such hexagon
+exists by \cref{thm:k3}(ii). For $k=4$ the blocked configurations occupy a
+tiny part of the configuration space: the short diagonal must lie within
+about $1\%$ of $r$, which explains why random instances never contain them.
+
+\paragraph{Random tests versus adversarial search.}
+Before finding $P_\star$ we tested all properties on random instances, in
+exact arithmetic (\cref{tab:hunt}): hulls of random point clouds, points on
+circles and thin ellipses, thin ``two-chain'' polygons bounded by two flat
+arcs, small integer grids with many cocircular points, and random
+perturbations (jitter, deletion and insertion of points) of every
+counterexample to a weaker property. On instances with at most $13$ points
+all radii and all $k$-sets were examined exhaustively; on larger ones
+$(\mathrm{TP}_k)$ was decided by the dynamic program of \cref{sec:dp} run on
+cyclic chords, since a tight pair $\{q,a(q)\}$ is contained in an $r$-far
+$k$-set iff $F(a(q),q\mid\pi)\ge k-2$. Counterexamples to $(\mathrm{G}_k)$
+and $(\mathrm{TT}_k)$ for $k\ge4$ and to $(\mathrm{AG}_k)$ for $k\ge6$ appear
+quickly, always on thin polygons in which the cyclic order is far from
+geometric proximity. In contrast, $(\mathrm{TP}_k)$ and $(\mathrm{ST}_k)$
+passed all $\huntCone$ tests. The counterexamples of \cref{thm:tightpair} were
+found only when we switched to an adversarial search: a penalty method that
+moves the $2k$ points of the polygon $s_1a_1\cdots s_ka_k$ so as to satisfy
+all constraints of the previous paragraph with a positive margin, followed by
+rounding to integers and exact verification. For $k=4$ this search succeeds
+within seconds.
+
+\begin{table}[tb]
+\centering
+\caption{Randomised tests of the properties of \cref{sec:greedy}. A test is a
+triple $(P,k,r)$ (for all properties except $(\mathrm{G}_k)$: one for which an
+$r$-far $k$-set exists). $(\mathrm{AG}'_k)$ and $(\mathrm{ST}'_k)$ are the
+variants seeded with $\{q,a(q),b(q)\}$. The last two properties are false
+(\cref{thm:tightpair}) although no random test detected it.}
+\label{tab:hunt}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Property & $k$ & tests & failures & fails for $k$\\
+\midrule
+\input{generated/table_hunt}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{A certified algorithm}\label{sec:certified}
+
+Although no seeded rule is complete, all of them are \emph{sound}: they only
+ever output $r$-far sets. So a successful greedy run at radius $\rho$ proves
+$\rstar\ge\rho$, and a single exact decision just above $\rho$ can prove
+$\rstar\le\rho$. \Cref{alg:certified} combines the two. As heuristic predicate
+$H(r)$ we use the alternating greedy from all seeds $\{q,a(q)\}$ and
+$\{q,a(q),b(q)\}$ with both starting sides.
+
+\begin{algorithm}
+\caption{$\AlgCert(P,k)$\quad ($k\ge3$)}\label{alg:certified}
+\begin{tabbing}
+\hspace{1.4em}\=\hspace{1.4em}\=\kill
+$W\gets$ sorted distinct distances inside the window of \cref{lem:window};\quad $\rho\gets g$\` \emph{$g$ is feasible}\\
+binary search on $W$ with predicate $H$; let $\rho$ be the largest radius at which a run succeeded\\
+\textbf{if} $\rho=\max W$ \textbf{or} $\AlgCapped(P,k,\rho^+)$ is \textsc{false} \textbf{then return} $\rho$\` \emph{$\rho^+$: successor of $\rho$ in $W$}\\
+\textbf{return} the result of binary search on $W\cap[\rho^+,\infty)$ with $\AlgCapped$\` \emph{$\rho^+$ is feasible}
+\end{tabbing}
+\end{algorithm}
+
+\begin{theorem}\label{thm:cert}
+\Cref{alg:certified} returns $\rstar$ on every input. It runs in
+$O(n^2k\log n+n^3\log k)$ time whenever $\rho=\rstar$ after the heuristic
+phase, and in $O(n^3\log k\log n)$ time in the worst case.
+\end{theorem}
+\begin{proof}
+Every success of $H$ exhibits an $r$-far $k$-set and $g$ is feasible, so
+$\rho\le\rstar$ regardless of whether $H$ is monotone. If $\rho=\max W$, then
+$\rho=\rstar$ by \cref{lem:window}. If the exact decision at $\rho^+$ fails,
+then $\rstar<\rho^+$ and hence $\rstar=\rho$, because $\rstar\in W$. Otherwise
+$\rstar\ge\rho^+$ and the exact binary search finds it.
+
+For the running time, $a(q)$ and $b(q)$ are found for all $q$ in $O(n^2)$
+time. In one greedy run each frontier only moves forward, and a point that is
+skipped is never examined again from that side, so a run examines $O(n)$
+points and compares each with at most $k$ chosen points. There are $4n$ runs
+per evaluation of $H$ and $O(\log n)$ evaluations, followed by a single call
+to \cref{alg:capped} if $\rho=\rstar$.
+\end{proof}
+
+\section{Experiments}\label{sec:experiments}
+
+\paragraph{Implementation.}
+All algorithms are implemented in C++17 in a single header
+(\code{convex/kdisp.hpp}); geometric decisions use only comparisons of $64$-bit
+squared distances and the $128$-bit in-circle determinant. Besides
+\cref{alg:capped,alg:certified} the code contains two baselines: the same
+dynamic program without the cap ($K=n-2$, cf.\ \cref{rem:cap}), and the direct
+\emph{triple-state} program that stores a value for every chord and apex and
+scans all sub-apexes, which takes $O(n^4)$ in-circle tests per decision. All
+optimisation variants use the search window unless stated otherwise.
+Experiments were run on one core of a virtual machine (x86-64, GCC~13.3,
+\code{-O2}); times are medians of three runs for $n\le200$ and single runs
+for larger instances, and exclude reading the input and building the distance
+matrix.
+
+\paragraph{Instances.}
+Every instance is generated by sampling a cloud of random integer points,
+taking its strictly convex hull, and keeping $n$ random hull vertices. The
+distributions are: uniform in a square and Gaussian (small hulls only),
+uniform in a disk, uniform in a thin annulus, uniform in a $1{:}20$ ellipse
+(\code{thin}), rounded points on a circle, exactly cocircular lattice points
+(the $972$ lattice points on a circle of radius $1185665$, a worst case for
+in-circle tests), and a thin lens bounded by two flat parabolic arcs
+(\code{twochain}), the shape on which greedy rules fail. Coordinates are
+bounded by $1.2\cdot10^{6}$. There are four splits: \emph{verify}
+($6\le n\le14$, $\nVerify$ instances), \emph{medium} ($20\le n\le40$,
+$\nMedium$ instances), \emph{scaling} ($25\le n\le400$, $k\in\{4,8,16,32\}$,
+$\nScaling$ instances), and a sweep over $k$ at $n=200$.
+
+\paragraph{Correctness.}
+On every instance of every split, the capped program with and without the
+window, the uncapped program, the certified algorithm and (for $n\le100$) the
+triple-state program returned the same optimum, and every reported set was
+checked to be a $k$-set with exactly that minimum distance
+(\cref{tab:correct}). On \emph{verify} the optimum also agrees with a
+branch-and-bound over all $k$-subsets, with an independent brute force
+written in Python ($\nVerifyPy/\nVerify$), and with an independent
+general-dimension solver based on clique enumeration and matrix products that
+is part of the same code base ($\nVerifyFmm/\nVerify$). On \emph{medium},
+exhaustive search was run for $k\le5$ ($\nMediumBrute$ instances). The
+explicit instances of \cref{sec:greedy} are re-verified by a separate script
+that shares no code with the solvers. In addition, a randomised self-test
+compares all solvers and \cref{cor:mis} with exhaustive search on tens of
+thousands of small instances, including degenerate ones with many equal
+distances and cocircular quadruples.
+
+\begin{table}[tb]
+\centering
+\caption{Cross-validation. ``agree'': all solvers return the same optimum and
+valid optimal sets; ``exhaustive'': number of instances on which this value
+was also confirmed by exhaustive search.}
+\label{tab:correct}
+\small
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+split & distribution & instances & $n$ & agree & exhaustive\\
+\midrule
+\input{generated/table_correctness}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Running time.}
+\Cref{fig:time} and \cref{tab:scaling} show the median running times on the
+\emph{scaling} split. All curves are consistent with cubic growth in $n$ for
+the threshold-based programs (between $n=100$ and $n=400$ the capped program
+grows like $n^{\expCappedFour}$ for $k=4$ and $n^{\expCappedSixteen}$ for
+$k=16$) and with quartic growth for the triple-state baseline, which is
+$\tripleSpeedupHundred$ times slower than the capped program at $n=100$
+already. At the optimum, a median of $\farTripleMedian\%$ of all triples are
+$r$-far (between $\farTripleMin\%$ and $\farTripleMax\%$), so the term
+$\Tr\log k$ dominates in practice.
+
+\begin{figure}[tb]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=4 by 1, horizontal sep=0.9cm},
+  width=0.31\textwidth, height=0.36\textwidth, xmode=log, ymode=log,
+  xlabel={$n$}, xtick={25,50,100,200,400}, xticklabels={25,50,100,200,400},
+  tick label style={font=\scriptsize}, label style={font=\small},
+  title style={font=\small}, grid=major, grid style={gray!25},
+  legend style={font=\scriptsize, at={(0.03,0.97)}, anchor=north west, draw=gray!50},
+  mark size=1.5pt]
+\nextgroupplot[title={$k=4$}, ylabel={time [ms]}]
+  \addplot[black, mark=triangle*] table {generated/plot_k4_triple.dat};
+  \addplot[orange!85!black, mark=diamond*] table {generated/plot_k4_uncapped.dat};
+  \addplot[blue, mark=*] table {generated/plot_k4_capped.dat};
+  \addplot[red!80!black, mark=square*] table {generated/plot_k4_certified.dat};
+  \legend{triple-state, uncapped, capped, certified}
+\nextgroupplot[title={$k=8$}]
+  \addplot[black, mark=triangle*] table {generated/plot_k8_triple.dat};
+  \addplot[orange!85!black, mark=diamond*] table {generated/plot_k8_uncapped.dat};
+  \addplot[blue, mark=*] table {generated/plot_k8_capped.dat};
+  \addplot[red!80!black, mark=square*] table {generated/plot_k8_certified.dat};
+\nextgroupplot[title={$k=16$}]
+  \addplot[black, mark=triangle*] table {generated/plot_k16_triple.dat};
+  \addplot[orange!85!black, mark=diamond*] table {generated/plot_k16_uncapped.dat};
+  \addplot[blue, mark=*] table {generated/plot_k16_capped.dat};
+  \addplot[red!80!black, mark=square*] table {generated/plot_k16_certified.dat};
+\nextgroupplot[title={$k=32$}]
+  \addplot[black, mark=triangle*] table {generated/plot_k32_triple.dat};
+  \addplot[orange!85!black, mark=diamond*] table {generated/plot_k32_uncapped.dat};
+  \addplot[blue, mark=*] table {generated/plot_k32_capped.dat};
+  \addplot[red!80!black, mark=square*] table {generated/plot_k32_certified.dat};
+\end{groupplot}
+\end{tikzpicture}
+\caption{Median time to solve $k$-dispersion exactly, over all distributions
+of the \emph{scaling} split (log--log). The triple-state baseline was run for
+$n\le100$ and the uncapped program for $n\le200$.}
+\label{fig:time}
+\end{figure}
+
+\paragraph{Effect of the cap.}
+\Cref{tab:ksweep} isolates the effect of capping at $n=200$. For $k=4$ the
+capped program is $\capSpeedupKFour$ times faster than the uncapped one; the
+advantage shrinks as $k$ grows and disappears once $k$ is close to the size of
+the largest $r$-far sets in the search range, as the analysis predicts
+($\log k$ versus $\log n$, and the early exit). The memory advantage,
+$O(n^2k)$ versus $O(n^3)$ table entries, is independent of this.
+
+\EXPERIMENTSREST
+
+\section{Conclusion and open problems}\label{sec:conclusion}
+
+We presented a simple exact algorithm for $k$-dispersion in convex position
+that needs nothing but the in-circle predicate, and we mapped out which of the
+structural properties behind the fast algorithms for $k=3$ extend to larger
+$k$: none of those tied to first far points does. Several questions remain.
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \emph{Subcubic algorithms for fixed $k\ge4$.} For $k=3$ the problem is
+solvable in near-linear time. Is there an $O(n^{3-\varepsilon})$ algorithm for
+$k=4$? By \cref{prop:gk,thm:tightpair}, such an algorithm cannot rely on the
+arc characterisation or on tight pairs, and a conditional lower bound seems
+equally plausible.
+\item \emph{Larger $k$.} We exhibited point sets without tight pairs for
+$k\le7$ and found blocked $2k$-gons by search in each of these cases. We expect
+that $(\mathrm{TP}_k)$ fails for every $k\ge4$, but have no uniform
+construction.
+\item \emph{Removing logarithms.} Can the $\log n$ factor of the binary search
+be avoided, for instance by a parametric search over the threshold
+representation, or the $\log k$ factor by amortising the in-circle queries of
+a chord over its parents?
+\item \emph{Certification.} The certified algorithm is fast when a cheap
+heuristic already attains the optimum. Which additional sound heuristics make
+this the common case on hard instances such as thin lenses?
+\item \emph{Weights and disks.} The algorithm of~\cite{tw26} handles weighted
+disks of arbitrary radii. Does capping help for the weighted problem, where
+values are no longer small integers?
+\end{enumerate}
+
+\paragraph{Reproducibility.}
+The source code, the instance generator, all instances and counterexamples,
+and the scripts that produce every table and figure of this paper are
+available in the directory \code{convex/} of the project repository;
+\code{convex/README.md} describes how to rebuild everything.
+
+\begin{thebibliography}{99}\itemsep=1pt
+
+\bibitem{akagi}
+T.~Akagi, T.~Araki, T.~Horiyama, S.-I.~Nakano, Y.~Okamoto, Y.~Otachi,
+T.~Saitoh, R.~Uehara, T.~Uno, K.~Wasa.
+\newblock Exact algorithms for the max-min dispersion problem.
+\newblock In \emph{Frontiers in Algorithmics (FAW 2018)}, LNCS 10823,
+pp.~263--272. Springer, 2018.
+
+\bibitem{chendumitrescu}
+K.~Chen, A.~Dumitrescu.
+\newblock A couple of simple algorithms for $k$-dispersion.
+\newblock arXiv:2511.00692, 2025.
+
+\bibitem{delaunay}
+B.~Delaunay.
+\newblock Sur la sph\`ere vide.
+\newblock \emph{Bulletin de l'Acad\'emie des Sciences de l'URSS, Classe des
+sciences math\'ematiques et naturelles}, 6:793--800, 1934.
+
+\bibitem{edelsbrunner}
+H.~Edelsbrunner.
+\newblock \emph{Geometry and Topology for Mesh Generation}.
+\newblock Cambridge University Press, 2001.
+
+\bibitem{gonzalez}
+T.~F.~Gonzalez.
+\newblock Clustering to minimize the maximum intercluster distance.
+\newblock \emph{Theoretical Computer Science}, 38:293--306, 1985.
+
+\bibitem{kobayashi}
+Y.~Kobayashi, S.-I.~Nakano, K.~Uchizawa, T.~Uno, Y.~Yamaguchi, K.~Yamanaka.
+\newblock An $O(n^2)$-time algorithm for computing a max-min 3-dispersion on a
+point set in convex position.
+\newblock \emph{IEICE Transactions on Information and Systems},
+E105-D(3):503--507, 2022.
+
+\bibitem{sbm}
+V.~R.~Singireddy, M.~Basappa, J.~S.~B.~Mitchell.
+\newblock Algorithms for $k$-dispersion for points in convex position in the
+plane.
+\newblock In \emph{Algorithms and Discrete Applied Mathematics (CALDAM 2023)},
+LNCS 13947, pp.~59--70. Springer, 2023. Journal version in \emph{Discrete
+Applied Mathematics}.
+
+\bibitem{tw25}
+A.~Tkachenko, H.~Wang.
+\newblock Dominating set, independent set, discrete $k$-center, dispersion,
+and related problems for planar points in convex position.
+\newblock In \emph{42nd International Symposium on Theoretical Aspects of
+Computer Science (STACS 2025)}, LIPIcs 327, pp.~73:1--73:20, 2025.
+arXiv:2501.00207.
+
+\bibitem{tw26}
+A.~Tkachenko, H.~Wang.
+\newblock Maximum independent sets in disk graphs with disks in convex
+position.
+\newblock In \emph{20th Scandinavian Symposium on Algorithm Theory (SWAT
+2026)}, LIPIcs 370, article 40, 2026. arXiv:2604.10828.
+
+\bibitem{wangkuo}
+D.~W.~Wang, Y.-S.~Kuo.
+\newblock A study on two geometric location problems.
+\newblock \emph{Information Processing Letters}, 28(6):281--286, 1988.
+
+\end{thebibliography}
+
+\appendix
+\section{Point sets without tight pairs}\label{app:instances}
+
+\Cref{tab:instances} lists the instances behind \cref{thm:tightpair} for
+$k=5,6,7$, together with two small instances that separate weaker properties
+from $(\mathrm{TP}_k)$. All of them are contained in
+\code{convex/data/counterexamples.json} and are verified by
+\code{convex/experiments/check\_counterexamples.py} by enumerating all
+$k$-subsets in exact integer arithmetic.
+
+\begin{table}[H]
+\centering
+\caption{Explicit instances (points in ccw order). In the first three, no
+$r$-far $k$-set contains a tight pair. In the last two an $r$-far $k$-set
+with a tight pair exists, but the stated rule fails.}
+\label{tab:instances}
+\small
+\begin{tabular}{@{}rrrp{0.72\textwidth}@{}}
+\toprule
+$k$ & $n$ & $r^2$ & points\\
+\midrule
+5 & 10 & 1000000 & \raggedright $(-512,859)$, $(-995,-25)$, $(-1009,-52)$, $(-10,-1)$, $(2,0)$, $(1006,163)$, $(1367,222)$, $(554,833)$, $(518,858)$, $(-492,864)$\tabularnewline\addlinespace
+6 & 12 & 418609 & \raggedright $(851,88)$, $(215,259)$, $(-175,352)$, $(-820,491)$, $(-1031,524)$, $(-687,-38)$, $(-649,-92)$, $(-13,-263)$, $(377,-356)$, $(1024,-495)$, $(1233,-528)$, $(889,34)$\tabularnewline\addlinespace
+7 & 14 & 13155129 & \raggedright $(5936,1558)$, $(2254,1872)$, $(-36,2004)$, $(-3872,2121)$, $(-4826,2102)$, $(-7427,-517)$, $(-8045,-1226)$, $(-4359,-1442)$, $(-3984,-1457)$, $(763,-1433)$, $(3767,-1353)$, $(7528,-1170)$, $(8805,-1040)$, $(6069,1446)$\tabularnewline
+\midrule
+4 & 8 & 50 & \raggedright $(\mathrm{TT}_4)$ fails, $(\mathrm{ST}_4)$ holds: $(-11,0)$, $(-9,-1)$, $(1,-2)$, $(3,-2)$, $(10,0)$, $(8,1)$, $(1,2)$, $(-4,2)$\tabularnewline\addlinespace
+6 & 10 & 26 & \raggedright $(\mathrm{AG}_6)$ fails, $(\mathrm{ST}_6)$ holds: $(-13,0)$, $(-9,-1)$, $(0,-2)$, $(2,-2)$, $(8,-1)$, $(13,0)$, $(11,1)$, $(1,2)$, $(-2,2)$, $(-8,1)$\tabularnewline
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Detailed running times}\label{app:times}
+
+\begin{table}[H]
+\centering
+\caption{Median solve time [ms] and mean number of exact decisions on the
+\emph{scaling} split. ``no window'': capped program with binary search over
+all distances. ``--'': not run.}
+\label{tab:scaling}
+\small
+\begin{tabular}{@{}rr|rrrrr|rrr@{}}
+\toprule
+ & & \multicolumn{5}{c|}{time [ms]} & \multicolumn{3}{c}{exact decisions}\\
+$k$ & $n$ & triple & uncapped & no window & capped & certified & no window & window & certified\\
+\midrule
+\input{generated/table_scaling}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}
