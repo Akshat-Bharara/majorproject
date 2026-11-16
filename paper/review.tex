@@ -1,0 +1,153 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\setlist{itemsep=2pt,topsep=3pt}
+\newcommand{\ok}{\textcolor{green!45!black}{\textbf{fixed}}}
+\newcommand{\team}{\textcolor{red!70!black}{\textbf{team}}}
+\title{Publishability Review and Revision Notes\\[2pt]\large ``Exact $k$-Dispersion for Points in Convex Position''}
+\date{Review of the version dated 27 October 2026}
+\begin{document}
+\maketitle
+
+\section*{1. Verdict}
+
+\textbf{The results are correct as far as we can check them, and the paper is
+publishable at the right venue once the team has dealt with the items in Section~3.}
+
+The main technical result is a capped dynamic program that solves $k$-dispersion in
+$O(n^3\log k\log n)$ time. It is a real but \emph{incremental} improvement: it beats
+the best known bound by a factor of $\log n/\log k$. The paper's most interesting
+material, the statements on tight pairs and the search tree, consists
+of conjectures that are well tested but not proven.
+
+\begin{center}
+\begin{tabular}{@{}p{4.3cm}p{10.9cm}@{}}
+\toprule
+Venue type & Assessment\\
+\midrule
+arXiv preprint & Ready once Section~3 is done. Recommended as the first step.\\
+EuroCG (non-archival) & Good fit; a 4--6 page abstract would be well received.\\
+CCCG & Good fit, with a realistic chance of acceptance.\\
+IPL / CGTA (journals) & Plausible for the dynamic program and the certificate, if the comparison with~[TW26] is solid.\\
+SoCG, SWAT, ESA, STACS & Unlikely as it stands. It would need a proof of the tight-pair or search-tree conjecture, an $o(n^3)$ algorithm for fixed $k\ge4$, or removal of the $\log n$ factor.\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{2. Independent verification}
+
+We reimplemented Algorithm~1, the optimisation algorithm, Lemma~10 and every greedy
+property of Section~6 from the paper's text alone, in Python with exact integers. The
+scripts are in \texttt{paper/verification/}. Results:
+\begin{itemize}
+\item \textbf{Algorithm.} The capped dynamic program agreed with exhaustive search on
+  \textbf{640/640} random convex instances ($5\le n\le16$, $3\le k\le9$; square,
+  disk, circle and thin-ellipse distributions). The repository's FMM solver agreed on
+  \textbf{100/100} of them. Every witness was valid, and the monotonicity claim of
+  Lemma~7 held on every query.
+\item \textbf{Search window.} Lemma~10 was never violated.
+\item \textbf{Counterexamples.} All three counterexamples in Table~3 reproduce
+  \emph{exactly}, including the side claims: on the 8-point instance $C_1'$ and
+  $V_3$ also fail, while $C_1$ and $V_4$ hold.
+\item \textbf{Conjectures.} The tight-pair property and the search-tree property
+  (old names $C_1$ and $V_4$) held in all $4\,444$ feasible tests.
+\item \textbf{Arc characterisation.} $G_k$ failed $0$, $264$, $200$ and $158$ times
+  out of $13\,204$ tests for $k=3,4,5,6$, which matches the paper.
+\end{itemize}
+We also checked every proof by hand. We found no error in the algorithm or its
+correctness. The problems below concern credit, precision and presentation.
+
+\section*{3. Blocking items: only the team can do these}
+
+\begin{enumerate}
+\item \team\quad \textbf{Read~[TW26] (Tkachenko--Wang, SWAT 2026, arXiv:2604.10828) in
+  full.} The original says ``we could not access the full text'', which reviewers will
+  not accept. The main risk is that [TW26] already caps its step functions, or that
+  capping its method is an obvious step; either would erase the main contribution.
+  The revised draft has a red placeholder where this comparison must go.
+\item \team\quad \textbf{Release the code.} The paper cites a \texttt{convex/}
+  folder (\texttt{gen\_convex\_dataset.py}, \texttt{run\_convex\_experiments.py},
+  \texttt{v5check.cpp}, and others). It is \emph{not in the repository}; only the
+  general FMM solver is. Publish it, ideally with a Zenodo DOI.
+\item \team\quad Author names, affiliations and e-mail addresses. ``Project Team'' is
+  not acceptable.
+\item \team\quad Experimental setup: CPU, operating system, compiler and flags,
+  whether runs are single-threaded, the number of repetitions, and what ``median''
+  is taken over.
+\item \team\quad Check the 2026 references (volume and pages for [SBM26], [TW26]),
+  and apply the target venue's template (for example LIPIcs, or the CCCG style).
+\end{enumerate}
+
+\section*{4. Problems found and fixed in the revised draft}
+
+\begin{enumerate}[label=\arabic*.]
+\item \ok\quad \textbf{Lemma 2 is a classical fact, not a new one.} The closest pair
+  of \emph{any} finite point set is a Delaunay edge, because the disk with the pair as
+  diameter contains no other point. The original presented it with a longer
+  convex-position proof and implied it was new. The revision gives the two-line
+  textbook proof and cites de~Berg et al. The certificate (Theorem~3) is now framed
+  honestly: the novelty is using it as a local certificate for the dynamic program,
+  which gives a shorter proof than TW's seven-term inequality.
+\item \ok\quad \textbf{Lemma 10's bound $r^*\le 2g$ is the classical
+  2-approximation} (Ravi--Rosenkrantz--Tayi 1994; Gonzalez 1985), and it was not
+  credited. It is now cited, and only the perimeter bound is claimed as new.
+\item \ok\quad \textbf{The comparison with the FPT bound was imprecise.} The original
+  claimed the new bound is better ``once $2^k\gtrsim n/\log n$''. The exact condition
+  is $2^k\log n\ge n\log k$, which certainly holds for $k\ge\log_2 n$. Corrected.
+\item \ok\quad \textbf{The case $k=2$ was missing.} Theorem~6 needs $k\ge3$, but
+  Theorem~11 claimed all $k$. The revision handles $k=2$ (diameter) separately.
+\item \ok\quad \textbf{The certified algorithm ran a binary search on a predicate that
+  need not be monotone.} The algorithm is still correct, but the reason was not
+  stated. Algorithm~2 is rewritten with an explicit invariant, and the proof now uses
+  that invariant.
+\item \ok\quad \textbf{The baseline could look like a straw man.} The ``TW''
+  timings come from a direct $O(n^4)$-per-decision implementation of their
+  recurrence, not from their fastest algorithm. This is now stated explicitly.
+\item \ok\quad \textbf{The ratio column of Table~6 does not match the table.} For
+  example, at $k=16$, $n=100$ the medians give $1300.8/366.7=3.55$, but the column
+  says $3.4\times$. The column was removed; the text now quotes ratios of the shown
+  medians (the team should check how the column was computed).
+\item \ok\quad \textbf{The abstract's test count did not match Table~4.} The abstract
+  said $1{,}306{,}510$ tests, but Table~4 gives $1{,}326{,}787$ tests for the
+  tight-pair property alone. It now says ``more than 1.3 million''.
+\item \ok\quad \textbf{Our own draft's 128-bit arithmetic bound.} The revised draft
+  now states it precisely: the in-circle determinant is at most
+  $3\cdot2^{122}<2^{124}$, so it fits in a signed 128-bit integer.
+\item \ok\quad \textbf{Notation.} The letter $g$ was used both for the chord gap and
+  for the greedy value; the gap is now $s$. The opaque names
+  $C_1,C_1',V_1,V_3,V_4,V_5$ are now $\mathrm{TP}$, $\mathrm{TP}_3$, $\mathrm{Alt}_3$,
+  $\mathrm{Tree}_3$, $\mathrm{Tree}_2$, $\mathrm{Alt}_2$, with a mapping note. The
+  handling of $\bot$ on chords with gap~1 and of ties is now spelled out.
+\item \ok\quad \textbf{Informal and non-paper text removed:} ``Project Team'', ``as
+  proposed'', ``this project'', ``we could not access'', file paths inside a
+  proposition, and the table of contents.
+\item \ok\quad \textbf{Additions:}
+  \begin{itemize}
+  \item motivation for the problem;
+  \item missing references: Nešetřil--Poljak and Eisenbrand--Grandoni for the clique
+    baseline, Ravi et al., Gonzalez, and Shewchuk;
+  \item a model-of-computation paragraph;
+  \item an organisation paragraph and a conclusion;
+  \item a vector figure redrawn from the Table~6 data;
+  \item a paragraph on the independent verification.
+  \end{itemize}
+\end{enumerate}
+
+\section*{5. What would make it a stronger paper}
+\begin{itemize}
+\item Prove Conjecture~13 (tight pair) or Conjecture~14 (search tree). The second
+  gives an $O(2^kn^2k\log n)$ algorithm and is the most valuable open item.
+\item Remove the $\log n$ factor by parametric search, giving $O(n^3\log k)$ overall.
+\item Implement TW's actual fastest algorithm, or at least argue why the direct
+  implementation is a fair baseline.
+\item Add larger experiments ($n$ in the thousands) and report the spread of running
+  times, not only medians.
+\end{itemize}
+
+\end{document}

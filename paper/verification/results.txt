@@ -1,0 +1,7 @@
+capped DP vs brute force: 240 instances, 0 mismatches; window violations: 0
+G4 example: 4-sets r-far=0, RHS of G4 holds=True, capped decision=False
+V1 example: r-far 4-sets=[(0, 3, 4, 7)], V1=False, V3=False, C1'=False, C1=True, V5=True, V4=True
+V5 example: r-far 6-sets=[(0, 1, 2, 5, 6, 7)], V5=False, V4=True, C1=True
+random property tests (tests, failures): {'C1': [4444, 0], 'V4': [4444, 0], 'G': [13135, 186]}
+n in [10,16], k in [3,9]: 400 instances, capped-vs-brute mismatches 0; repo FMM solver checked on 100, mismatches 0
+G_k by k (tests, failures): {3: (13204, 0), 4: (13204, 264), 5: (13204, 200), 6: (13204, 158)}
