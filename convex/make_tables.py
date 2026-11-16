@@ -143,6 +143,12 @@ def main():
         macro(macros, "tripleSpeedupHundred", f"{st.median(sp):.1f}")
         sp = [r["t_capped"] / r["t_certified"] for r in scaling if r["certified_by_greedy"] == "1" and r["t_certified"] > 0.5]
         macro(macros, "certSpeedup", f"{st.median(sp):.1f}")
+        q = st.quantiles(sp, n=4)
+        macro(macros, "certSpeedupLo", f"{q[0]:.1f}")
+        macro(macros, "certSpeedupHi", f"{q[2]:.1f}")
+        ov = [r["t_certified"] / r["t_capped"] for r in scaling if r["certified_by_greedy"] != "1" and r["t_capped"] > 0.5]
+        macro(macros, "certOverhead", f"{100 * (st.median(ov) - 1):.0f}" if ov else "0")
+        macro(macros, "certScalingNo", sum(r["certified_by_greedy"] != "1" for r in scaling))
 
     # ---- certification rate per family ------------------------------------
     lines = []
@@ -199,13 +205,14 @@ def main():
             krange[prop].add(k)
             if fails:
                 kfail[prop].add(k)
-    names = [("G", "$G_k$ (arc characterisation)"), ("T3", "tight triple (Thm.~\\ref{thm:k3})"),
-             ("C1p", "$C_1'$: some $r$-far $k$-set $\\ni q,a(q),b(q)$"),
-             ("V1", "$V_1$: alternating greedy, seed $\\{q,a(q),b(q)\\}$"),
-             ("V3", "$V_3$: search tree, seed $\\{q,a(q),b(q)\\}$"),
-             ("V5", "$V_5$: alternating greedy, seed $\\{q,a(q)\\}$"),
-             ("C1", "$C_1$: some $r$-far $k$-set $\\ni q,a(q)$"),
-             ("V4", "$V_4$: search tree, seed $\\{q,a(q)\\}$")]
+    names = [("G", "$(\\mathrm{G}_k)$ arc characterisation"),
+             ("T3", "single replacement, \\cref{thm:k3}(ii)"),
+             ("C1p", "$(\\mathrm{TT}_k)$ tight triple"),
+             ("V1", "$(\\mathrm{AG}'_k)$ alternating greedy, 3-point seed"),
+             ("V3", "$(\\mathrm{ST}'_k)$ search tree, 3-point seed"),
+             ("V5", "$(\\mathrm{AG}_k)$ alternating greedy"),
+             ("C1", "$(\\mathrm{TP}_k)$ tight pair"),
+             ("V4", "$(\\mathrm{ST}_k)$ search tree")]
     lines = []
     for key, label in names:
         if key not in tot:
@@ -214,12 +221,12 @@ def main():
         ks = krange[key]
         kr = f"{min(ks)}--{max(ks)}" if len(ks) > 1 else f"{min(ks)}"
         kf = "--" if not kfail[key] else (f"{min(kfail[key])}--{max(kfail[key])}" if len(kfail[key]) > 1 else f"{min(kfail[key])}")
-        lines.append(f"{label} & {kr} & {t:,} & {f:,} & {kf} \\\\".replace(",", "{,}"))
+        num = lambda v: f"{v:,}".replace(",", "{,}")
+        lines.append(f"{label} & {kr} & {num(t)} & {num(f)} & {kf} \\\\")
     write("table_hunt.tex", "\n".join(lines) + "\n")
     if "C1" in tot:
         macro(macros, "huntCone", f"{tot['C1'][0]:,}".replace(",", "{,}"))
         macro(macros, "huntVfour", f"{tot['V4'][0]:,}".replace(",", "{,}"))
-        macro(macros, "huntGthree", f"{sum(1 for _ in [0]) and 0}")
     write("macros.tex", "\n".join(macros) + "\n")
     print(f"wrote tables to {os.path.normpath(OUT)}")
 

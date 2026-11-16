@@ -19,7 +19,7 @@ def lens_family(k):
     """The family of Proposition 6.2: u alone on the left parabola, k-1 points on
     the right one (levels 0, +-1, +-2, ...); u and v = level 0 are the only close pair."""
     levels = [0] + [j for t in range(1, k) for j in (t, -t)][: k - 2]
-    H = 3 * (max(abs(j) for j in levels) + 1)
+    H = 3 * (k + 1)
     right = sorted(((H * H - 9 * j * j, 3 * j * H * H) for j in levels), key=lambda p: p[1])
     return [(-H * H, 0)] + right, (3 * H * H) ** 2
 

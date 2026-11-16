@@ -44,8 +44,9 @@
 \newcommand{\nil}{\bot}
 \newcommand{\AlgCapped}{\textsc{CappedDecision}}
 \newcommand{\AlgCert}{\textsc{Certified}}
-\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\code}[1]{\nolinkurl{#1}}
 
+\makeatletter\newcommand{\tabinput}[1]{\@@input #1.tex }\makeatother
 \input{generated/macros}
 
 \title{Exact $k$-Dispersion for Points in Convex Position:\\
@@ -54,6 +55,7 @@ A Capped Delaunay Dynamic Program\\ and the Limits of Greedy Structure}
 \date{November 2026}
 
 \begin{document}
+\emergencystretch=2em
 \maketitle
 
 \begin{abstract}
@@ -129,7 +131,7 @@ known~\cite{kobayashi,tw25}.
 \centering
 \caption{Exact algorithms for $k$-dispersion of $n$ points in convex position.}
 \label{tab:known}
-\small
+\small\setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}lll@{}}
 \toprule
 Reference & Time & Remarks\\
@@ -548,9 +550,10 @@ $O(n^2\alpha)$ space, where $\alpha$ is its size.
 \begin{proof}
 Compute an inclusion-maximal $r$-far set $M$ greedily in $O(n|M|)$ time. Every
 point of $P$ is at distance less than $r$ from some point of $M$, and an open
-disk of radius $r$ contains at most five points with pairwise distances at
-least $r$ besides its centre (six such points would include two that subtend
-an angle of at most $\pi/3$ at the centre and are therefore closer than $r$).
+disk of radius $r$ contains at most five points of any $r$-far set (among six
+points other than the centre, two would subtend an angle of at most $\pi/3$ at
+the centre and would therefore be closer than $r$; and if the centre belongs
+to the set, no other point of the disk does).
 Hence $|M|\le\alpha\le5|M|$. Run \cref{alg:capped} with
 $K=\min(n,5|M|)-1$ and without the early exit. Since $F\le\alpha-2<K$, no
 value is truncated, so the maximum number of finite thresholds over all chords
@@ -875,7 +878,7 @@ variants seeded with $\{q,a(q),b(q)\}$. The last two properties are false
 \toprule
 Property & $k$ & tests & failures & fails for $k$\\
 \midrule
-\input{generated/table_hunt}
+\tabinput{generated/table_hunt}
 \bottomrule
 \end{tabular}
 \end{table}
@@ -889,15 +892,14 @@ $\rstar\le\rho$. \Cref{alg:certified} combines the two. As heuristic predicate
 $H(r)$ we use the alternating greedy from all seeds $\{q,a(q)\}$ and
 $\{q,a(q),b(q)\}$ with both starting sides.
 
-\begin{algorithm}
+\begin{algorithm}[H]
 \caption{$\AlgCert(P,k)$\quad ($k\ge3$)}\label{alg:certified}
-\begin{tabbing}
-\hspace{1.4em}\=\hspace{1.4em}\=\kill
-$W\gets$ sorted distinct distances inside the window of \cref{lem:window};\quad $\rho\gets g$\` \emph{$g$ is feasible}\\
-binary search on $W$ with predicate $H$; let $\rho$ be the largest radius at which a run succeeded\\
-\textbf{if} $\rho=\max W$ \textbf{or} $\AlgCapped(P,k,\rho^+)$ is \textsc{false} \textbf{then return} $\rho$\` \emph{$\rho^+$: successor of $\rho$ in $W$}\\
-\textbf{return} the result of binary search on $W\cap[\rho^+,\infty)$ with $\AlgCapped$\` \emph{$\rho^+$ is feasible}
-\end{tabbing}
+\begin{enumerate}[label=\arabic*:,leftmargin=2em,itemsep=1pt,topsep=2pt]
+\item $W\gets$ the sorted distinct distances inside the window of \cref{lem:window};\ \ $\rho\gets g$, which is feasible.
+\item Binary search on $W$ with the predicate $H$; let $\rho$ be the largest radius at which a run succeeded.
+\item Let $\rho^+$ be the successor of $\rho$ in $W$. \textbf{If} $\rho=\max W$ \textbf{or} $\AlgCapped(P,k,\rho^+)$ is \textsc{false}, \textbf{return} $\rho$.
+\item Otherwise $\rho^+$ is feasible: \textbf{return} the result of binary search on $W\cap[\rho^+,\infty)$ with $\AlgCapped$.
+\end{enumerate}
 \end{algorithm}
 
 \begin{theorem}\label{thm:cert}
@@ -978,32 +980,34 @@ was also confirmed by exhaustive search.}
 \toprule
 split & distribution & instances & $n$ & agree & exhaustive\\
 \midrule
-\input{generated/table_correctness}
+\tabinput{generated/table_correctness}
 \bottomrule
 \end{tabular}
 \end{table}
 
 \paragraph{Running time.}
 \Cref{fig:time} and \cref{tab:scaling} show the median running times on the
-\emph{scaling} split. All curves are consistent with cubic growth in $n$ for
-the threshold-based programs (between $n=100$ and $n=400$ the capped program
-grows like $n^{\expCappedFour}$ for $k=4$ and $n^{\expCappedSixteen}$ for
-$k=16$) and with quartic growth for the triple-state baseline, which is
-$\tripleSpeedupHundred$ times slower than the capped program at $n=100$
-already. At the optimum, a median of $\farTripleMedian\%$ of all triples are
+\emph{scaling} split. Between $n=100$ and $n=400$ the running time of the capped program grows
+like $n^{\expCappedFour}$ for $k=4$ and like $n^{\expCappedSixteen}$ for
+$k=16$. This is somewhat faster than cubic: the number of binary-search steps
+grows with $\log n$, and we attribute the remainder to memory effects, since
+the threshold table has $\Theta(n^2k)$ entries. The triple-state baseline grows roughly like $n^4$ and is
+already $\tripleSpeedupHundred$ times slower than the capped program at
+$n=100$.
+At the optimum, a median of $\farTripleMedian\%$ of all triples are
 $r$-far (between $\farTripleMin\%$ and $\farTripleMax\%$), so the term
 $\Tr\log k$ dominates in practice.
 
 \begin{figure}[tb]
 \centering
 \begin{tikzpicture}
-\begin{groupplot}[group style={group size=4 by 1, horizontal sep=0.9cm},
-  width=0.31\textwidth, height=0.36\textwidth, xmode=log, ymode=log,
-  xlabel={$n$}, xtick={25,50,100,200,400}, xticklabels={25,50,100,200,400},
+\begin{groupplot}[group style={group size=4 by 1, horizontal sep=0.75cm},
+  width=0.285\textwidth, height=0.36\textwidth, xmode=log, ymode=log,
+  xlabel={$n$}, xtick={25,50,100,200,400}, xticklabels={25,50,100,200,400}, x tick label style={font=\tiny},
   tick label style={font=\scriptsize}, label style={font=\small},
   title style={font=\small}, grid=major, grid style={gray!25},
-  legend style={font=\scriptsize, at={(0.03,0.97)}, anchor=north west, draw=gray!50},
-  mark size=1.5pt]
+  legend style={font=\scriptsize, at={(2.55,1.22)}, anchor=south, legend columns=4, draw=gray!50, /tikz/every even column/.append style={column sep=8pt}},
+  every axis plot/.append style={mark size=1.5pt}]
 \nextgroupplot[title={$k=4$}, ylabel={time [ms]}]
   \addplot[black, mark=triangle*] table {generated/plot_k4_triple.dat};
   \addplot[orange!85!black, mark=diamond*] table {generated/plot_k4_uncapped.dat};
@@ -1035,13 +1039,74 @@ $n\le100$ and the uncapped program for $n\le200$.}
 
 \paragraph{Effect of the cap.}
 \Cref{tab:ksweep} isolates the effect of capping at $n=200$. For $k=4$ the
-capped program is $\capSpeedupKFour$ times faster than the uncapped one; the
-advantage shrinks as $k$ grows and disappears once $k$ is close to the size of
-the largest $r$-far sets in the search range, as the analysis predicts
-($\log k$ versus $\log n$, and the early exit). The memory advantage,
+capped program is $\capSpeedupKFour$ times faster than the uncapped one; for
+larger $k$ the advantage is a factor between $1.1$ and $1.4$ and decreases as
+$k$ approaches the size of the largest $r$-far sets in the search range, as
+the analysis predicts ($\log k$ versus $\log n$, and the early exit). The memory advantage,
 $O(n^2k)$ versus $O(n^3)$ table entries, is independent of this.
 
-\EXPERIMENTSREST
+\begin{table}[tb]
+\centering
+\caption{Sweep over $k$ at $n=200$ (median over six distributions): time [ms]
+of the uncapped and the capped program and of the certified algorithm, and
+in-circle tests per exact decision of the capped program (in millions).}
+\label{tab:ksweep}
+\small
+\begin{tabular}{@{}rrrrrr@{}}
+\toprule
+$k$ & uncapped & capped & uncapped/capped & certified & in-circle tests [$10^6$]\\
+\midrule
+\tabinput{generated/table_ksweep}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Effect of the window.}
+On the \emph{scaling} split the window of \cref{lem:window} keeps a median of
+$\windowMedian\%$ (at most $\windowMax\%$) of the distinct pairwise distances
+and saves $\windowSaved$ exact decisions per instance on average
+(\cref{tab:scaling}); the median speed-up over binary search on all distances
+is $\windowSpeedup\times$. The gain is smaller than the reduction of the
+search range suggests because the binary search is logarithmic in the number
+of candidates, and because the decisions that are saved are the cheap ones
+far away from $\rstar$.
+
+\paragraph{Certification.}
+\Cref{tab:certified} reports how often the heuristic phase of
+\cref{alg:certified} already attains the optimum, over all
+$\certTotal$ instances of the verify, medium and scaling splits. This happens
+on $\certYes$ instances, and on every instance drawn from the square,
+Gaussian, disk, annulus, circle and cocircular distributions. In these cases
+a single exact decision is made, and the certified algorithm is
+$\certSpeedup$ times faster than the capped binary search in the median
+(interquartile range $\certSpeedupLo$--$\certSpeedupHi$). The farthest-first
+set alone is optimal far less often, so the seeded greedies do most of the
+work. The failures are confined to the two thin families---the $1{:}20$
+ellipse and the two-chain lens---which is consistent with \cref{sec:greedy}:
+these are the shapes in which the cyclic order and geometric proximity
+disagree. When the heuristic bound is not tight, the exact binary search has
+to be run after all and the certified algorithm is about $\certOverhead\%$
+slower than the plain one (median over the $\certScalingNo$ such instances of
+the scaling split). The output is exact in either case.
+
+\begin{table}[tb]
+\centering
+\caption{Quality of the heuristic lower bounds. ``FF optimal'': the
+farthest-first set attains $\rstar$; ``certified'': the heuristic phase of
+\cref{alg:certified} attains $\rstar$, so that one exact decision suffices.
+The last two columns give the mean and the maximum relative gap
+$1-g/\rstar$ of the farthest-first value $g$.}
+\label{tab:certified}
+\small
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+distribution & instances & FF optimal & certified & rate & mean gap & max gap\\
+\midrule
+\tabinput{generated/table_certified}
+\bottomrule
+\end{tabular}
+\end{table}
+
 
 \section{Conclusion and open problems}\label{sec:conclusion}
 
@@ -1151,7 +1216,7 @@ D.~W.~Wang, Y.-S.~Kuo.
 $k=5,6,7$, together with two small instances that separate weaker properties
 from $(\mathrm{TP}_k)$. All of them are contained in
 \code{convex/data/counterexamples.json} and are verified by
-\code{convex/experiments/check\_counterexamples.py} by enumerating all
+\code{convex/experiments/check_counterexamples.py} by enumerating all
 $k$-subsets in exact integer arithmetic.
 
 \begin{table}[H]
@@ -1189,7 +1254,7 @@ all distances. ``--'': not run.}
  & & \multicolumn{5}{c|}{time [ms]} & \multicolumn{3}{c}{exact decisions}\\
 $k$ & $n$ & triple & uncapped & no window & capped & certified & no window & window & certified\\
 \midrule
-\input{generated/table_scaling}
+\tabinput{generated/table_scaling}
 \bottomrule
 \end{tabular}
 \end{table}
