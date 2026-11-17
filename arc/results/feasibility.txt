@@ -1,0 +1,13 @@
+rounded circle, radius 5e8 (inside the 2^29 box): n convex unimodal
+1000 1 1
+10000 1 1
+20000 1 1
+30000 1 1
+50000 1 1
+100000 0 0
+polygon whose edges are all primitive vectors of norm <= rho: rho n max|coord| convex unimodal
+8 120 201 1 0
+23 1000 4867 1 0
+72 9856 150229 1 0
+229 100128 4865711 1 0
+724 1000976 153777613 1 0

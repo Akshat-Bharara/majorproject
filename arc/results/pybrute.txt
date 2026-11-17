@@ -1,0 +1,1 @@
+instances 55  solver values checked 641  A2 checks 23263  failures 0

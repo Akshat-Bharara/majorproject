@@ -1,0 +1,4 @@
+ok   H1-k6   n=10 k=6: 1 r-far k-set(s) with arc-shaped Far sets, greedy fails
+ok   H2u-k4  n=6 k=4: r*^2 = 101878534210, arc property at r*, unchecked binary search returns 259734655962
+ok   H3-k4   n=6 k=4: r*^2 = 140422760650, no greedy chain is r*-far
+ok   Pstar   n=8 k=4: r*^2 = 10240, beta = 6, no greedy chain is r-far

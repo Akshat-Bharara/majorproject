@@ -1,0 +1,696 @@
+small/pstar.txt flags 0
+small/cocircular_0.txt 2 O2 5615309440000 3 7
+small/cocircular_0.txt 2 adaptive 5615309440000 3 7
+small/cocircular_0.txt 3 O2 3902081757440 1 5 9
+small/cocircular_0.txt 3 adaptive 3902081757440 1 5 9
+small/cocircular_0.txt 4 O2 1975788079876 0 4 6 8
+small/cocircular_0.txt 4 adaptive 1975788079876 0 4 6 8
+small/cocircular_0.txt 5 O2 412040747170 0 2 4 5 7
+small/cocircular_0.txt 5 adaptive 412040747170 0 2 4 5 7
+small/cocircular_0.txt 6 O2 244639541250 0 2 4 5 6 7
+small/cocircular_0.txt 6 adaptive 244639541250 0 2 4 5 6 7
+small/cocircular_0.txt 7 O2 231645012740 0 2 4 5 6 7 9
+small/cocircular_0.txt 7 adaptive 231645012740 0 2 4 5 6 7 9
+small/cocircular_0.txt 8 O2 148032646580 0 1 2 4 5 6 7 9
+small/cocircular_0.txt 8 adaptive 148032646580 0 1 2 4 5 6 7 9
+small/cocircular_0.txt 9 O2 33077682170 0 1 2 3 4 5 6 7 9
+small/cocircular_0.txt 9 adaptive 33077682170 0 1 2 3 4 5 6 7 9
+small/cocircular_0.txt 10 O2 24123722500 0 1 2 3 4 5 6 7 8 9
+small/cocircular_0.txt 10 adaptive 24123722500 0 1 2 3 4 5 6 7 8 9
+small/cocircular_0.txt flags 1
+small/roundcircle_0.txt 2 O2 995802656080205005 0 3
+small/roundcircle_0.txt 2 adaptive 995802656080205005 0 3
+small/roundcircle_0.txt 3 O2 685123992069004597 0 2 4
+small/roundcircle_0.txt 3 adaptive 685123992069004597 0 2 4
+small/roundcircle_0.txt 4 O2 302099955817624394 1 3 4 5
+small/roundcircle_0.txt 4 adaptive 302099955817624394 1 3 4 5
+small/roundcircle_0.txt 5 O2 208133436153261977 0 1 2 3 4
+small/roundcircle_0.txt 5 adaptive 208133436153261977 0 1 2 3 4
+small/roundcircle_0.txt 6 O2 166514525175913613 0 1 2 3 4 5
+small/roundcircle_0.txt 6 adaptive 166514525175913613 0 1 2 3 4 5
+small/roundcircle_0.txt flags 1
+small/jitter_0.txt 2 O2 475951390273 3 9
+small/jitter_0.txt 2 adaptive 475951390273 3 9
+small/jitter_0.txt 3 O2 356054875978 1 5 9
+small/jitter_0.txt 3 adaptive 356054875978 1 5 9
+small/jitter_0.txt 4 O2 236941921193 1 4 7 10
+small/jitter_0.txt 4 adaptive 236941921193 1 4 7 10
+small/jitter_0.txt 5 O2 118823005849 0 2 4 6 9
+small/jitter_0.txt 5 adaptive 118823005849 0 2 4 6 9
+small/jitter_0.txt 6 O2 118353353625 0 2 4 6 8 10
+small/jitter_0.txt 6 adaptive 118353353625 0 2 4 6 8 10
+small/jitter_0.txt 7 O2 31798058365 0 2 4 6 8 10 11
+small/jitter_0.txt 7 adaptive 31798058365 0 2 4 6 8 10 11
+small/jitter_0.txt 8 O2 31790237188 0 2 4 6 8 9 10 11
+small/jitter_0.txt 8 adaptive 31790237188 0 2 4 6 8 9 10 11
+small/jitter_0.txt 9 O2 31786135105 0 2 4 5 6 8 9 10 11
+small/jitter_0.txt 9 adaptive 31786135105 0 2 4 5 6 8 9 10 11
+small/jitter_0.txt 10 O2 31629423941 0 1 2 4 5 6 8 9 10 11
+small/jitter_0.txt 10 adaptive 31629423941 0 1 2 4 5 6 8 9 10 11
+small/jitter_0.txt 11 O2 31439718349 0 1 2 3 4 5 6 8 9 10 11
+small/jitter_0.txt 11 adaptive 31439718349 0 1 2 3 4 5 6 8 9 10 11
+small/jitter_0.txt 12 O2 31419316097 0 1 2 3 4 5 6 7 8 9 10 11
+small/jitter_0.txt 12 adaptive 31419316097 0 1 2 3 4 5 6 7 8 9 10 11
+small/jitter_0.txt flags 1
+small/disk_0.txt 2 O2 3810649171561 1 3
+small/disk_0.txt 2 adaptive 3810649171561 1 3
+small/disk_0.txt 3 O2 1992654747733 1 2 4
+small/disk_0.txt 3 adaptive 1992654747733 1 2 4
+small/disk_0.txt 4 O2 678574145125 0 2 3 4
+small/disk_0.txt 4 adaptive 678574145125 0 2 3 4
+small/disk_0.txt 5 O2 242858896090 0 1 2 3 4
+small/disk_0.txt 5 adaptive 242858896090 0 1 2 3 4
+small/disk_0.txt flags 1
+small/square_0.txt 2 O2 6629611242293 4 6
+small/square_0.txt 2 adaptive 6629611242293 4 6
+small/square_0.txt 3 O2 3065898325057 1 4 5
+small/square_0.txt 3 adaptive 3065898325057 1 4 5
+small/square_0.txt 4 O2 797618151985 0 2 3 5
+small/square_0.txt 4 adaptive 797618151985 0 2 3 5
+small/square_0.txt 5 O2 223281659465 0 1 3 5 6
+small/square_0.txt 5 adaptive 223281659465 0 1 3 5 6
+small/square_0.txt 6 O2 168017426585 0 1 3 4 5 6
+small/square_0.txt 6 adaptive 168017426585 0 1 3 4 5 6
+small/square_0.txt 7 O2 122387571941 0 1 2 3 4 5 6
+small/square_0.txt 7 adaptive 122387571941 0 1 2 3 4 5 6
+small/square_0.txt flags 1
+small/gauss_0.txt 2 O2 2644461612477 1 4
+small/gauss_0.txt 2 adaptive 2644461612477 1 4
+small/gauss_0.txt 3 O2 1589251743594 2 4 7
+small/gauss_0.txt 3 adaptive 1589251743594 2 4 7
+small/gauss_0.txt 4 O2 676551651674 1 2 4 7
+small/gauss_0.txt 4 adaptive 676551651674 1 2 4 7
+small/gauss_0.txt 5 O2 226400176424 0 2 4 6 7
+small/gauss_0.txt 5 adaptive 226400176424 0 2 4 6 7
+small/gauss_0.txt 6 O2 36579428513 0 2 4 5 6 7
+small/gauss_0.txt 6 adaptive 36579428513 0 2 4 5 6 7
+small/gauss_0.txt 7 O2 28161336097 0 1 2 4 5 6 7
+small/gauss_0.txt 7 adaptive 28161336097 0 1 2 4 5 6 7
+small/gauss_0.txt 8 O2 4158705317 0 1 2 3 4 5 6 7
+small/gauss_0.txt 8 adaptive 4158705317 0 1 2 3 4 5 6 7
+small/gauss_0.txt flags 1
+small/annulus_0.txt 2 O2 3907652480217 1 5
+small/annulus_0.txt 2 adaptive 3907652480217 1 5
+small/annulus_0.txt 3 O2 2743607493565 1 3 7
+small/annulus_0.txt 3 adaptive 2743607493565 1 3 7
+small/annulus_0.txt 4 O2 1005349543168 0 2 3 5
+small/annulus_0.txt 4 adaptive 1005349543168 0 2 3 5
+small/annulus_0.txt 5 O2 794776290304 0 1 2 3 5
+small/annulus_0.txt 5 adaptive 794776290304 0 1 2 3 5
+small/annulus_0.txt 6 O2 790377549977 0 1 2 3 5 7
+small/annulus_0.txt 6 adaptive 790377549977 0 1 2 3 5 7
+small/annulus_0.txt 7 O2 403622113588 0 1 2 3 4 6 7
+small/annulus_0.txt 7 adaptive 403622113588 0 1 2 3 4 6 7
+small/annulus_0.txt 8 O2 95374443530 0 1 2 3 4 5 6 7
+small/annulus_0.txt 8 adaptive 95374443530 0 1 2 3 4 5 6 7
+small/annulus_0.txt flags 1
+small/ellipse_0.txt flags 0
+small/twochain_0.txt flags 0
+small/cocircular_1.txt 2 O2 5614338295450 0 5
+small/cocircular_1.txt 2 adaptive 5614338295450 0 5
+small/cocircular_1.txt 3 O2 4018228906250 1 7 8
+small/cocircular_1.txt 3 adaptive 4018228906250 1 7 8
+small/cocircular_1.txt 4 O2 687875406400 0 1 4 6
+small/cocircular_1.txt 4 adaptive 687875406400 0 1 4 6
+small/cocircular_1.txt 5 O2 546882107648 0 1 4 5 6
+small/cocircular_1.txt 5 adaptive 546882107648 0 1 4 5 6
+small/cocircular_1.txt 6 O2 110685916250 0 1 3 5 6 8
+small/cocircular_1.txt 6 adaptive 110685916250 0 1 3 5 6 8
+small/cocircular_1.txt 7 O2 23855334490 0 1 2 3 5 6 8
+small/cocircular_1.txt 7 adaptive 23855334490 0 1 2 3 5 6 8
+small/cocircular_1.txt 8 O2 19425935360 0 1 2 3 4 5 6 8
+small/cocircular_1.txt 8 adaptive 19425935360 0 1 2 3 4 5 6 8
+small/cocircular_1.txt 9 O2 391827410 0 1 2 3 4 5 6 7 8
+small/cocircular_1.txt 9 adaptive 391827410 0 1 2 3 4 5 6 7 8
+small/cocircular_1.txt flags 1
+small/roundcircle_1.txt 2 O2 987440340916054440 1 3
+small/roundcircle_1.txt 2 adaptive 987440340916054440 1 3
+small/roundcircle_1.txt 3 O2 503359088782687972 0 2 3
+small/roundcircle_1.txt 3 adaptive 503359088782687972 0 2 3
+small/roundcircle_1.txt 4 O2 356226964353828125 0 1 2 3
+small/roundcircle_1.txt 4 adaptive 356226964353828125 0 1 2 3
+small/roundcircle_1.txt flags 1
+small/jitter_1.txt 2 O2 2470269265 0 4
+small/jitter_1.txt 2 adaptive 2470269265 0 4
+small/jitter_1.txt 3 O2 1438415122 1 4 7
+small/jitter_1.txt 3 adaptive 1438415122 1 4 7
+small/jitter_1.txt 4 O2 802705130 1 3 5 7
+small/jitter_1.txt 4 adaptive 802705130 1 3 5 7
+small/jitter_1.txt 5 O2 410795954 0 2 4 5 7
+small/jitter_1.txt 5 adaptive 410795954 0 2 4 5 7
+small/jitter_1.txt 6 O2 304871773 0 1 2 4 5 7
+small/jitter_1.txt 6 adaptive 304871773 0 1 2 4 5 7
+small/jitter_1.txt 7 O2 274729970 0 1 2 4 5 6 8
+small/jitter_1.txt 7 adaptive 274729970 0 1 2 4 5 6 8
+small/jitter_1.txt 8 O2 121208957 0 1 2 4 5 6 7 8
+small/jitter_1.txt 8 adaptive 121208957 0 1 2 4 5 6 7 8
+small/jitter_1.txt 9 O2 119913293 0 1 2 3 4 5 6 7 8
+small/jitter_1.txt 9 adaptive 119913293 0 1 2 3 4 5 6 7 8
+small/jitter_1.txt flags 1
+small/disk_1.txt 2 O2 3763720733578 2 4
+small/disk_1.txt 2 adaptive 3763720733578 2 4
+small/disk_1.txt 3 O2 2125102161296 0 2 3
+small/disk_1.txt 3 adaptive 2125102161296 0 2 3
+small/disk_1.txt 4 O2 863095522720 0 1 3 4
+small/disk_1.txt 4 adaptive 863095522720 0 1 3 4
+small/disk_1.txt 5 O2 339570376829 0 1 3 4 5
+small/disk_1.txt 5 adaptive 339570376829 0 1 3 4 5
+small/disk_1.txt 6 O2 188907072353 0 1 2 3 4 5
+small/disk_1.txt 6 adaptive 188907072353 0 1 2 3 4 5
+small/disk_1.txt flags 1
+small/square_1.txt 5 adaptive 1340519225585 0 3 5 9 12
+small/square_1.txt 6 adaptive 747790765201 1 3 5 6 10 14
+small/square_1.txt 7 adaptive 516289703773 0 2 3 5 6 10 14
+small/square_1.txt 8 adaptive 355146532109 0 2 3 5 6 9 10 12
+small/square_1.txt 9 adaptive 320329432052 0 2 3 4 5 6 9 10 12
+small/square_1.txt 10 adaptive 208380686194 0 2 3 4 5 6 9 10 12 14
+small/square_1.txt 11 adaptive 132901314984 0 1 2 3 4 5 6 8 10 12 14
+small/square_1.txt 12 adaptive 113434868885 0 1 2 3 4 5 6 8 10 11 13 14
+small/square_1.txt 13 adaptive 42724923856 0 1 2 3 4 5 6 8 9 10 11 12 14
+small/square_1.txt 14 adaptive 19175897417 0 1 2 3 4 5 6 7 8 9 10 11 12 14
+small/square_1.txt 15 adaptive 16609572973 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14
+small/square_1.txt flags 0
+small/gauss_1.txt 2 O2 2615402401684 1 3
+small/gauss_1.txt 2 adaptive 2615402401684 1 3
+small/gauss_1.txt 3 O2 1526802804020 0 2 3
+small/gauss_1.txt 3 adaptive 1526802804020 0 2 3
+small/gauss_1.txt 4 O2 868010741000 0 1 2 3
+small/gauss_1.txt 4 adaptive 868010741000 0 1 2 3
+small/gauss_1.txt flags 1
+small/annulus_1.txt 2 O2 3956198949369 1 7
+small/annulus_1.txt 2 adaptive 3956198949369 1 7
+small/annulus_1.txt 3 O2 2663641979876 2 7 10
+small/annulus_1.txt 3 adaptive 2663641979876 2 7 10
+small/annulus_1.txt 4 O2 1681390116325 0 3 7 9
+small/annulus_1.txt 4 adaptive 1681390116325 0 3 7 9
+small/annulus_1.txt 5 O2 989601327361 0 2 4 7 9
+small/annulus_1.txt 5 adaptive 989601327361 0 2 4 7 9
+small/annulus_1.txt 6 O2 632102573572 0 2 3 5 8 10
+small/annulus_1.txt 6 adaptive 632102573572 0 2 3 5 8 10
+small/annulus_1.txt 7 O2 376076240090 0 2 3 5 7 8 9
+small/annulus_1.txt 7 adaptive 376076240090 0 2 3 5 7 8 9
+small/annulus_1.txt 8 O2 255247171073 0 2 3 5 7 8 9 10
+small/annulus_1.txt 8 adaptive 255247171073 0 2 3 5 7 8 9 10
+small/annulus_1.txt 9 O2 123911930941 0 1 2 3 5 7 8 9 10
+small/annulus_1.txt 9 adaptive 123911930941 0 1 2 3 5 7 8 9 10
+small/annulus_1.txt 10 O2 46929967685 0 1 2 3 4 5 7 8 9 10
+small/annulus_1.txt 10 adaptive 46929967685 0 1 2 3 4 5 7 8 9 10
+small/annulus_1.txt 11 O2 8697617905 0 1 2 3 4 5 6 7 8 9 10
+small/annulus_1.txt 11 adaptive 8697617905 0 1 2 3 4 5 6 7 8 9 10
+small/annulus_1.txt flags 1
+small/ellipse_1.txt flags 0
+small/twochain_1.txt flags 0
+small/cocircular_2.txt 2 O2 5623151510080 2 7
+small/cocircular_2.txt 2 adaptive 5623151510080 2 7
+small/cocircular_2.txt 3 O2 4093379942210 5 7 11
+small/cocircular_2.txt 3 adaptive 4093379942210 5 7 11
+small/cocircular_2.txt 4 O2 1546697163700 1 5 6 8
+small/cocircular_2.txt 4 adaptive 1546697163700 1 5 6 8
+small/cocircular_2.txt 5 O2 769837091634 0 3 5 6 8
+small/cocircular_2.txt 5 adaptive 769837091634 0 3 5 6 8
+small/cocircular_2.txt 6 O2 624361703680 0 3 5 6 7 8
+small/cocircular_2.txt 6 adaptive 624361703680 0 3 5 6 7 8
+small/cocircular_2.txt 7 O2 166746854602 0 1 3 4 6 7 8
+small/cocircular_2.txt 7 adaptive 166746854602 0 1 3 4 6 7 8
+small/cocircular_2.txt 8 O2 93302593722 0 1 3 4 6 7 8 11
+small/cocircular_2.txt 8 adaptive 93302593722 0 1 3 4 6 7 8 11
+small/cocircular_2.txt 9 O2 52193093940 0 1 3 4 5 6 7 8 11
+small/cocircular_2.txt 9 adaptive 52193093940 0 1 3 4 5 6 7 8 11
+small/cocircular_2.txt 10 O2 35759656400 0 1 2 3 4 5 6 7 8 11
+small/cocircular_2.txt 10 adaptive 35759656400 0 1 2 3 4 5 6 7 8 11
+small/cocircular_2.txt 11 O2 18379429538 0 1 2 3 4 5 6 7 8 10 11
+small/cocircular_2.txt 11 adaptive 18379429538 0 1 2 3 4 5 6 7 8 10 11
+small/cocircular_2.txt 12 O2 764317450 0 1 2 3 4 5 6 7 8 9 10 11
+small/cocircular_2.txt 12 adaptive 764317450 0 1 2 3 4 5 6 7 8 9 10 11
+small/cocircular_2.txt flags 1
+small/roundcircle_2.txt 2 O2 988673054593662497 1 6
+small/roundcircle_2.txt 2 adaptive 988673054593662497 1 6
+small/roundcircle_2.txt 3 O2 706557233016203369 1 4 7
+small/roundcircle_2.txt 3 adaptive 706557233016203369 1 4 7
+small/roundcircle_2.txt 4 O2 404623184373636058 1 3 5 7
+small/roundcircle_2.txt 4 adaptive 404623184373636058 1 3 5 7
+small/roundcircle_2.txt 5 O2 201750697522987780 0 2 4 6 7
+small/roundcircle_2.txt 5 adaptive 201750697522987780 0 2 4 6 7
+small/roundcircle_2.txt 6 O2 94015120062931528 0 1 2 4 5 7
+small/roundcircle_2.txt 6 adaptive 94015120062931528 0 1 2 4 5 7
+small/roundcircle_2.txt 7 O2 70598388240818285 0 1 2 3 4 5 7
+small/roundcircle_2.txt 7 adaptive 70598388240818285 0 1 2 3 4 5 7
+small/roundcircle_2.txt 8 O2 61306720078792057 0 1 2 3 4 5 6 7
+small/roundcircle_2.txt 8 adaptive 61306720078792057 0 1 2 3 4 5 6 7
+small/roundcircle_2.txt 9 O2 55129924374320800 0 1 2 3 4 5 6 7 8
+small/roundcircle_2.txt 9 adaptive 55129924374320800 0 1 2 3 4 5 6 7 8
+small/roundcircle_2.txt flags 1
+small/jitter_2.txt 2 O2 74407785505 5 11
+small/jitter_2.txt 2 adaptive 74407785505 5 11
+small/jitter_2.txt 3 O2 55770128730 1 5 9
+small/jitter_2.txt 3 adaptive 55770128730 1 5 9
+small/jitter_2.txt 4 O2 37179187325 2 5 8 11
+small/jitter_2.txt 4 adaptive 37179187325 2 5 8 11
+small/jitter_2.txt 5 O2 18585621050 0 2 4 7 9
+small/jitter_2.txt 5 adaptive 18585621050 0 2 4 7 9
+small/jitter_2.txt 6 O2 18581513389 1 3 5 7 9 11
+small/jitter_2.txt 6 adaptive 18581513389 1 3 5 7 9 11
+small/jitter_2.txt 7 O2 4991414522 0 1 3 5 7 9 10
+small/jitter_2.txt 7 adaptive 4991414522 0 1 3 5 7 9 10
+small/jitter_2.txt 8 O2 4981425490 0 1 3 5 7 8 9 10
+small/jitter_2.txt 8 adaptive 4981425490 0 1 3 5 7 8 9 10
+small/jitter_2.txt 9 O2 4979199637 0 1 3 5 6 7 8 9 10
+small/jitter_2.txt 9 adaptive 4979199637 0 1 3 5 6 7 8 9 10
+small/jitter_2.txt 10 O2 4977433476 0 1 3 4 5 6 7 8 9 10
+small/jitter_2.txt 10 adaptive 4977433476 0 1 3 4 5 6 7 8 9 10
+small/jitter_2.txt 11 O2 4971042442 0 1 2 3 4 5 6 7 8 9 10
+small/jitter_2.txt 11 adaptive 4971042442 0 1 2 3 4 5 6 7 8 9 10
+small/jitter_2.txt 12 O2 4968349234 0 1 2 3 4 5 6 7 8 9 10 11
+small/jitter_2.txt 12 adaptive 4968349234 0 1 2 3 4 5 6 7 8 9 10 11
+small/jitter_2.txt flags 1
+small/disk_2.txt 2 O2 3727608280661 0 3
+small/disk_2.txt 2 adaptive 3727608280661 0 3
+small/disk_2.txt 3 O2 2167102287010 0 2 4
+small/disk_2.txt 3 adaptive 2167102287010 0 2 4
+small/disk_2.txt 4 O2 261704113645 0 1 2 3
+small/disk_2.txt 4 adaptive 261704113645 0 1 2 3
+small/disk_2.txt 5 O2 157505106490 0 1 2 3 4
+small/disk_2.txt 5 adaptive 157505106490 0 1 2 3 4
+small/disk_2.txt flags 1
+small/square_2.txt 2 O2 6782146657177 0 3
+small/square_2.txt 2 adaptive 6782146657177 0 3
+small/square_2.txt 3 O2 2730576854176 1 2 8
+small/square_2.txt 3 adaptive 2730576854176 1 2 8
+small/square_2.txt 4 O2 1254716668466 0 2 7 8
+small/square_2.txt 4 adaptive 1254716668466 0 2 7 8
+small/square_2.txt 5 O2 429392013565 0 2 5 7 8
+small/square_2.txt 5 adaptive 429392013565 0 2 5 7 8
+small/square_2.txt 6 O2 181774566761 0 2 3 6 7 8
+small/square_2.txt 6 adaptive 181774566761 0 2 3 6 7 8
+small/square_2.txt 7 O2 63451010305 0 1 2 3 5 7 8
+small/square_2.txt 7 adaptive 63451010305 0 1 2 3 5 7 8
+small/square_2.txt 8 O2 22533497909 0 1 2 3 5 6 7 8
+small/square_2.txt 8 adaptive 22533497909 0 1 2 3 5 6 7 8
+small/square_2.txt 9 O2 438016292 0 1 2 3 4 5 6 7 8
+small/square_2.txt 9 adaptive 438016292 0 1 2 3 4 5 6 7 8
+small/square_2.txt flags 1
+small/gauss_2.txt 2 O2 754664829057 2 3
+small/gauss_2.txt 2 adaptive 754664829057 2 3
+small/gauss_2.txt 3 O2 153198125885 0 2 3
+small/gauss_2.txt 3 adaptive 153198125885 0 2 3
+small/gauss_2.txt 4 O2 62876965181 0 1 2 3
+small/gauss_2.txt 4 adaptive 62876965181 0 1 2 3
+small/gauss_2.txt flags 1
+small/annulus_2.txt 2 O2 3895223863330 1 6
+small/annulus_2.txt 2 adaptive 3895223863330 1 6
+small/annulus_2.txt 3 O2 1639908845653 0 1 3
+small/annulus_2.txt 3 adaptive 1639908845653 0 1 3
+small/annulus_2.txt 4 O2 1330961697988 0 1 2 3
+small/annulus_2.txt 4 adaptive 1330961697988 0 1 2 3
+small/annulus_2.txt 5 O2 424251441140 0 1 2 3 6
+small/annulus_2.txt 5 adaptive 424251441140 0 1 2 3 6
+small/annulus_2.txt 6 O2 51385873930 0 1 2 3 4 5
+small/annulus_2.txt 6 adaptive 51385873930 0 1 2 3 4 5
+small/annulus_2.txt 7 O2 8848935482 0 1 2 3 4 5 6
+small/annulus_2.txt 7 adaptive 8848935482 0 1 2 3 4 5 6
+small/annulus_2.txt 8 O2 5015856800 0 1 2 3 4 5 6 7
+small/annulus_2.txt 8 adaptive 5015856800 0 1 2 3 4 5 6 7
+small/annulus_2.txt flags 1
+small/ellipse_2.txt flags 0
+small/twochain_2.txt flags 0
+small/cocircular_3.txt 2 O2 5623051832450 1 11
+small/cocircular_3.txt 2 adaptive 5623051832450 1 11
+small/cocircular_3.txt 3 O2 4167451760706 0 5 9
+small/cocircular_3.txt 3 adaptive 4167451760706 0 5 9
+small/cocircular_3.txt 4 O2 2582466109210 0 1 8 11
+small/cocircular_3.txt 4 adaptive 2582466109210 0 1 8 11
+small/cocircular_3.txt 5 O2 918541789490 0 1 6 9 12
+small/cocircular_3.txt 5 adaptive 918541789490 0 1 6 9 12
+small/cocircular_3.txt 6 O2 503008890930 0 1 5 7 9 12
+small/cocircular_3.txt 6 adaptive 503008890930 0 1 5 7 9 12
+small/cocircular_3.txt 7 O2 258402740570 0 1 4 6 9 11 12
+small/cocircular_3.txt 7 adaptive 258402740570 0 1 4 6 9 11 12
+small/cocircular_3.txt 8 O2 252292354730 0 1 4 6 8 9 11 12
+small/cocircular_3.txt 8 adaptive 252292354730 0 1 4 6 8 9 11 12
+small/cocircular_3.txt 9 O2 73086761930 0 1 3 5 6 7 9 10 12
+small/cocircular_3.txt 9 adaptive 73086761930 0 1 3 5 6 7 9 10 12
+small/cocircular_3.txt 10 O2 53882197200 0 1 2 4 6 7 8 9 10 12
+small/cocircular_3.txt 10 adaptive 53882197200 0 1 2 4 6 7 8 9 10 12
+small/cocircular_3.txt 11 O2 47140258698 0 1 2 4 6 7 8 9 10 12 13
+small/cocircular_3.txt 11 adaptive 47140258698 0 1 2 4 6 7 8 9 10 12 13
+small/cocircular_3.txt 12 O2 35937980416 0 1 2 4 5 6 7 8 9 10 12 13
+small/cocircular_3.txt 12 adaptive 35937980416 0 1 2 4 5 6 7 8 9 10 12 13
+small/cocircular_3.txt 13 O2 30857668660 0 1 2 4 5 6 7 8 9 10 11 12 13
+small/cocircular_3.txt 13 adaptive 30857668660 0 1 2 4 5 6 7 8 9 10 11 12 13
+small/cocircular_3.txt 14 O2 1248993460 0 1 2 3 4 5 6 7 8 9 10 11 12 13
+small/cocircular_3.txt 14 adaptive 1248993460 0 1 2 3 4 5 6 7 8 9 10 11 12 13
+small/cocircular_3.txt flags 1
+small/roundcircle_3.txt 2 O2 999998096345142625 1 9
+small/roundcircle_3.txt 2 adaptive 999998096345142625 1 9
+small/roundcircle_3.txt 3 O2 692715087916274045 0 5 10
+small/roundcircle_3.txt 3 adaptive 692715087916274045 0 5 10
+small/roundcircle_3.txt 4 O2 478161217886053952 2 6 10 14
+small/roundcircle_3.txt 4 adaptive 478161217886053952 2 6 10 14
+small/roundcircle_3.txt 5 O2 291218433176421466 2 5 8 12 15
+small/roundcircle_3.txt 5 adaptive 291218433176421466 2 5 8 12 15
+small/roundcircle_3.txt 6 O2 186163942003151017 1 3 6 9 12 14
+small/roundcircle_3.txt 6 adaptive 186163942003151017 1 3 6 9 12 14
+small/roundcircle_3.txt 7 O2 131904180261308717 1 3 5 7 10 13 15
+small/roundcircle_3.txt 7 adaptive 131904180261308717 1 3 5 7 10 13 15
+small/roundcircle_3.txt 8 O2 116253184313244290 1 3 5 7 9 11 13 15
+small/roundcircle_3.txt 8 adaptive 116253184313244290 1 3 5 7 9 11 13 15
+small/roundcircle_3.txt 9 O2 62351711854637210 0 2 4 5 7 9 10 12 14
+small/roundcircle_3.txt 9 adaptive 62351711854637210 0 2 4 5 7 9 10 12 14
+small/roundcircle_3.txt 10 O2 42646012435875770 0 2 4 5 7 8 10 12 13 14
+small/roundcircle_3.txt 10 adaptive 42646012435875770 0 2 4 5 7 8 10 12 13 14
+small/roundcircle_3.txt 11 O2 34322935187768194 0 2 4 5 6 7 8 10 12 13 14
+small/roundcircle_3.txt 11 adaptive 34322935187768194 0 2 4 5 6 7 8 10 12 13 14
+small/roundcircle_3.txt 12 O2 21127663615153394 0 2 3 4 5 6 7 8 10 12 13 14
+small/roundcircle_3.txt 12 adaptive 21127663615153394 0 2 3 4 5 6 7 8 10 12 13 14
+small/roundcircle_3.txt 13 O2 19161914123995634 0 1 2 3 4 5 6 7 8 10 12 13 14
+small/roundcircle_3.txt 13 adaptive 19161914123995634 0 1 2 3 4 5 6 7 8 10 12 13 14
+small/roundcircle_3.txt 14 O2 18945999136969274 0 1 2 3 4 5 6 7 8 10 11 12 13 14
+small/roundcircle_3.txt 14 adaptive 18945999136969274 0 1 2 3 4 5 6 7 8 10 11 12 13 14
+small/roundcircle_3.txt 15 O2 16968963453034613 0 1 2 3 4 5 6 7 8 10 11 12 13 14 15
+small/roundcircle_3.txt 15 adaptive 16968963453034613 0 1 2 3 4 5 6 7 8 10 11 12 13 14 15
+small/roundcircle_3.txt 16 O2 12042067797940388 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+small/roundcircle_3.txt 16 adaptive 12042067797940388 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+small/roundcircle_3.txt flags 1
+small/jitter_3.txt 2 O2 3351035305 2 6
+small/jitter_3.txt 2 adaptive 3351035305 2 6
+small/jitter_3.txt 3 O2 1755477380 0 3 6
+small/jitter_3.txt 3 adaptive 1755477380 0 3 6
+small/jitter_3.txt 4 O2 1520661636 1 3 5 7
+small/jitter_3.txt 4 adaptive 1520661636 1 3 5 7
+small/jitter_3.txt 5 O2 530165585 0 2 3 5 7
+small/jitter_3.txt 5 adaptive 530165585 0 2 3 5 7
+small/jitter_3.txt 6 O2 464593337 0 2 3 5 6 7
+small/jitter_3.txt 6 adaptive 464593337 0 2 3 5 6 7
+small/jitter_3.txt 7 O2 423772213 0 2 3 4 5 6 7
+small/jitter_3.txt 7 adaptive 423772213 0 2 3 4 5 6 7
+small/jitter_3.txt 8 O2 398873105 0 1 2 3 4 5 6 7
+small/jitter_3.txt 8 adaptive 398873105 0 1 2 3 4 5 6 7
+small/jitter_3.txt flags 1
+small/disk_3.txt 2 O2 3815073844744 0 6
+small/disk_3.txt 2 adaptive 3815073844744 0 6
+small/disk_3.txt 3 O2 2806711074745 2 5 10
+small/disk_3.txt 3 adaptive 2806711074745 2 5 10
+small/disk_3.txt 4 O2 1144758267469 0 4 5 8
+small/disk_3.txt 4 adaptive 1144758267469 0 4 5 8
+small/disk_3.txt 5 O2 553121640292 0 3 5 8 12
+small/disk_3.txt 5 adaptive 553121640292 0 3 5 8 12
+small/disk_3.txt 6 O2 332703412213 0 1 5 7 8 11
+small/disk_3.txt 6 adaptive 332703412213 0 1 5 7 8 11
+small/disk_3.txt 7 O2 290143137245 0 1 4 5 7 8 11
+small/disk_3.txt 7 adaptive 290143137245 0 1 4 5 7 8 11
+small/disk_3.txt 8 O2 158473755058 0 1 4 5 7 8 11 13
+small/disk_3.txt 8 adaptive 158473755058 0 1 4 5 7 8 11 13
+small/disk_3.txt 9 O2 101288932160 0 1 4 5 7 8 10 11 13
+small/disk_3.txt 9 adaptive 101288932160 0 1 4 5 7 8 10 11 13
+small/disk_3.txt 10 O2 55190538874 0 1 3 4 5 7 8 10 11 13
+small/disk_3.txt 10 adaptive 55190538874 0 1 3 4 5 7 8 10 11 13
+small/disk_3.txt 11 O2 27959598208 0 1 3 4 5 6 7 8 10 11 13
+small/disk_3.txt 11 adaptive 27959598208 0 1 3 4 5 6 7 8 10 11 13
+small/disk_3.txt 12 O2 24326827880 0 1 3 4 5 6 7 8 9 10 11 13
+small/disk_3.txt 12 adaptive 24326827880 0 1 3 4 5 6 7 8 9 10 11 13
+small/disk_3.txt 13 O2 17288664025 0 1 2 3 4 5 6 7 8 9 10 11 13
+small/disk_3.txt 13 adaptive 17288664025 0 1 2 3 4 5 6 7 8 9 10 11 13
+small/disk_3.txt 14 O2 4602845840 0 1 2 3 4 5 6 7 8 9 10 11 12 13
+small/disk_3.txt 14 adaptive 4602845840 0 1 2 3 4 5 6 7 8 9 10 11 12 13
+small/disk_3.txt flags 1
+small/square_3.txt 2 O2 7115633098010 3 7
+small/square_3.txt 2 adaptive 7115633098010 3 7
+small/square_3.txt 3 O2 3750927653800 0 4 7
+small/square_3.txt 3 adaptive 3750927653800 0 4 7
+small/square_3.txt 4 O2 2966749108405 0 3 5 7
+small/square_3.txt 4 adaptive 2966749108405 0 3 5 7
+small/square_3.txt 5 O2 235200226429 0 1 3 4 6
+small/square_3.txt 5 adaptive 235200226429 0 1 3 4 6
+small/square_3.txt 6 O2 150477102009 0 1 3 4 5 6
+small/square_3.txt 6 adaptive 150477102009 0 1 3 4 5 6
+small/square_3.txt 7 O2 99263391781 0 1 3 4 5 6 8
+small/square_3.txt 7 adaptive 99263391781 0 1 3 4 5 6 8
+small/square_3.txt 8 O2 34513977389 0 1 2 3 4 5 6 8
+small/square_3.txt 8 adaptive 34513977389 0 1 2 3 4 5 6 8
+small/square_3.txt 9 O2 7419809450 0 1 2 3 4 5 6 7 8
+small/square_3.txt 9 adaptive 7419809450 0 1 2 3 4 5 6 7 8
+small/square_3.txt flags 1
+small/gauss_3.txt 2 O2 2679553673765 2 7
+small/gauss_3.txt 2 adaptive 2679553673765 2 7
+small/gauss_3.txt 3 O2 1606266323345 0 3 6
+small/gauss_3.txt 3 adaptive 1606266323345 0 3 6
+small/gauss_3.txt 4 O2 1115351612138 0 2 4 7
+small/gauss_3.txt 4 adaptive 1115351612138 0 2 4 7
+small/gauss_3.txt 5 O2 604674167492 1 3 4 6 8
+small/gauss_3.txt 5 adaptive 604674167492 1 3 4 6 8
+small/gauss_3.txt 6 O2 209555146754 0 1 2 4 6 8
+small/gauss_3.txt 6 adaptive 209555146754 0 1 2 4 6 8
+small/gauss_3.txt 7 O2 99789890290 0 1 2 3 4 6 8
+small/gauss_3.txt 7 adaptive 99789890290 0 1 2 3 4 6 8
+small/gauss_3.txt 8 O2 56956804645 0 1 2 3 4 6 7 8
+small/gauss_3.txt 8 adaptive 56956804645 0 1 2 3 4 6 7 8
+small/gauss_3.txt 9 O2 25164235700 0 1 2 3 4 5 6 7 8
+small/gauss_3.txt 9 adaptive 25164235700 0 1 2 3 4 5 6 7 8
+small/gauss_3.txt flags 1
+small/annulus_3.txt 2 O2 3979835971901 2 10
+small/annulus_3.txt 2 adaptive 3979835971901 2 10
+small/annulus_3.txt 3 O2 2878025422532 0 6 12
+small/annulus_3.txt 3 adaptive 2878025422532 0 6 12
+small/annulus_3.txt 4 O2 1389100873973 2 6 8 13
+small/annulus_3.txt 4 adaptive 1389100873973 2 6 8 13
+small/annulus_3.txt 5 O2 904808934404 2 5 7 11 13
+small/annulus_3.txt 5 adaptive 904808934404 2 5 7 11 13
+small/annulus_3.txt 6 O2 697108016530 1 3 6 7 10 13
+small/annulus_3.txt 6 adaptive 697108016530 1 3 6 7 10 13
+small/annulus_3.txt 7 O2 322684786469 0 2 4 5 7 8 13
+small/annulus_3.txt 7 adaptive 322684786469 0 2 4 5 7 8 13
+small/annulus_3.txt 8 O2 164279511460 0 2 4 5 7 8 12 13
+small/annulus_3.txt 8 adaptive 164279511460 0 2 4 5 7 8 12 13
+small/annulus_3.txt 9 O2 57850103746 0 2 3 4 5 7 8 11 13
+small/annulus_3.txt 9 adaptive 57850103746 0 2 3 4 5 7 8 11 13
+small/annulus_3.txt 10 O2 55200806258 0 1 2 3 4 5 7 8 11 13
+small/annulus_3.txt 10 adaptive 55200806258 0 1 2 3 4 5 7 8 11 13
+small/annulus_3.txt 11 O2 35416798600 0 1 2 3 4 5 7 8 10 12 13
+small/annulus_3.txt 11 adaptive 35416798600 0 1 2 3 4 5 7 8 10 12 13
+small/annulus_3.txt 12 O2 21814819570 0 1 2 3 4 5 7 8 10 12 13 14
+small/annulus_3.txt 12 adaptive 21814819570 0 1 2 3 4 5 7 8 10 12 13 14
+small/annulus_3.txt 13 O2 9948024265 0 1 2 3 4 5 6 7 8 10 12 13 14
+small/annulus_3.txt 13 adaptive 9948024265 0 1 2 3 4 5 6 7 8 10 12 13 14
+small/annulus_3.txt 14 O2 4757745424 0 1 2 3 4 5 6 7 8 10 11 12 13 14
+small/annulus_3.txt 14 adaptive 4757745424 0 1 2 3 4 5 6 7 8 10 11 12 13 14
+small/annulus_3.txt 15 O2 1421900602 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14
+small/annulus_3.txt 15 adaptive 1421900602 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14
+small/annulus_3.txt flags 1
+small/ellipse_3.txt flags 0
+small/twochain_3.txt 2 O2 3555052033586 0 2
+small/twochain_3.txt 2 adaptive 3555052033586 0 2
+small/twochain_3.txt 3 O2 137403055760 0 2 3
+small/twochain_3.txt 3 adaptive 137403055760 0 2 3
+small/twochain_3.txt 4 O2 123117805865 0 1 2 3
+small/twochain_3.txt 4 adaptive 123117805865 0 1 2 3
+small/twochain_3.txt flags 1
+small/cocircular_4.txt 2 O2 5623192391680 0 3
+small/cocircular_4.txt 2 adaptive 5623192391680 0 3
+small/cocircular_4.txt 3 O2 2582466109210 0 2 6
+small/cocircular_4.txt 3 adaptive 2582466109210 0 2 6
+small/cocircular_4.txt 4 O2 325703074970 0 2 4 5
+small/cocircular_4.txt 4 adaptive 325703074970 0 2 4 5
+small/cocircular_4.txt 5 O2 7106876010 0 2 3 4 5
+small/cocircular_4.txt 5 adaptive 7106876010 0 2 3 4 5
+small/cocircular_4.txt 6 O2 1513808010 0 1 2 3 4 5
+small/cocircular_4.txt 6 adaptive 1513808010 0 1 2 3 4 5
+small/cocircular_4.txt 7 O2 154136450 0 1 2 3 4 5 6
+small/cocircular_4.txt 7 adaptive 154136450 0 1 2 3 4 5 6
+small/cocircular_4.txt flags 1
+small/roundcircle_4.txt 2 O2 999918614413735081 5 11
+small/roundcircle_4.txt 2 adaptive 999918614413735081 5 11
+small/roundcircle_4.txt 3 O2 710191024974131122 0 4 8
+small/roundcircle_4.txt 3 adaptive 710191024974131122 0 4 8
+small/roundcircle_4.txt 4 O2 457362726820604449 2 5 8 11
+small/roundcircle_4.txt 4 adaptive 457362726820604449 2 5 8 11
+small/roundcircle_4.txt 5 O2 252814272603041201 0 3 5 7 9
+small/roundcircle_4.txt 5 adaptive 252814272603041201 0 3 5 7 9
+small/roundcircle_4.txt 6 O2 186773841012594676 0 2 4 6 8 10
+small/roundcircle_4.txt 6 adaptive 186773841012594676 0 2 4 6 8 10
+small/roundcircle_4.txt 7 O2 97405685537283061 0 2 4 6 8 9 11
+small/roundcircle_4.txt 7 adaptive 97405685537283061 0 2 4 6 8 9 11
+small/roundcircle_4.txt 8 O2 81963898706918682 0 1 3 4 6 8 9 11
+small/roundcircle_4.txt 8 adaptive 81963898706918682 0 1 3 4 6 8 9 11
+small/roundcircle_4.txt 9 O2 46984030930494818 0 1 3 4 6 7 8 9 11
+small/roundcircle_4.txt 9 adaptive 46984030930494818 0 1 3 4 6 7 8 9 11
+small/roundcircle_4.txt 10 O2 33211935888462280 0 1 3 4 5 6 7 8 9 11
+small/roundcircle_4.txt 10 adaptive 33211935888462280 0 1 3 4 5 6 7 8 9 11
+small/roundcircle_4.txt 11 O2 28270375297041826 0 1 3 4 5 6 7 8 9 10 11
+small/roundcircle_4.txt 11 adaptive 28270375297041826 0 1 3 4 5 6 7 8 9 10 11
+small/roundcircle_4.txt 12 O2 24370989207597041 0 1 2 3 4 5 6 7 8 9 10 11
+small/roundcircle_4.txt 12 adaptive 24370989207597041 0 1 2 3 4 5 6 7 8 9 10 11
+small/roundcircle_4.txt flags 1
+small/jitter_4.txt 2 O2 63540947012 0 2
+small/jitter_4.txt 2 adaptive 63540947012 0 2
+small/jitter_4.txt 3 O2 24280503145 0 1 3
+small/jitter_4.txt 3 adaptive 24280503145 0 1 3
+small/jitter_4.txt 4 O2 24245654381 0 1 2 3
+small/jitter_4.txt 4 adaptive 24245654381 0 1 2 3
+small/jitter_4.txt 5 O2 24242724545 0 1 2 3 4
+small/jitter_4.txt 5 adaptive 24242724545 0 1 2 3 4
+small/jitter_4.txt flags 1
+small/disk_4.txt 2 O2 3832317964269 1 6
+small/disk_4.txt 2 adaptive 3832317964269 1 6
+small/disk_4.txt 3 O2 2606253980554 2 5 9
+small/disk_4.txt 3 adaptive 2606253980554 2 5 9
+small/disk_4.txt 4 O2 1287674442290 1 3 7 9
+small/disk_4.txt 4 adaptive 1287674442290 1 3 7 9
+small/disk_4.txt 5 O2 623672706592 0 2 3 5 8
+small/disk_4.txt 5 adaptive 623672706592 0 2 3 5 8
+small/disk_4.txt 6 O2 466796123792 1 2 3 5 8 9
+small/disk_4.txt 6 adaptive 466796123792 1 2 3 5 8 9
+small/disk_4.txt 7 O2 324422959813 0 1 2 3 4 7 9
+small/disk_4.txt 7 adaptive 324422959813 0 1 2 3 4 7 9
+small/disk_4.txt 8 O2 168807113866 0 1 2 3 4 6 8 9
+small/disk_4.txt 8 adaptive 168807113866 0 1 2 3 4 6 8 9
+small/disk_4.txt 9 O2 52189657570 0 1 2 3 4 6 7 8 9
+small/disk_4.txt 9 adaptive 52189657570 0 1 2 3 4 6 7 8 9
+small/disk_4.txt 10 O2 42891410642 0 1 2 3 4 5 6 7 8 9
+small/disk_4.txt 10 adaptive 42891410642 0 1 2 3 4 5 6 7 8 9
+small/disk_4.txt flags 1
+small/square_4.txt 2 adaptive 7290153887234 0 6
+small/square_4.txt 4 adaptive 2468769486201 0 4 5 8
+small/square_4.txt 5 adaptive 310851920592 0 2 3 5 8
+small/square_4.txt 6 adaptive 72813887105 0 2 3 5 7 8
+small/square_4.txt 7 adaptive 70070979805 0 2 3 4 5 7 8
+small/square_4.txt 8 adaptive 46156111137 0 1 2 3 4 5 7 8
+small/square_4.txt 9 adaptive 7266744922 0 1 2 3 4 5 6 7 8
+small/square_4.txt flags 0
+small/gauss_4.txt 2 adaptive 3257524128520 3 9
+small/gauss_4.txt 3 adaptive 2221927495426 6 9 13
+small/gauss_4.txt 4 adaptive 1094476701937 4 7 9 13
+small/gauss_4.txt 5 adaptive 674538938649 2 6 8 10 13
+small/gauss_4.txt 6 adaptive 567454886154 1 5 7 9 11 13
+small/gauss_4.txt 7 adaptive 333827089146 0 4 6 8 9 11 13
+small/gauss_4.txt 8 adaptive 153892045645 0 3 5 7 9 10 12 13
+small/gauss_4.txt 9 adaptive 137733167008 0 3 5 6 7 9 10 12 13
+small/gauss_4.txt 10 adaptive 132656279249 0 3 5 6 7 8 9 10 12 13
+small/gauss_4.txt 11 adaptive 107652163349 0 3 4 5 6 7 8 9 10 11 13
+small/gauss_4.txt 12 adaptive 40643621649 0 1 3 4 5 6 7 8 9 10 11 13
+small/gauss_4.txt 13 adaptive 36378090980 0 1 3 4 5 6 7 8 9 10 11 12 13
+small/gauss_4.txt 14 adaptive 3624355010 0 1 2 3 4 5 6 7 8 9 10 11 12 13
+small/gauss_4.txt flags 0
+small/annulus_4.txt 2 O2 3886262504900 1 5
+small/annulus_4.txt 2 adaptive 3886262504900 1 5
+small/annulus_4.txt 3 O2 2360211856705 1 2 7
+small/annulus_4.txt 3 adaptive 2360211856705 1 2 7
+small/annulus_4.txt 4 O2 1130331597410 0 1 2 4
+small/annulus_4.txt 4 adaptive 1130331597410 0 1 2 4
+small/annulus_4.txt 5 O2 681162845648 0 1 2 3 7
+small/annulus_4.txt 5 adaptive 681162845648 0 1 2 3 7
+small/annulus_4.txt 6 O2 94932413725 0 1 2 3 4 5
+small/annulus_4.txt 6 adaptive 94932413725 0 1 2 3 4 5
+small/annulus_4.txt 7 O2 87133441744 0 1 2 3 4 5 7
+small/annulus_4.txt 7 adaptive 87133441744 0 1 2 3 4 5 7
+small/annulus_4.txt 8 O2 13765812749 0 1 2 3 4 5 6 7
+small/annulus_4.txt 8 adaptive 13765812749 0 1 2 3 4 5 6 7
+small/annulus_4.txt flags 1
+small/ellipse_4.txt flags 0
+small/twochain_4.txt flags 0
+small/cocircular_5.txt 2 O2 5609293760330 0 3
+small/cocircular_5.txt 2 adaptive 5609293760330 0 3
+small/cocircular_5.txt 3 O2 3863134536170 1 3 4
+small/cocircular_5.txt 3 adaptive 3863134536170 1 3 4
+small/cocircular_5.txt 4 O2 1427980928720 0 1 2 4
+small/cocircular_5.txt 4 adaptive 1427980928720 0 1 2 4
+small/cocircular_5.txt 5 O2 210633707700 0 1 2 3 4
+small/cocircular_5.txt 5 adaptive 210633707700 0 1 2 3 4
+small/cocircular_5.txt flags 1
+small/roundcircle_5.txt 2 O2 997123505084737906 0 4
+small/roundcircle_5.txt 2 adaptive 997123505084737906 0 4
+small/roundcircle_5.txt 3 O2 715439127485437549 2 5 8
+small/roundcircle_5.txt 3 adaptive 715439127485437549 2 5 8
+small/roundcircle_5.txt 4 O2 425829569075478261 1 3 6 8
+small/roundcircle_5.txt 4 adaptive 425829569075478261 1 3 6 8
+small/roundcircle_5.txt 5 O2 200679488115618881 0 2 3 5 7
+small/roundcircle_5.txt 5 adaptive 200679488115618881 0 2 3 5 7
+small/roundcircle_5.txt 6 O2 109036168062297064 0 1 3 4 6 7
+small/roundcircle_5.txt 6 adaptive 109036168062297064 0 1 3 4 6 7
+small/roundcircle_5.txt 7 O2 105290550839306132 0 1 2 3 4 6 7
+small/roundcircle_5.txt 7 adaptive 105290550839306132 0 1 2 3 4 6 7
+small/roundcircle_5.txt 8 O2 104766917464021537 0 1 2 3 4 6 7 8
+small/roundcircle_5.txt 8 adaptive 104766917464021537 0 1 2 3 4 6 7 8
+small/roundcircle_5.txt 9 O2 79975102597844228 0 1 2 3 4 5 6 7 8
+small/roundcircle_5.txt 9 adaptive 79975102597844228 0 1 2 3 4 5 6 7 8
+small/roundcircle_5.txt flags 1
+small/jitter_5.txt 2 O2 70244227721 2 5
+small/jitter_5.txt 2 adaptive 70244227721 2 5
+small/jitter_5.txt 3 O2 45148260625 0 3 5
+small/jitter_5.txt 3 adaptive 45148260625 0 3 5
+small/jitter_5.txt 4 O2 13954936994 0 2 4 6
+small/jitter_5.txt 4 adaptive 13954936994 0 2 4 6
+small/jitter_5.txt 5 O2 13886877581 0 2 4 5 6
+small/jitter_5.txt 5 adaptive 13886877581 0 2 4 5 6
+small/jitter_5.txt 6 O2 13878318530 0 2 3 4 5 6
+small/jitter_5.txt 6 adaptive 13878318530 0 2 3 4 5 6
+small/jitter_5.txt 7 O2 13872019330 0 1 2 3 4 5 6
+small/jitter_5.txt 7 adaptive 13872019330 0 1 2 3 4 5 6
+small/jitter_5.txt flags 1
+small/disk_5.txt 2 O2 3519432939620 0 2
+small/disk_5.txt 2 adaptive 3519432939620 0 2
+small/disk_5.txt 3 O2 2314731543178 0 1 4
+small/disk_5.txt 3 adaptive 2314731543178 0 1 4
+small/disk_5.txt 4 O2 1101968879609 0 1 3 5
+small/disk_5.txt 4 adaptive 1101968879609 0 1 3 5
+small/disk_5.txt 5 O2 306733623368 0 1 3 4 5
+small/disk_5.txt 5 adaptive 306733623368 0 1 3 4 5
+small/disk_5.txt 6 O2 46166270056 0 1 2 3 4 5
+small/disk_5.txt 6 adaptive 46166270056 0 1 2 3 4 5
+small/disk_5.txt flags 1
+small/square_5.txt 2 adaptive 7511336093348 4 12
+small/square_5.txt 3 adaptive 3970836452441 2 5 10
+small/square_5.txt 4 adaptive 3601404082865 1 4 8 12
+small/square_5.txt 5 adaptive 801030980066 0 1 3 5 6
+small/square_5.txt 6 adaptive 128928845858 0 1 3 5 6 9
+small/square_5.txt 7 adaptive 92143479220 0 1 3 5 6 9 10
+small/square_5.txt 8 adaptive 38051574980 0 1 2 3 5 6 9 10
+small/square_5.txt 9 adaptive 23565813298 0 1 2 3 5 6 8 9 10
+small/square_5.txt 10 adaptive 18412000074 0 1 2 3 4 5 6 8 9 10
+small/square_5.txt 11 adaptive 11725485658 0 1 2 3 4 5 6 8 9 10 11
+small/square_5.txt 12 adaptive 5059754408 0 1 2 3 4 5 6 7 8 9 10 11
+small/square_5.txt 13 adaptive 1972090394 0 1 2 3 4 5 6 7 8 9 10 11 12
+small/square_5.txt flags 0
+small/gauss_5.txt 3 adaptive 2113340621834 1 6 9
+small/gauss_5.txt 4 adaptive 1087509459220 0 3 7 9
+small/gauss_5.txt 5 adaptive 847063403666 1 4 7 9 11
+small/gauss_5.txt 6 adaptive 496620961570 1 3 5 7 9 11
+small/gauss_5.txt 7 adaptive 334496926024 0 1 3 5 7 9 10
+small/gauss_5.txt 8 adaptive 255894966388 0 1 2 4 6 7 9 10
+small/gauss_5.txt 9 adaptive 146654330341 0 1 2 4 5 7 9 10 11
+small/gauss_5.txt 10 adaptive 106943922769 0 1 2 4 5 6 7 9 10 11
+small/gauss_5.txt 11 adaptive 41998991402 0 1 2 3 4 5 6 7 9 10 11
+small/gauss_5.txt 12 adaptive 28487876317 0 1 2 3 4 5 6 7 8 9 10 11
+small/gauss_5.txt flags 0
+small/annulus_5.txt 2 O2 3952497086137 0 9
+small/annulus_5.txt 2 adaptive 3952497086137 0 9
+small/annulus_5.txt 3 O2 2887837329744 0 6 12
+small/annulus_5.txt 3 adaptive 2887837329744 0 6 12
+small/annulus_5.txt 4 O2 1750913217509 0 4 9 14
+small/annulus_5.txt 4 adaptive 1750913217509 0 4 9 14
+small/annulus_5.txt 5 O2 1195404302245 3 5 9 13 15
+small/annulus_5.txt 5 adaptive 1195404302245 3 5 9 13 15
+small/annulus_5.txt 6 O2 612756265652 1 4 8 11 14 15
+small/annulus_5.txt 6 adaptive 612756265652 1 4 8 11 14 15
+small/annulus_5.txt 7 O2 321034683466 0 3 4 8 10 12 15
+small/annulus_5.txt 7 adaptive 321034683466 0 3 4 8 10 12 15
+small/annulus_5.txt 8 O2 256789705330 0 3 4 7 8 10 12 15
+small/annulus_5.txt 8 adaptive 256789705330 0 3 4 7 8 10 12 15
+small/annulus_5.txt 9 O2 202088017936 0 2 4 7 8 10 12 14 15
+small/annulus_5.txt 9 adaptive 202088017936 0 2 4 7 8 10 12 14 15
+small/annulus_5.txt 10 O2 142388094529 0 1 3 4 6 8 10 12 14 15
+small/annulus_5.txt 10 adaptive 142388094529 0 1 3 4 6 8 10 12 14 15
+small/annulus_5.txt 11 O2 107206896530 0 1 3 4 6 8 9 10 12 14 15
+small/annulus_5.txt 11 adaptive 107206896530 0 1 3 4 6 8 9 10 12 14 15
+small/annulus_5.txt 12 O2 61698866741 0 1 3 4 6 8 9 10 11 12 13 15
+small/annulus_5.txt 12 adaptive 61698866741 0 1 3 4 6 8 9 10 11 12 13 15
+small/annulus_5.txt 13 O2 56383312429 0 1 3 4 5 7 8 9 10 11 12 13 15
+small/annulus_5.txt 13 adaptive 56383312429 0 1 3 4 5 7 8 9 10 11 12 13 15
+small/annulus_5.txt 14 O2 23354592617 0 1 3 4 5 7 8 9 10 11 12 13 14 15
+small/annulus_5.txt 14 adaptive 23354592617 0 1 3 4 5 7 8 9 10 11 12 13 14 15
+small/annulus_5.txt 15 O2 18257724068 0 1 3 4 5 6 7 8 9 10 11 12 13 14 15
+small/annulus_5.txt 15 adaptive 18257724068 0 1 3 4 5 6 7 8 9 10 11 12 13 14 15
+small/annulus_5.txt 16 O2 7437009941 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+small/annulus_5.txt 16 adaptive 7437009941 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15
+small/annulus_5.txt flags 1
+small/ellipse_5.txt flags 0
+small/twochain_5.txt flags 0

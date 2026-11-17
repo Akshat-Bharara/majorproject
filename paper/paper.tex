@@ -48,6 +48,7 @@
 
 \makeatletter\newcommand{\tabinput}[1]{\@@input #1.tex }\makeatother
 \input{generated/macros}
+\input{generated/arc_macros}
 
 \title{Exact $k$-Dispersion for Points in Convex Position:\\
 A Capped Delaunay Dynamic Program\\ and the Limits of Greedy Structure}
@@ -63,7 +64,7 @@ Given $n$ points in convex position in the plane and an integer $k$, the
 \emph{$k$-dispersion} problem asks for $k$ of the points whose minimum pairwise
 distance $\rstar$ is as large as possible. The best known bound is
 $O(n^3\log^2 n)$ (Tkachenko and Wang, SWAT~2026), obtained by binary search over
-a maximum-independent-set procedure. We make three contributions.
+a maximum-independent-set procedure. We make four contributions.
 
 \emph{(1) A simple exact algorithm.} We show that a set in convex position has
 all pairwise distances at least $r$ if and only if it admits a triangulation
@@ -91,7 +92,16 @@ radius. The counterexample for $k=4$ has eight points and can be checked by
 hand. It refutes a conjecture that had survived more than $5.5\cdot 10^{7}$
 exact randomised tests, and was found only by adversarial optimisation.
 
-\emph{(3) Implementation and experiments.} Greedy rules remain useful as
+\emph{(3) When greedy is exact.} The counterexamples are thin polygons. We
+show that thinness is the only obstruction: if for every point $q$ the points
+at distance at least $r$ from $q$ are contiguous along the hull (the
+\emph{arc property}), then an $r$-far $k$-set exists if and only if some
+greedy chain $q,a(q),a(a(q)),\dots$ closes up, which is decided in $O(n^2)$
+time. For \emph{unimodal} point sets, such as points on a circle, this yields
+an exact algorithm with expected running time $O(n\log^2n)$; it solves
+instances with $10^6$ points in seconds.
+
+\emph{(4) Implementation and experiments.} Greedy rules remain useful as
 \emph{sound} heuristics: a certified variant runs a greedy search followed by
 a single exact decision and is exact on every input. All algorithms are
 implemented with exact integer arithmetic and cross-checked against exhaustive
@@ -145,6 +155,7 @@ Tkachenko, Wang~\cite{tw25} & $O(n\log^2 n)$ & $k=3$; $O(n\log n)$ expected\\
 \midrule
 \textbf{This work} (\cref{thm:opt}) & $O(n^3\log k\log n)$ & decision in $O(n^2k+n^3/w+\Tr\log k)$\\
 \textbf{This work} (\cref{thm:cert}) & $O(n^2k\log n+n^3\log k)$ & when a greedy bound is tight; always exact\\
+\textbf{This work} (\cref{thm:arcopt}) & $O(n\log^2n)$ expected & unimodal sets, e.g.\ points on a circle\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -190,6 +201,14 @@ perturbations of all counterexamples to weaker properties, before an
 optimisation-based search refuted it. We regard this as a useful caution about
 randomised evidence for geometric conjectures.
 
+\item \textbf{The arc property} (\cref{sec:arc}). All our counterexamples
+are thin. We show that if the set of points at distance at least $r$ from $q$
+is contiguous along the hull for every $q$, then the plain greedy chain
+$q,a(q),a(a(q)),\dots$ is exact (\cref{thm:arc}), and that for unimodal point
+sets $k$-dispersion can be solved in expected $O(n\log^2 n)$ time
+(\cref{thm:arcopt}). We also delimit the hypothesis: it cannot be weakened to
+the points of one solution (for $k=6$) or to the optimal radius alone.
+
 \item \textbf{Certified algorithm and experiments} (\cref{sec:certified,sec:experiments}).
 Greedy rules only ever output $r$-far sets. \Cref{alg:certified} uses them to
 find a lower bound and certifies it with one exact decision; it is exact on
@@ -218,7 +237,8 @@ new.
 \Cref{sec:prelim} fixes notation. \Cref{sec:certificate} proves the Delaunay
 certificate, \cref{sec:dp} develops the dynamic program, and
 \cref{sec:opt} treats optimisation. \Cref{sec:greedy} studies greedy
-structure, \cref{sec:experiments} reports experiments, and
+structure, \cref{sec:arc} treats point sets with the arc property,
+\cref{sec:experiments} reports experiments, and
 \cref{sec:conclusion} lists open problems.
 
 \section{Preliminaries}\label{sec:prelim}
@@ -922,6 +942,258 @@ per evaluation of $H$ and $O(\log n)$ evaluations, followed by a single call
 to \cref{alg:capped} if $\rho=\rstar$.
 \end{proof}
 
+\section{When greedy is exact: the arc property}\label{sec:arc}
+
+The counterexamples of \cref{sec:greedy} are thin polygons in which the
+distance from a point is far from unimodal along the hull. This section shows
+that this is the only obstruction: if the set of points far from $q$ is always
+contiguous, the simplest greedy rule is exact, and for unimodal point sets it
+gives a near-linear algorithm.
+
+For $r>0$ and $q\in P$ let $\mathrm{Far}_r(q)=\{x\in P\setminus\{q\}:|qx|\ge r\}$.
+We say that $P$ has the \emph{$r$-arc property} if for every $q$ the set
+$\mathrm{Far}_r(q)$ consists of consecutive points in the order
+$p_{q+1},\dots,p_{q-1}$; then $\mathrm{Far}_r(q)$ is exactly the ccw arc from
+$a(q)$ to $b(q)$. We call $P$ \emph{unimodal} if for every $q$ the sequence
+$|p_qp_{q+t}|$, $t=1,\dots,n-1$, is strictly increasing and then strictly
+decreasing, where the maximum may be attained at two consecutive values of
+$t$. A unimodal set has the $r$-arc property for every $r$. Points on a circle
+are unimodal, since the chord length is $2R\sin(\theta/2)$ for the ccw angle
+$\theta\in(0,2\pi)$; the tie at the top occurs, for instance, in every regular
+polygon with an odd number of vertices, which is why it has to be admitted.
+
+\begin{lemma}[Exchange]\label{lem:a1}
+Assume the $r$-arc property. Let $S$ be an $r$-far set and let $s,s'$ be
+consecutive points of $S$ in ccw order. Then $(S\setminus\{s'\})\cup\{a(s)\}$
+is $r$-far.
+\end{lemma}
+\begin{proof}
+By \cref{lem:arcbasic}, $a(s)$ lies on the ccw arc from $s$ to $s'$, and
+$|s\,a(s)|\ge r$. Let $t\in S\setminus\{s,s'\}$. The set $\mathrm{Far}_r(t)$
+is a set of consecutive points in the order that starts and ends next to $t$,
+and it contains $s$ and $s'$. The ccw arc from $s$ to $s'$ does not contain
+$t$, so all its points lie between $s$ and $s'$ in that order and belong to
+$\mathrm{Far}_r(t)$. Hence $|t\,a(s)|\ge r$.
+\end{proof}
+
+For $q\in P$ and $k\ge2$ the \emph{greedy chain} of $q$ is $x_0=q$,
+$x_{i+1}=a(x_i)$ for $i<k-1$. It is \emph{proper} if all $a(x_i)$ are defined
+and the chain does not wrap around, i.e.\ the ccw offsets of $x_0,\dots,x_{k-1}$
+from $q$ are strictly increasing and smaller than $n$.
+
+\begin{theorem}\label{thm:arc}
+Assume the $r$-arc property and let $k\ge2$.
+\begin{enumerate}[label=(\roman*),itemsep=1pt,topsep=2pt]
+\item If $S$ is an $r$-far $k$-set and $q\in S$, then the greedy chain of $q$
+is proper and $r$-far.
+\item A proper greedy chain is $r$-far if and only if $|x_0x_{k-1}|\ge r$.
+\end{enumerate}
+Hence $P$ has an $r$-far $k$-set if and only if some $q$ has a proper greedy
+chain with $|x_0x_{k-1}|\ge r$.
+\end{theorem}
+\begin{proof}
+(i) Let $S=\{s_1,\dots,s_k\}$ in ccw order with $s_1=q$. Applying
+\cref{lem:a1} to the consecutive pair $(x_0,s_2)$ replaces $s_2$ by $x_1$;
+then $(x_1,s_3)$ is a consecutive pair of the new $r$-far set, and we replace
+$s_3$ by $x_2$, and so on. After $k-1$ steps the set is the chain, which is
+$r$-far, and since $x_i$ lies on the ccw arc from $x_{i-1}$ to $s_{i+1}$, the
+chain is proper.
+
+(ii) Only ``if'' needs a proof. Fix $i$. Starting after $x_i$, the other
+chain points appear in the order
+$x_{i+1},\dots,x_{k-1},x_0,\dots,x_{i-1}$. The first of them is $a(x_i)$ and
+lies in $\mathrm{Far}_r(x_i)$. The last one also does: for $i\ge1$ because
+$x_i=a(x_{i-1})$, and for $i=0$ by assumption. Since $\mathrm{Far}_r(x_i)$ is
+contiguous, it contains all of them.
+\end{proof}
+
+Part~(ii) is the difference to \cref{sec:greedy}: without the arc property a
+greedy chain can close up and still contain a close pair, and by
+\cref{thm:tightpair} there may be no $r$-far chain at all. Indeed the set
+$P_\star$ violates the arc property at $r^2=10240$ ($\mathrm{Far}_r(p_0)$
+consists of the three runs $\{p_1,p_2\}$, $\{p_4\}$, $\{p_6\}$).
+
+\paragraph{Decision.}
+Given the offsets of $a(q)$ for all $q$, the function $a^{k-1}$ together with
+the offset travelled is obtained by repeated squaring in $O(n\log k)$ time and
+$O(n)$ space, after which \cref{thm:arc} is tested in $O(1)$ per seed. (The
+obvious $O(nk)$ walk works as well.) Computing $a(q)$ takes $O(n)$ time by
+scanning. For unimodal $P$ we first find, for every row $q$, the position of
+its maximum by binary search; then $a(q)$ is found by binary search on the
+increasing part of the row.
+
+\begin{theorem}\label{thm:arcdecision}
+Under the $r$-arc property, the decision problem can be solved in
+$O(n^2)$ time, and in $O(n\log n)$ time if $P$ is unimodal. A witness is
+reported within the same bounds.
+\end{theorem}
+
+\paragraph{Optimisation.}
+For unimodal $P$, sorting the $\binom n2$ distances and binary search gives
+$O(n^2\log n)$ time; we call this variant \textsc{O1}. To avoid generating
+all distances, observe that every row splits at its maximum into an increasing
+and a decreasing list, so that the candidates are available as $2n$ implicit
+sorted lists. Algorithm \textsc{O2} maintains an open interval $(lo,hi)$ with
+$lo$ feasible and $hi$ infeasible and, for each list, the range of its entries
+inside the interval. In each round it picks one of the remaining entries
+uniformly at random, tests it, and shrinks all ranges by binary search.
+
+\begin{theorem}\label{thm:arcopt}
+For $n$ points in convex position that form a unimodal set, $k$-dispersion can
+be solved exactly in expected $O(n\log^2n)$ time and $O(n)$ space.
+\end{theorem}
+\begin{proof}
+A round costs $O(n\log n)$: $O(n)$ to select the pivot, $O(n\log n)$ for the
+decision (\cref{thm:arcdecision}) and $O(n\log n)$ to update the ranges. All
+remaining entries equal to the pivot are removed, and with probability at
+least $1/2$ the pivot has rank between $1/4$ and $3/4$ among the remaining
+entries, in which case at least a quarter of them are removed. So the expected
+number of rounds is $O(\log n)$. When no entry is left, $lo=\rstar$, because
+$\rstar$ is a pairwise distance and is feasible.
+\end{proof}
+
+\paragraph{Recognising the hypotheses.}
+The arc property at a given $r$ is checked in $O(n^2)$ time by counting runs.
+Unimodality can be verified in $O(n\log n)$ time. For the hull edge
+$p_jp_{j+1}$, the points strictly closer to $p_j$ than to $p_{j+1}$ are cut
+off by the perpendicular bisector and therefore form a clockwise run
+$p_j,p_{j-1},\dots$ of some length $c_j$, found by binary search; let $z_j=1$
+if the next point is equidistant from both, and $z_j=0$ otherwise. In row $q$,
+the step from $p_{q+t}$ to $p_{q+t+1}$ increases the distance iff $t<c_{q+t}$
+and leaves it unchanged iff $t=c_{q+t}$ and $z_{q+t}=1$. Row $q$ fails to be
+unimodal iff a step that is not an increase is followed by one that is not a
+decrease, and a short calculation shows that this happens for some $q$ iff
+$c_j\le\min\{c_{j+1}+z_{j+1}-2,\;n-3\}$ for some $j$.
+
+For general convex input we use an \emph{adaptive} variant of \textsc{O1}: it
+checks the arc property at every radius it tests and reports ``not
+applicable'' if the check fails. It takes $O(n^2\log n)$ time, is exact
+whenever it answers, and never answers incorrectly.
+
+\paragraph{How far do the hypotheses go?}
+We searched for counterexamples to weaker hypotheses, exhaustively on random
+and perturbed instances with at most $13$ points and $k\le6$
+(\cref{tab:archyp}); all counterexamples were re-verified by an independent
+script.
+\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
+\item \emph{Arc-shaped far sets only for the points of some $r$-far $k$-set.}
+For $k=3$ this suffices, since the proof of \cref{thm:arc}(i) then only uses
+points of $S$. For $k=6$ it does not: there is a $10$-point set with an
+$r$-far $6$-set whose points all have contiguous far sets, yet no greedy
+chain is $r$-far. For $k=4,5$ the random search found no counterexample in
+$\arcHoneFourFive$ cases; in view of \cref{sec:greedy} we do not regard this as
+evidence and leave the question open.
+\item \emph{Arc property only at $r=\rstar$.} Then the chain of every point
+of an optimal set is $\rstar$-far, but the test of \cref{thm:arc}(ii) is
+unreliable at other radii, and a binary search with it can return a wrong
+value; a $6$-point example exists for $k=4$. Binary search with chains that
+are verified pairwise returned $\rstar$ in all $\arcHtwo$ cases.
+\item \emph{No hypothesis.} As expected from \cref{thm:tightpair}, no greedy
+chain needs to be $\rstar$-far for $k\ge4$; this happens in $6$--$9\%$ of
+the instances of this search, most of which are thin.
+\end{itemize}
+
+\begin{table}[tb]
+\centering
+\caption{Search for counterexamples to weakened hypotheses ($n\le13$,
+exhaustive over radii and $k$-sets). H1: some $r$-far $k$-set has only
+arc-shaped far sets $\Rightarrow$ some greedy chain is $r$-far. H2: arc
+property at $\rstar$ $\Rightarrow$ binary search with pairwise-verified chains
+returns $\rstar$; H2u: the same with the test of \cref{thm:arc}(ii). H3: some
+greedy chain is $\rstar$-far.}
+\label{tab:archyp}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+ & \multicolumn{4}{c}{cases in which the premise holds / violations}\\
+hypothesis & $k=3$ & $k=4$ & $k=5$ & $k=6$\\
+\midrule
+\tabinput{generated/arc_hyp}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{How common is the arc property?}
+\Cref{tab:arcstats} reports, for instances with $20\le n\le60$ and
+$k\in\{4,8\}$, the structure at the optimal radius (computed by
+\cref{alg:capped}). Let $\beta=\sum_q(\#\text{runs of }\mathrm{Far}_{\rstar}(q)-1)$,
+so that $\beta=0$ is the arc property at $\rstar$. For all hulls of random
+point clouds, for cocircular points and for jittered regular polygons we
+found $\beta=0$ in every test, and the adaptive algorithm answered on all of
+them except for about a third of the instances drawn from a square and two
+Gaussian ones, where the arc
+property fails at some smaller radius visited by the binary search. On thin
+ellipses and two-chain lenses the arc property always fails. Greedy chains
+succeed at $\rstar$ in all tests with $\beta\le2$, and their success rate
+drops as $\beta$ grows, which suggests looking for algorithms that are
+fixed-parameter tractable in $\beta$.
+
+\begin{table}[tb]
+\centering
+\caption{Structure at the optimal radius ($20\le n\le60$, $k\in\{4,8\}$).
+``arc pts'': mean fraction of points with a contiguous far set; ``greedy'':
+some greedy chain is $\rstar$-far; ``adaptive'': the adaptive algorithm
+answers (and is then correct).}
+\label{tab:arcstats}
+\small
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+group & tests & arc pts & mean $\beta$ & $\beta=0$ & greedy & adaptive\\
+\midrule
+\tabinput{generated/arc_stats}
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Verification.}
+The implementation (\code{arc/arcdisp.hpp}) was validated before any timing.
+On $\arcSmallInst$ instances with $n\le16$ from ten families, at every
+candidate radius $r$ (and at $r^2+1$) at which the arc property holds, three
+implementations of the decision procedure agree with exhaustive search for
+all $k=2,\dots,n$ ($\arcDchecks$ comparisons), and \textsc{O1}, \textsc{O2}
+and the adaptive variant return the exhaustive optimum with a valid witness
+($\arcOptChecks$ instance--$k$ pairs). On $\arcBigInst$ instances with
+$20\le n\le150$ they agree with \cref{alg:capped} ($\arcBigChecks$ checks).
+An independent Python script recomputes the optima of exported instances by
+brute force and checks \cref{thm:arc} directly ($\arcPyAtwo$ checks). No
+discrepancy occurred. When the decision procedure is applied \emph{without}
+the arc property, it is wrong in $\arcUncheckedWrong\%$ of the cases on the
+thin families, so the hypothesis cannot be dropped.
+
+\paragraph{Running time.}
+Unimodal instances are points at jittered equally spaced angles on a circle,
+rounded to integers; every instance is verified to be strictly convex and
+unimodal by the exact $O(n\log n)$ test. With coordinates bounded by $2^{29}$
+such instances exist for $n\le50000$ but not for $n=10^5$, where rounding
+destroys convexity; convex lattice polygons with $10^6$ vertices do fit into
+this box (take all primitive vectors of norm at most $724$ as edges), but they
+are not unimodal. For $n\ge10^5$ we therefore use a circle of radius $2^{60}$
+and $128$-bit squared distances (``wide'' mode); \textsc{O1} needs
+$\Theta(n^2)$ memory and was run for $n\le10^4$. Every reported witness was
+checked by an exact closest-pair computation. \Cref{tab:arcscaling} shows the
+medians over three instances. \textsc{O2} solves instances with a million
+points in about $\arcMillion$ seconds, and its running time grows like
+$n^{\arcSlope}$ between $n=10^3$ and $n=10^6$, compared with
+$n^{\arcSlopeOone}$ for \textsc{O1}. At $n=400$ it is more than four orders of
+magnitude faster than the cubic dynamic program, which of course does not
+need the hypothesis.
+
+\begin{table}[tb]
+\centering
+\caption{Median running time [ms] on unimodal instances (three instances per
+cell). \textsc{DP}: \cref{alg:capped} with binary search. ``--'': not run.}
+\label{tab:arcscaling}
+\small
+\begin{tabular}{@{}rr|rrr|r@{}}
+\toprule
+ & & \multicolumn{3}{c|}{$64$-bit distances} & $128$-bit\\
+$n$ & $k$ & \textsc{DP} & \textsc{O1} & \textsc{O2} & \textsc{O2}\\
+\midrule
+\tabinput{generated/arc_scaling}
+\bottomrule
+\end{tabular}
+\end{table}
+
 \section{Experiments}\label{sec:experiments}
 
 \paragraph{Implementation.}
@@ -1113,7 +1385,9 @@ distribution & instances & FF optimal & certified & rate & mean gap & max gap\\
 We presented a simple exact algorithm for $k$-dispersion in convex position
 that needs nothing but the in-circle predicate, and we mapped out which of the
 structural properties behind the fast algorithms for $k=3$ extend to larger
-$k$: none of those tied to first far points does. Several questions remain.
+$k$: none of those tied to first far points does in general, but all of them
+do once the far sets are contiguous, which gives a near-linear algorithm for
+unimodal point sets. Several questions remain.
 \begin{enumerate}[leftmargin=*,itemsep=2pt]
 \item \emph{Subcubic algorithms for fixed $k\ge4$.} For $k=3$ the problem is
 solvable in near-linear time. Is there an $O(n^{3-\varepsilon})$ algorithm for
@@ -1124,6 +1398,11 @@ equally plausible.
 $k\le7$ and found blocked $2k$-gons by search in each of these cases. We expect
 that $(\mathrm{TP}_k)$ fails for every $k\ge4$, but have no uniform
 construction.
+\item \emph{Between the arc property and the general case.} Is the greedy
+chain exact for $k=4,5$ when only the points of some solution have contiguous
+far sets? Is $k$-dispersion fixed-parameter tractable in the number $\beta$ of
+excess runs of the far sets (\cref{sec:arc}), so that the near-linear
+algorithm for unimodal sets degrades gracefully towards the cubic one?
 \item \emph{Removing logarithms.} Can the $\log n$ factor of the binary search
 be avoided, for instance by a parametric search over the threshold
 representation, or the $\log k$ factor by amortising the in-circle queries of
@@ -1137,10 +1416,11 @@ values are no longer small integers?
 \end{enumerate}
 
 \paragraph{Reproducibility.}
-The source code, the instance generator, all instances and counterexamples,
+The source code, the instance generators, all instances and counterexamples,
 and the scripts that produce every table and figure of this paper are
-available in the directory \code{convex/} of the project repository;
-\code{convex/README.md} describes how to rebuild everything.
+available in the directories \code{convex/} and \code{arc/} (for
+\cref{sec:arc}) of the project repository; the \code{README.md} files
+describe how to rebuild everything.
 
 \begin{thebibliography}{99}\itemsep=1pt
 

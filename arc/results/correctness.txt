@@ -1,0 +1,23 @@
+PART A/B (n <= 16)
+family instances unimodal radii arc_radii D_checks opt_checks adaptive_ok adaptive_na unchecked_D_tests unchecked_D_wrong
+annulus 300 283 30518 30452 351628 2659 2651 8 916 0
+cocircular 300 300 30074 30074 341528 2666 2666 0 0 0
+disk 300 277 29342 29266 331246 2601 2590 11 946 0
+ellipse 300 33 31366 16442 183156 2708 259 2449 180610 11258
+gauss 300 196 28280 27644 298062 2582 2528 54 7700 0
+jitter 300 283 30758 30676 349176 2698 2691 7 900 0
+pstar 1 0 32 16 112 7 0 7 112 6
+roundcircle 300 300 27462 27462 307062 2493 2493 0 0 0
+square 300 111 31146 28764 325460 2714 2436 278 29572 0
+twochain 300 23 32984 14410 160898 2799 174 2625 224874 19492
+PART C (20 <= n <= 150, DP oracle)
+family instances unimodal O1O2_checks adaptive_ok adaptive_na
+annulus 25 3 30 237 13
+cocircular 25 25 250 250 0
+disk 25 1 10 240 10
+ellipse 25 0 0 0 250
+jitter 24 4 40 227 13
+roundcircle 25 25 250 250 0
+square 2 0 0 14 6
+twochain 25 0 0 0 250
+FAILURES 0
