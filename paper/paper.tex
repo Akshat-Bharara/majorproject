@@ -1174,9 +1174,8 @@ checked by an exact closest-pair computation. \Cref{tab:arcscaling} shows the
 medians over three instances. \textsc{O2} solves instances with a million
 points in about $\arcMillion$ seconds, and its running time grows like
 $n^{\arcSlope}$ between $n=10^3$ and $n=10^6$, compared with
-$n^{\arcSlopeOone}$ for \textsc{O1}. At $n=400$ it is more than four orders of
-magnitude faster than the cubic dynamic program, which of course does not
-need the hypothesis.
+$n^{\arcSlopeOone}$ for \textsc{O1}. At $n=400$ it is between $300$ ($k=4$) and $40\,000$ ($k=64$) times faster
+than the cubic dynamic program, which of course does not need the hypothesis.
 
 \begin{table}[tb]
 \centering
@@ -1194,7 +1193,7 @@ $n$ & $k$ & \textsc{DP} & \textsc{O1} & \textsc{O2} & \textsc{O2}\\
 \end{tabular}
 \end{table}
 
-\section{Experiments}\label{sec:experiments}
+\section{Experiments with the general algorithms}\label{sec:experiments}
 
 \paragraph{Implementation.}
 All algorithms are implemented in C++17 in a single header

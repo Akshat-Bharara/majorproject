@@ -66,7 +66,11 @@ def main():
     # ---- structure at r* ----
     rows = []
     md.append("\n### Structure at r* (20 <= n <= 60, k in {4, 8})\n\n| group | tests | mean fraction of arc-shaped points | mean beta | beta = 0 | greedy chain r*-far | adaptive answers | unchecked O1 = r* |\n|---|---|---|---|---|---|---|---|")
-    for line in open(os.path.join(RES, "probe_stats.txt")).read().splitlines()[1:]:
+    lines = open(os.path.join(RES, "probe_stats.txt")).read().splitlines()[1:]
+    cut = lines.index("--")
+    order = ["beta=0", "beta 1-2", "beta 3-10", "beta 11-40", "beta >40"]
+    lines = lines[:cut + 1] + sorted(lines[cut + 1:], key=lambda l: order.index(l.split("|")[0].strip()))
+    for line in lines:
         if line.startswith("--"):
             rows.append("\\midrule")
             continue

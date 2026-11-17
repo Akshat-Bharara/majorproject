@@ -157,3 +157,25 @@ Instances are in `data/hypothesis_counterexamples.json`.
 | `run_all.sh`, `make_tables.py` | run everything (timing only after all checks pass), build tables |
 | `data/` | generated instances and counterexamples (data only) |
 | `results/` | raw outputs and `tables.md` |
+
+## 6. Results
+
+All numbers below are produced by `./run_all.sh` followed by
+`python3 make_tables.py`; the timing runs start only after every correctness
+check has passed. Full tables: `results/tables.md`.
+
+* **Correctness:** 2,701 instances with n <= 16 (ten families): 2,648,328
+  comparisons of D(r) with exhaustive search at radii where the arc property
+  holds, 23,927 optimum checks for O1/O2/adaptive, 176 instances with
+  20 <= n <= 150 against the capped Delaunay DP, independent Python brute
+  force on 55 exported instances (641 solver values, 23,263 direct checks of
+  Theorem A2). **0 failures.**
+* **Feasibility of large unimodal inputs:** see D2 and `results/feasibility.txt`.
+* **Structure at r\*:** beta = 0 on every hull of a random cloud, every
+  cocircular and every jittered-polygon instance; never on thin ellipses and
+  two-chain lenses. Greedy chains are r\*-far in all tests with beta <= 2 and
+  in 12-58 % of the tests with larger beta.
+* **Scaling (unimodal, medians over 3 instances):** O2 solves n = 10^6 in
+  about 6 s (128-bit distances); log-log slope 1.15 for n = 10^3..10^6. O1 has
+  slope 2.11, the cubic DP 3.16 (n = 100..400). At n = 400, O2 is 300x (k = 4)
+  to 40,000x (k = 64) faster than the DP.
