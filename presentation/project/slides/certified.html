@@ -1,0 +1,19 @@
+<section id="certified" class="alt">
+<div class="head">
+<p class="eyebrow">OUR FIX: USE GREEDY SAFELY</p>
+<h2>A certified algorithm</h2>
+</div>
+<div class="cols">
+<div class="col steps" style="flex:1.2;">
+<div class="step d1"><p class="n">1</p><div class="t"><h3>Cheap lower bound</h3><p>Binary search with the fast greedy search. Every set it outputs is valid, so its value ρ is a lower bound, whether or not Claim 2 holds.</p></div></div>
+<div class="step d2"><p class="n">2</p><div class="t"><h3>One exact check</h3><p>Run our exact decision once, at the next candidate above ρ.</p></div></div>
+<div class="step d3"><p class="n">3</p><div class="t"><h3>Done, or continue exactly</h3><p>If the answer is NO, ρ is optimal, with a certificate. Otherwise continue the binary search with the exact test.</p></div></div>
+</div>
+<div class="col" style="flex:0.8; justify-content:center; gap:28px;">
+<div class="tile"><p class="k">always</p><p class="v">exact</p></div>
+<div class="tile"><p class="k">greedy already optimal on</p><p class="v">807 / 846</p><p class="k">test instances (all misses on thin shapes)</p></div>
+</div>
+</div>
+<p class="footer">[Name 2] · Part 2</p><p class="pg"></p>
+<aside>Since greedy growth is fast but not proved complete, we use it in a way that cannot go wrong. Greedy only ever outputs valid sets, so it gives a lower bound. One exact decision just above that bound either certifies optimality or tells us to keep searching exactly. The answer is always exact, and in 807 of 846 test instances the greedy bound was already optimal, so only one exact decision was needed. Time: O(n² k log n + n³ log k) in that case.</aside>
+</section>

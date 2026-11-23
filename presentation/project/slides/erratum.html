@@ -1,0 +1,19 @@
+<section id="erratum" class="alt">
+<div class="head">
+<p class="eyebrow">FINDING 1</p>
+<h2>A one-character slip in Algorithm 1</h2>
+</div>
+<div class="cols">
+<div class="col" style="flex:1.2; gap:24px;">
+<p class="soft">After a YES at the median radius, the printed pseudocode discards every candidate ≤ 2r — including the median that just passed.</p>
+<p class="code bad">line 23 (printed):&#160; X ← X \ { e | e ≤ 2r }</p>
+<p class="code good">fix:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; X ← X \ { e | e &lt; 2r }</p>
+<p class="soft">The paper’s prose already describes the correct rule (“remove all elements smaller than 2r”). With it, Algorithm 1 was correct on every test.</p>
+</div>
+<div class="col" style="flex:0.8; justify-content:center;">
+<div class="tile orig"><p class="v">59%</p><p class="k">of 8,967 random runs return a wrong value when the pseudocode is followed literally (5,288 runs; 1,478 end with no candidate left)</p></div>
+</div>
+</div>
+<p class="footer">[Name 2] · Part 2</p><p class="pg"></p>
+<aside>Algorithm 1 is the outer binary search over candidate distances. When the decision says YES at the median, the printed line 23 removes all candidates less than or equal to that median, so the feasible median itself is thrown away. Followed literally, the search returns a wrong value in 59 percent of our random runs. The text of the paper describes the correct rule, so this is a typo, and the fix is one character: less-or-equal becomes strictly less. We mention it because anyone implementing from the pseudocode would hit it. (Tip: present this respectfully, as a verification result; it is worth sharing with the authors.)</aside>
+</section>

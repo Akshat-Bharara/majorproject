@@ -1,0 +1,17 @@
+<section id="benchdp">
+<div class="head">
+<p class="eyebrow">MEASURED, SAME INSTANCES</p>
+<h2>Original DP vs. our capped DP (k = 8)</h2>
+</div>
+<div class="legend"><div class="key"><div class="sw-o"></div><p>Original DP, O(n⁴k²)</p></div><div class="key"><div class="sw-u"></div><p>Our capped DP</p></div><p class="small">median time in milliseconds, 9 instances per size</p></div>
+<div class="chart">
+<div class="brow"><p class="blabel">n = 20</p><div class="bars"><div class="bline"><div class="bar-o" style="width:9px;"></div><p class="bval">2.4</p></div><div class="bline"><div class="bar-u" style="width:3px;"></div><p class="bval">0.19</p></div></div></div>
+<div class="brow"><p class="blabel">n = 30</p><div class="bars"><div class="bline"><div class="bar-o" style="width:50px;"></div><p class="bval">14.2</p></div><div class="bline"><div class="bar-u" style="width:3px;"></div><p class="bval">0.64</p></div></div></div>
+<div class="brow"><p class="blabel">n = 40</p><div class="bars"><div class="bline"><div class="bar-o" style="width:148px;"></div><p class="bval">41.9</p></div><div class="bline"><div class="bar-u" style="width:5px;"></div><p class="bval">1.5</p></div></div></div>
+<div class="brow"><p class="blabel">n = 50</p><div class="bars"><div class="bline"><div class="bar-o" style="width:514px;"></div><p class="bval">146</p></div><div class="bline"><div class="bar-u" style="width:12px;"></div><p class="bval">3.4</p></div></div></div>
+<div class="brow"><p class="blabel">n = 60</p><div class="bars"><div class="bline"><div class="bar-o" style="width:900px;"></div><p class="bval">255</p></div><div class="bline"><div class="bar-u" style="width:24px;"></div><p class="bval">6.8 · <b>37× faster</b></p></div></div></div>
+</div>
+<p class="small">Both programs return the same optimum on all 90 instances (disk, circle and thin-lens hulls; k = 4 and 8). The gap grows linearly with n.</p>
+<p class="footer">[Name 1] · Part 1</p><p class="pg"></p>
+<aside>We implemented the original DP exactly as described in Section 4 of the paper and ran it on the same instances as ours. Both always return the same answer, which also confirms that the original DP is correct. At n = 60 and k = 8 the original takes 255 ms and ours 6.8 ms, 37 times faster, and the ratio grows with n because the original is n^4 and ours n^3. Our certified variant (Part 2) is even 160 times faster here. This closes Part 1; over to [Name 2].</aside>
+</section>

@@ -1,0 +1,14 @@
+<section id="certificate">
+<div class="head">
+<p class="eyebrow">KEY TOOL</p>
+<h2>A Delaunay certificate for “far apart”</h2>
+</div>
+<div class="statement d1"><p class="label">THEOREM (DELAUNAY CERTIFICATE)</p><p>A set S in convex position has all pairwise distances ≥ r <b>if and only if</b> S has a triangulation in which (a) every edge has length ≥ r and (b) every diagonal is locally Delaunay.</p></div>
+<div class="cards">
+<div class="card d2"><p class="tag">WHY IT HOLDS</p><p>Locally Delaunay everywhere ⇒ the triangulation is Delaunay. In a Delaunay triangulation of a convex set, the closest pair is always an edge. Short, rigorous proof.</p></div>
+<div class="card d3"><p class="tag">WHY IT HELPS</p><p>Condition (a) looks at one edge, condition (b) at two neighbouring triangles. Both are <b>local</b>, so a dynamic program over chords can check them.</p></div>
+<div class="card d4"><p class="tag">EXACT ARITHMETIC</p><p>“Locally Delaunay” is one in-circle test: a 3×3 determinant on integers that fits in 128 bits. No floating point anywhere.</p></div>
+</div>
+<p class="footer">[Name 1] · Part 1</p><p class="pg"></p>
+<aside>The original DP also uses Delaunay triangulations; this theorem states precisely why that is correct. A set is r-far exactly when it has a triangulation with long edges whose diagonals are all locally Delaunay. Proof idea: local Delaunay everywhere implies global Delaunay (a classical lemma), and in a Delaunay triangulation of a convex set the closest pair is an edge (we prove it with an angle argument). Because both conditions are local, a DP can glue triangles one at a time and only check one edge or one pair of triangles per step.</aside>
+</section>

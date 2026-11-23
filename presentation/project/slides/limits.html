@@ -1,0 +1,13 @@
+<section id="limits">
+<div class="head">
+<p class="eyebrow">HOW FAR DOES IT REACH?</p>
+<h2>Where the hypothesis holds, and where it breaks</h2>
+</div>
+<div class="cards" style="flex:1;">
+<div class="card ours d1"><p class="tag">HOLDS</p><p class="big">5,556 / 5,556</p><p>tests on hulls of random points (disk, square, Gaussian, annulus), cocircular sets and jittered polygons: the arc property held at the optimal radius every time.</p></div>
+<div class="card orig d2"><p class="tag-orig">BREAKS</p><p class="big">0 / 1,600</p><p>tests on thin ellipses and two-chain lenses. Run blindly there, the greedy test is wrong in 8% of cases, so our adaptive mode checks first and answers “not applicable”.</p></div>
+<div class="card d3"><p class="tag">CANNOT BE WEAKENED</p><p>Arc property only for the solution’s points: <b>false</b> for k = 6 (10 points).</p><p>Arc property only at the optimal radius: binary search <b>fails</b> (6 points, k = 4).</p></div>
+</div>
+<p class="footer">[Name 3] · Part 3</p><p class="pg"></p>
+<aside>Is this class relevant? On every hull of random points we generated, and on near-circular sets, the arc property held at the optimal radius: 5,556 of 5,556 tests. On thin ellipses and lenses it never held, and using the greedy test there without checking gives wrong answers 8 percent of the time, which is why our adaptive version checks the property and refuses to answer when it fails. We also tried to weaken the hypothesis, and found small counterexamples for both natural weakenings, independently verified in Python.</aside>
+</section>

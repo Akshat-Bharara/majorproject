@@ -1,0 +1,18 @@
+<section id="benchfpt">
+<div class="head">
+<p class="eyebrow">MEASURED, SAME INSTANCES</p>
+<h2>Original FPT algorithm vs. our certified algorithm</h2>
+</div>
+<table>
+<tr><th style="width:16%;">n = 400</th><th style="width:28%; text-align:right;">Original FPT</th><th style="width:28%; text-align:right;">Ours, certified</th><th style="width:28%; text-align:right;">Result</th></tr>
+<tr><td>k = 4</td><td style="text-align:right;">21 ms</td><td style="text-align:right;">33 ms</td><td style="text-align:right;">original 1.6× faster</td></tr>
+<tr><td>k = 8</td><td style="text-align:right;">197 ms</td><td style="text-align:right;">253 ms</td><td style="text-align:right;">original 1.3× faster</td></tr>
+<tr class="hl"><td>k = 16</td><td style="text-align:right;">45.9 s</td><td style="text-align:right;">0.70 s</td><td style="text-align:right;"><b>ours 65× faster</b></td></tr>
+</table>
+<div class="cards">
+<div class="card d1"><p class="tag">READING THE TABLE</p><p>For small k the search tree is excellent. Its 2^k factor takes over quickly: from k = 8 to k = 16 its time grows 230-fold, ours 3-fold.</p></div>
+<div class="card d2"><p class="tag">SAME ANSWERS</p><p>Medians over 9 instances (disk, circle, thin lens). All 81 runs with n = 100, 200, 400 return the same optimum.</p></div>
+</div>
+<p class="footer">[Name 2] · Part 2</p><p class="pg"></p>
+<aside>An honest comparison. With few points to choose, the original search tree is actually faster than ours, because most branches die immediately. But the 2^k factor is real: going from k = 8 to k = 16 multiplies its time by about 230, while ours grows about 3-fold, so at k = 16 we are 65 times faster. Both always agree on the answer. Over to [Name 3] for Part 3.</aside>
+</section>

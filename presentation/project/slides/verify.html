@@ -1,0 +1,15 @@
+<section id="verify">
+<div class="head">
+<p class="eyebrow">METHOD</p>
+<h2>Every algorithm, checked against brute force</h2>
+</div>
+<div class="tiles">
+<div class="tile d1"><p class="v">3 / 3</p><p class="k">results of the paper re-implemented in C++, with 64-bit and 128-bit integer arithmetic</p></div>
+<div class="tile d2"><p class="v">532,833</p><p class="k">decision tests of the search tree against exhaustive search: 0 wrong</p></div>
+<div class="tile d3"><p class="v">13,951</p><p class="k">optimum tests of the DP of Section 4: 0 wrong</p></div>
+</div>
+<div class="note"><p>Exhaustive search tries every k-subset; an independent Python script repeats the key checks without sharing code. Instances: hulls of random points, circles, thin ellipses and thin “two-chain” lenses.</p></div>
+<p class="lead">Two findings follow: a slip in the pseudocode, and a proof that needs more care.</p>
+<p class="footer">[Name 2] · Part 2</p><p class="pg"></p>
+<aside>Our approach: implement each algorithm exactly as written, then compare with exhaustive search on many small random instances, using exact integers so that ties are handled correctly. The search tree and the DP agreed with brute force on every test we ran. That is good news for the paper. The next two slides show what careful re-implementation revealed beyond that.</aside>
+</section>

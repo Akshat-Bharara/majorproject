@@ -1,0 +1,18 @@
+<section id="newbound">
+<div class="head">
+<p class="eyebrow">NEW BOUNDS FOR THIS SUBPROBLEM</p>
+<h2>From O(n⁴k²) to O(n log² n)</h2>
+</div>
+<table>
+<tr><th style="width:36%;">Task</th><th style="width:32%;">Original paper</th><th style="width:32%;">Ours</th></tr>
+<tr><td>Decision, arc property</td><td>O(2^k n² log n)</td><td>O(n²)</td></tr>
+<tr><td>Decision, unimodal</td><td>O(2^k n² log n)</td><td>O(n log n)</td></tr>
+<tr class="hl"><td>Optimisation, unimodal</td><td>O(2^k n² log² n) or O(n⁴k²)</td><td>O(n log² n) expected</td></tr>
+</table>
+<div class="cards">
+<div class="card d1"><p class="tag">HOW</p><p>Binary search finds each a(q) on a unimodal row. Each row splits at its peak into two sorted lists; a randomised binary search over these 2n lists never builds the n² distances.</p></div>
+<div class="card d2"><p class="tag">HONEST SCOPE</p><p>For points <i>exactly</i> on a circle, O(n) was already known (Akagi et al.). Ours covers every unimodal set and needs no special geometry.</p></div>
+</div>
+<p class="footer">[Name 3] · Part 3</p><p class="pg"></p>
+<aside>This is the subproblem with a better bound. For unimodal inputs, the first far point a(q) is found by binary search on each distance row. Following a chain of k steps is done with repeated squaring in O(n log k). For the optimisation we cannot even afford to list all n² distances, so we treat each row as two sorted lists split at its peak and pick a random candidate pivot each round; the expected number of rounds is logarithmic. Total: expected O(n log² n), versus O(2^k n² log² n) or O(n^4 k^2) in the original paper. To be fair: for points exactly on a circle a linear-time algorithm already existed; our result covers the whole unimodal class, which includes rounded and perturbed circles.</aside>
+</section>

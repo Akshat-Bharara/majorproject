@@ -1,0 +1,19 @@
+<section id="claim2">
+<div class="head">
+<p class="eyebrow">FINDING 2</p>
+<h2>The FPT algorithm rests on Claim 2</h2>
+</div>
+<div class="cols">
+<div class="col steps" style="flex:1.2;">
+<div class="step d1"><p class="n">1</p><div class="t"><h3>Start anywhere</h3><p>Put the first disk on a vertex v. Both ends of the solution start at v.</p></div></div>
+<div class="step d2"><p class="n">2</p><div class="t"><h3>Grow one end</h3><p>Walk clockwise or counter-clockwise from that end; take the first vertex at distance ≥ 2r from every chosen centre.</p></div></div>
+<div class="step d3"><p class="n">3</p><div class="t"><h3>Branch on the side</h3><p>Two choices per step: at most 2^k paths per start vertex, n start vertices.</p></div></div>
+</div>
+<div class="col" style="flex:0.8; gap:28px;">
+<div class="statement d2"><p class="label">CLAIM 2 (PAPER)</p><p>If k disks fit, some start vertex has a path that places all k.</p></div>
+<div class="note orig"><p>The paper’s proof is a picture argument (a Delaunay triangle of three centres, then “the boundary would self-intersect”). It does not say which vertices block which, so it is not a complete proof.</p></div>
+</div>
+</div>
+<p class="footer">[Name 2] · Part 2</p><p class="pg"></p>
+<aside>The FPT algorithm works like this: put a disk on a vertex, then repeatedly extend one of the two ends of the chain of disks, always taking the first vertex that is far enough from everything placed so far. Branch on which end to extend, so 2^k paths per start. Correctness depends on Claim 2: if a solution exists, some start and some sequence of left/right choices finds one. The proof in the paper argues from a figure with three centres and says the boundary would have to self-intersect, but it does not make that argument precise. So we tested the claim as hard as we could.</aside>
+</section>

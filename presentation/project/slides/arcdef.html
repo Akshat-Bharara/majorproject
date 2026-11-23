@@ -1,0 +1,38 @@
+<section id="arcdef">
+<div class="head">
+<p class="eyebrow">THE SPECIAL CASE</p>
+<h2>The arc property</h2>
+</div>
+<div class="cols" style="gap:56px;">
+<div class="col" style="flex:0.95; gap:24px;">
+<div class="statement d1"><p class="label">DEFINITION</p><p>Far(q) = points at distance ≥ r from q. P has the <b>r-arc property</b> if every Far(q) is one contiguous run along the hull.</p></div>
+<p class="soft"><b>Unimodal</b> point sets: walking along the hull from q, the distance to q only rises, then only falls. They have the arc property for every r.</p>
+<p class="soft">Examples: points on or near a circle, and rounded or jittered regular polygons. In our tests, every hull of random points also had the arc property at its optimal radius.</p>
+</div>
+<div class="col" style="flex:1.05; flex-direction:row; gap:32px; align-items:flex-start;">
+<div style="display:flex; flex-direction:column; gap:12px; align-items:center;">
+<svg aria-label="Fourteen points on a circle. From the bottom point q, the points at distance at least r form one contiguous arc at the top, shown in blue." width="400" height="400" viewBox="0 0 400 400"><g transform="scale(0.7692)">
+<circle cx="260" cy="470" r="330" fill="none" stroke="#9FB8D8" stroke-width="3" stroke-dasharray="10 8"/>
+<polygon points="260,470 165,448 88,387 46,299 46,201 88,113 165,52 260,30 355,52 432,113 474,201 474,299 432,387 355,448" fill="none" stroke="#B9B1A2" stroke-width="3"/>
+<g fill="#FFFDF8" stroke="#6B7280" stroke-width="3"><circle cx="165" cy="448" r="11"/><circle cx="88" cy="387" r="11"/><circle cx="46" cy="299" r="11"/><circle cx="474" cy="299" r="11"/><circle cx="432" cy="387" r="11"/><circle cx="355" cy="448" r="11"/></g>
+<g fill="#2F6DB5"><circle cx="46" cy="201" r="13"/><circle cx="88" cy="113" r="13"/><circle cx="165" cy="52" r="13"/><circle cx="260" cy="30" r="13"/><circle cx="355" cy="52" r="13"/><circle cx="432" cy="113" r="13"/><circle cx="474" cy="201" r="13"/></g>
+<circle cx="260" cy="470" r="15" fill="#14213D"/>
+</g></svg>
+<p class="small" style="width:400px; text-align:center;">Circle: Far(q) is one arc (blue). Holds.</p>
+</div>
+<div style="display:flex; flex-direction:column; gap:12px; align-items:center;">
+<svg aria-label="A thin lens of fifteen points. From the point q on the lower chain, the far points form two separate runs: a long one on the right and a single point at the left tip." width="400" height="400" viewBox="0 0 400 400"><g transform="translate(15,0) scale(0.7407)">
+<circle cx="145" cy="306" r="140" fill="none" stroke="#E2B48F" stroke-width="3" stroke-dasharray="10 8"/>
+<polygon points="5,250 75,285 145,306 215,318 285,319 355,311 425,292 500,250 460,220 390,191 320,174 250,170 180,178 110,198 40,230" fill="none" stroke="#B9B1A2" stroke-width="3"/>
+<g fill="#FFFDF8" stroke="#6B7280" stroke-width="3"><circle cx="75" cy="285" r="10"/><circle cx="215" cy="318" r="10"/><circle cx="180" cy="178" r="10"/><circle cx="110" cy="198" r="10"/><circle cx="40" cy="230" r="10"/></g>
+<g fill="#2F6DB5"><circle cx="285" cy="319" r="12"/><circle cx="355" cy="311" r="12"/><circle cx="425" cy="292" r="12"/><circle cx="500" cy="250" r="12"/><circle cx="460" cy="220" r="12"/><circle cx="390" cy="191" r="12"/><circle cx="320" cy="174" r="12"/><circle cx="250" cy="170" r="12"/></g>
+<circle cx="5" cy="250" r="12" fill="#C8641E"/>
+<circle cx="145" cy="306" r="14" fill="#14213D"/>
+</g></svg>
+<p class="small" style="width:400px; text-align:center;">Thin lens: Far(q) splits into two runs (blue and orange). Fails.</p>
+</div>
+</div>
+</div>
+<p class="footer">[Name 3] · Part 3</p><p class="pg"></p>
+<aside>Define Far(q) as the points at distance at least r from q. The arc property says that, for every q, these points are consecutive along the hull. On a circle this is obvious: distance grows as you walk away from q and shrinks as you come back. On a thin lens it fails: from a point on the lower chain, the far points are the right part of the lens and also the left tip, with near points in between. Unimodal sets, where every distance profile rises then falls, have the arc property at every radius. These are exactly the thin shapes where Part 2’s counterexamples live.</aside>
+</section>

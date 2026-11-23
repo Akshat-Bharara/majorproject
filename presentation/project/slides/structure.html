@@ -1,0 +1,17 @@
+<section id="structure">
+<div class="head">
+<p class="eyebrow">GREEDY STRUCTURE</p>
+<h2>True for k = 3, false for k ≥ 4</h2>
+</div>
+<table>
+<tr><th style="width:46%;">Property (a(q) = first far point after q)</th><th style="width:22%;">k = 3</th><th style="width:32%;">k ≥ 4</th></tr>
+<tr><td>Arc characterisation behind the fast k = 3 algorithms</td><td>proved</td><td>fails for every k</td></tr>
+<tr><td>Some solution contains q, a(q), b(q)</td><td>proved</td><td>fails, 8 points</td></tr>
+<tr><td>Some solution contains a “tight pair” q, a(q)</td><td>proved</td><td>fails for k = 4, 5, 6, 7</td></tr>
+<tr><td>One-sided search tree finds a solution</td><td>proved</td><td>fails for k = 4, 5, 6, 7</td></tr>
+<tr class="hl"><td>Two-sided search tree (Claim 2)</td><td>proved</td><td>no failure found · open</td></tr>
+</table>
+<div class="note orig"><p><b>Lesson:</b> the tight-pair property passed 55 million random tests and is still false. We found its counterexamples only by adversarial optimisation. We searched the same way for Claim 2 (about 1,400 annealing runs) and found nothing.</p></div>
+<p class="footer">[Name 2] · Part 2</p><p class="pg"></p>
+<aside>For three points everything works, and we give short proofs. For four or more points, every one-sided property we know fails, with explicit integer counterexamples verified by brute force. The interesting row is the last one: the paper’s two-sided search. It survived half a million random tests and about 1,400 simulated-annealing runs designed to break it. That is evidence, not proof, and the tight-pair row shows why we are careful: it also survived 55 million random tests and is false. So we report Claim 2 as open: likely true, not yet proved.</aside>
+</section>

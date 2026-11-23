@@ -1,0 +1,20 @@
+<section id="capped" class="alt">
+<div class="head">
+<p class="eyebrow">OUR ALGORITHM</p>
+<h2>The capped dynamic program</h2>
+</div>
+<div class="cols">
+<div class="col steps" style="flex:1.25;">
+<div class="step d1"><p class="n">1</p><div class="t"><h3>One table entry per chord</h3><p>The value of a chord depends on the angle allowed by the triangle on its other side, as a step function.</p></div></div>
+<div class="step d2"><p class="n">2</p><div class="t"><h3>Keep only the first k − 2 steps</h3><p>A decision only asks “do k points fit?”, so each chord stores k − 2 apex points instead of a full table.</p></div></div>
+<div class="step d3"><p class="n">3</p><div class="t"><h3>Binary search inside a window</h3><p>A farthest-first greedy value g gives g ≤ r* ≤ min(2g, perimeter / k); only candidates inside are tested.</p></div></div>
+</div>
+<div class="col" style="flex:0.75; justify-content:center; gap:24px;">
+<div class="tile orig"><p class="k">Original DP</p><p class="v">O(n⁴ k²)</p></div>
+<div class="tile"><p class="k">Ours, optimisation</p><p class="v">O(n³ log k log n)</p></div>
+<div class="tile"><p class="k">Ours, one decision · memory</p><p class="v" style="font-size:56px;">O(n³ log k) · O(n²k)</p></div>
+</div>
+</div>
+<p class="footer">[Name 1] · Part 1</p><p class="pg"></p>
+<aside>Three ideas. First, instead of a state for every chord AND every apex (that is what costs n^4), we give each chord a step function of the angle constraint imposed by its parent triangle. Second, capping: we only need to know whether k points fit, so each chord remembers just k−2 thresholds, each stored as the apex point that attains it; comparing them is an in-circle test, and finding how many pass is a binary search, hence the log k. Third, a search window from the farthest-first greedy and the hull perimeter shrinks the binary search. Result: O(n^3 log k log n) versus O(n^4 k^2); memory O(n^2 k).</aside>
+</section>

@@ -1,0 +1,18 @@
+<section id="summary">
+<div class="head">
+<p class="eyebrow">SUMMARY</p>
+<h2>What we add to the original paper</h2>
+</div>
+<table>
+<tr><th style="width:30%;">Original paper</th><th style="width:70%;">This project</th></tr>
+<tr><td>DP, O(n⁴k²)</td><td>Capped DP, O(n³ log k log n); 37× faster at n = 60, gap growing with n</td></tr>
+<tr><td>FPT search tree, O(2^k n² log² n)</td><td>Verified on 532,833 tests; one-sided variant refuted; proved on arc-property inputs, with no branching</td></tr>
+<tr><td>Algorithm 1 (pseudocode)</td><td>One-character fix; as printed, 59% of runs are wrong</td></tr>
+<tr><td>k = 3 approximation, ratio 0.354</td><td>Holds in every test; worst observed 0.61</td></tr>
+<tr class="hl"><td>Special case: none</td><td>Unimodal sets in O(n log² n): one million points in 6.5 s</td></tr>
+<tr><td>—</td><td>Certified algorithm: greedy speed, always exact; 65× faster than the FPT at k = 16</td></tr>
+</table>
+<p class="small">Code, data and every check: project repository, folders convex/, arc/ and sbm/. Full write-up: our report (22 pages).</p>
+<p class="footer">[Name 3] · Conclusion</p><p class="pg"></p>
+<aside>One table for the whole project. Left: what the original paper offers. Right: what we add. A faster exact algorithm; a careful verification with one pseudocode fix and a clear status for Claim 2; a near-linear algorithm for an important special case; and a certified algorithm that is fast like greedy but always exact.</aside>
+</section>

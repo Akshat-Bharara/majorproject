@@ -1,0 +1,19 @@
+<section id="landscape">
+<div class="head">
+<p class="eyebrow">STATE OF THE ART</p>
+<h2>Exact algorithms in convex position</h2>
+</div>
+<table>
+<tr><th style="width:44%;">Reference</th><th style="width:26%;">Time</th><th style="width:30%;">Remarks</th></tr>
+<tr><td>Kobayashi et al., IEICE 2022</td><td>O(n²)</td><td>only k = 3</td></tr>
+<tr><td>Tkachenko &amp; Wang, STACS 2025</td><td>O(n^3.5 log n)</td><td>any k</td></tr>
+<tr class="hlo"><td>Singireddy, Basappa, Mitchell, DAM 2026</td><td>O(2^k n² log² n)</td><td>FPT search tree</td></tr>
+<tr class="hlo"><td>Singireddy, Basappa, Mitchell, DAM 2026</td><td>O(n⁴ k²)</td><td>Delaunay DP</td></tr>
+<tr><td>Tkachenko &amp; Wang, SWAT 2026</td><td>O(n³ log² n)</td><td>via independent sets</td></tr>
+<tr class="hl"><td>This project</td><td>O(n³ log k log n)</td><td>any k, simple, exact</td></tr>
+<tr class="hl"><td>This project, unimodal inputs</td><td>O(n log² n)</td><td>expected time</td></tr>
+</table>
+<p class="small">Orange rows: the original paper we build on. Blue rows: our results. Times are for the optimisation problem.</p>
+<p class="footer">[Name 1] · Part 1</p><p class="pg"></p>
+<aside>Brief tour of the literature. The original paper (orange) gave the first FPT algorithm and an O(n^4 k^2) dynamic program; its conference version appeared at CALDAM 2023. Tkachenko and Wang later gave faster algorithms using different techniques. Our main exact algorithm is O(n^3 log k log n), which beats O(n^4 k^2) by a factor of about n·k² and the SWAT 2026 bound by a factor log n / log k. For unimodal inputs we get near-linear time. Note: please double-check these bounds against the papers before the final presentation.</aside>
+</section>

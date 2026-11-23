@@ -1,0 +1,14 @@
+<section id="approx3" class="alt">
+<div class="head">
+<p class="eyebrow">THE THIRD RESULT, TESTED</p>
+<h2>The k = 3 approximation keeps its promise</h2>
+</div>
+<div class="tiles">
+<div class="tile orig d1"><p class="k">proved in the paper</p><p class="v">0.354</p><p class="k">ratio 1/(2√2), in O(log n) time</p></div>
+<div class="tile d2"><p class="k">worst on 20,000 random inputs</p><p class="v">0.73</p><p class="k">never below the bound</p></div>
+<div class="tile d3"><p class="k">worst found by adversarial search</p><p class="v">0.61</p><p class="k">simulated annealing on 6 and 8 points</p></div>
+</div>
+<div class="note"><p>The guarantee held in every test, but the gap between 0.354 and 0.61 suggests the analysis is not tight. A sharper ratio for the same O(log n) algorithm is a natural next step.</p></div>
+<p class="footer">[Name 3] · Part 3</p><p class="pg"></p>
+<aside>The third result of the paper is an O(log n)-time approximation for k = 3 using the four extreme points. We implemented it and compared its answer with the exact optimum. The proven ratio is about 0.354. On 20,000 random inputs the worst ratio was 0.73, and even an adversarial search designed to make it fail only got down to 0.61. So the guarantee is safe, and it looks like a better ratio could be proved. We leave that as an open question.</aside>
+</section>

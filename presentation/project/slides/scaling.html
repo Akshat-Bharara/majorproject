@@ -1,0 +1,19 @@
+<section id="scaling" class="alt">
+<div class="head">
+<p class="eyebrow">MEASURED</p>
+<h2>From a thousand to a million points</h2>
+</div>
+<div class="tiles">
+<div class="tile d1"><p class="k">n = 1,000</p><p class="v">2 ms</p></div>
+<div class="tile d2"><p class="k">n = 10,000</p><p class="v">31 ms</p></div>
+<div class="tile d3"><p class="k">n = 100,000</p><p class="v">0.5 s</p></div>
+<div class="tile d4"><p class="k">n = 1,000,000</p><p class="v">6.5 s</p></div>
+</div>
+<p class="lead">10× more points costs about 14× more time — a measured growth of n^1.15.</p>
+<div class="cards">
+<div class="card orig"><p class="tag-orig">FOR COMPARISON</p><p>Sorting all distances (O(n² log n)) takes 3.1 s at n = 10,000. The cubic DP takes up to 16 s at just n = 400.</p></div>
+<div class="card"><p class="tag">CHECKED</p><p>Every instance verified unimodal by an exact test; every answer checked by an exact closest-pair computation. Medians over 3 instances and 4 values of k.</p></div>
+</div>
+<p class="footer">[Name 3] · Part 3 · n ≥ 100,000 uses 128-bit distances (circle of radius 2^60); smaller n fit 64-bit coordinates.</p><p class="pg"></p>
+<aside>The near-linear bound shows in practice. One million points take about six and a half seconds; each tenfold increase in n costs about fourteen times more time, slope 1.15 on a log-log plot. For contrast, the general cubic DP needs up to 16 seconds for only 400 points. A technical note: integer coordinates up to 2^29 cannot hold a million points on a convex unimodal curve, so for the two largest sizes we use a bigger circle with 128-bit squared distances; the code is the same template.</aside>
+</section>

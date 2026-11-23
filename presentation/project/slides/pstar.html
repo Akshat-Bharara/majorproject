@@ -1,0 +1,39 @@
+<section id="pstar" class="alt">
+<div class="head">
+<p class="eyebrow">TESTING CLAIM 2</p>
+<h2>Growing in one direction is not enough</h2>
+</div>
+<div class="cols" style="gap:56px;">
+<div class="col" style="flex:1.15; align-items:center; justify-content:center;">
+<div style="position:relative; width:960px; height:440px;">
+<svg aria-label="Eight points in convex position. The four blue points p0, p2, p4, p6 form the only optimal 4-set. Each white point is the first far point after a blue point but is too close to another blue point, shown by dashed orange lines." width="960" height="440" viewBox="0 0 960 440" style="position:absolute; left:0; top:0;">
+<polygon points="544,28 148,116 24,148 360,376 416,412 812,324 936,292 600,64" fill="#F7F5EF" stroke="#B9B1A2" stroke-width="3"/>
+<polygon points="544,28 24,148 416,412 936,292" fill="none" stroke="#2F6DB5" stroke-width="4"/>
+<line x1="544" y1="28" x2="416" y2="412" stroke="#2F6DB5" stroke-width="6"/>
+<line x1="24" y1="148" x2="936" y2="292" stroke="#2F6DB5" stroke-width="2"/>
+<g stroke="#C8641E" stroke-width="4" stroke-dasharray="12 9">
+<line x1="148" y1="116" x2="416" y2="412"/><line x1="812" y1="324" x2="544" y2="28"/><line x1="360" y1="376" x2="544" y2="28"/><line x1="600" y1="64" x2="416" y2="412"/>
+</g>
+<g fill="#FFFDF8" stroke="#14213D" stroke-width="3"><circle cx="148" cy="116" r="11"/><circle cx="360" cy="376" r="11"/><circle cx="812" cy="324" r="11"/><circle cx="600" cy="64" r="11"/></g>
+<g fill="#2F6DB5"><circle cx="544" cy="28" r="14"/><circle cx="24" cy="148" r="14"/><circle cx="416" cy="412" r="14"/><circle cx="936" cy="292" r="14"/></g>
+</svg>
+<p class="small" style="position:absolute; left:566px; top:0px; width:60px; color:#14213D;">p0</p>
+<p class="small" style="position:absolute; left:110px; top:66px; width:60px; color:#14213D;">p1</p>
+<p class="small" style="position:absolute; left:0px; top:170px; width:60px; color:#14213D;">p2</p>
+<p class="small" style="position:absolute; left:296px; top:384px; width:60px; color:#14213D;">p3</p>
+<p class="small" style="position:absolute; left:438px; top:400px; width:60px; color:#14213D;">p4</p>
+<p class="small" style="position:absolute; left:770px; top:340px; width:60px; color:#14213D;">p5</p>
+<p class="small" style="position:absolute; left:900px; top:236px; width:60px; color:#14213D;">p6</p>
+<p class="small" style="position:absolute; left:620px; top:40px; width:60px; color:#14213D;">p7</p>
+</div>
+</div>
+<div class="col" style="flex:0.85; gap:24px;">
+<p class="soft">8 integer points, r² = 10,240. The <b>only</b> optimal 4-set is {p0, p2, p4, p6} (blue).</p>
+<p class="soft">From every blue point, the first far point in the hull order p0 → p1 → … → p7 is white — and each white point is too close to another blue point (dashed).</p>
+<div class="note orig"><p>So a search that always extends the same way, or starts from a point and its first far neighbour, fails from every start.</p></div>
+<div class="note"><p>The paper’s two-sided search succeeds here. A proof of Claim 2 must therefore use both directions.</p></div>
+</div>
+</div>
+<p class="footer">[Name 2] · Part 2</p><p class="pg"></p>
+<aside>This 8-point set is our key example; every number can be checked by hand from the distance table in our report. Only one 4-subset is r-far: the four blue points. If you start at a blue point and step counter-clockwise, the first point at distance at least r is the white one next to it, and that white point is too close to the opposite blue point. So every one-directional greedy run fails. The original algorithm extends in both directions and does succeed here. What we learn: Claim 2 cannot be proved by a one-sided argument; both directions are essential.</aside>
+</section>

@@ -1,0 +1,30 @@
+<section id="problem">
+<div class="head">
+<p class="eyebrow">THE PROBLEM</p>
+<h2>Pick k points that are as far apart as possible</h2>
+</div>
+<div class="cols">
+<div class="col" style="flex:1.1;">
+<div class="statement d1"><p class="label">K-DISPERSION</p><p>Given n points in convex position and an integer k, choose k of them so that the smallest distance between two chosen points, δ(S), is as large as possible.</p></div>
+<div class="note d2"><p><b>Example from the paper:</b> place k oil-storage plants on the coast of a convex island so that an accident at one plant cannot reach another.</p></div>
+<div class="note d3"><p><b>Why convex position?</b> For general point sets the problem is NP-hard. On the boundary of a convex region it becomes polynomial.</p></div>
+</div>
+<div class="col" style="flex:0.9; align-items:center; justify-content:center;">
+<svg aria-label="A convex polygon with ten vertices; four of them are chosen and joined, and the shortest of the six chosen distances is highlighted" width="620" height="547" viewBox="0 0 620 547"><g transform="scale(0.9118)">
+<polygon points="40,280 100,135 235,55 415,35 585,95 650,245 615,410 455,520 235,530 85,440" fill="#ECE7DC" stroke="#B9B1A2" stroke-width="3"/>
+<g stroke="#9FB8D8" stroke-width="3">
+<line x1="40" y1="280" x2="415" y2="35"/><line x1="235" y1="530" x2="40" y2="280"/><line x1="650" y1="245" x2="235" y2="530"/>
+<line x1="40" y1="280" x2="650" y2="245"/><line x1="415" y1="35" x2="235" y2="530"/>
+</g>
+<line x1="415" y1="35" x2="650" y2="245" stroke="#C8641E" stroke-width="6"/>
+<g fill="#F7F5EF" stroke="#6B7280" stroke-width="3">
+<circle cx="100" cy="135" r="10"/><circle cx="235" cy="55" r="10"/><circle cx="585" cy="95" r="10"/><circle cx="615" cy="410" r="10"/><circle cx="455" cy="520" r="10"/><circle cx="85" cy="440" r="10"/>
+</g>
+<g fill="#2F6DB5"><circle cx="40" cy="280" r="15"/><circle cx="415" cy="35" r="15"/><circle cx="650" cy="245" r="15"/><circle cx="235" cy="530" r="15"/></g>
+</g></svg>
+<p class="small" style="width:640px; text-align:center;">Blue: a chosen set with k = 4. Orange: its smallest distance δ(S), the value we maximise.</p>
+</div>
+</div>
+<p class="footer">[Name 1] · Part 1</p><p class="pg"></p>
+<aside>Definition: we have n points on the boundary of a convex polygon. We choose k of them. The quality of a choice is the smallest distance between two chosen points; we want to maximise it. The optimal value is called r-star. Application from the original paper: oil plants on a convex island’s coast. In general position the problem is NP-hard; in convex position it can be solved in polynomial time, and the question is how fast.</aside>
+</section>

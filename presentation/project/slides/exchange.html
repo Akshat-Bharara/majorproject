@@ -1,0 +1,13 @@
+<section id="exchange" class="alt">
+<div class="head">
+<p class="eyebrow">OUR THEOREM</p>
+<h2>Under the arc property, greedy is exact</h2>
+</div>
+<div class="cards">
+<div class="card d1"><p class="tag">EXCHANGE LEMMA</p><p>If S is r-far and s, s′ are consecutive in S, then replacing s′ by a(s) keeps S r-far.</p><p><b>Proof:</b> any other t ∈ S sees s and s′ as far; Far(t) is an arc, so it contains everything between them — including a(s).</p></div>
+<div class="card d2"><p class="tag">GREEDY-CHAIN THEOREM</p><p>An r-far k-set exists <b>iff</b> for some q the chain q, a(q), a(a(q)), … of k points does not wrap around and its two ends are ≥ r apart.</p><p>One chain test per q; no branching.</p></div>
+</div>
+<div class="statement d3"><p class="label">CONSEQUENCE FOR THE ORIGINAL PAPER</p><p>On these inputs Claim 2 is a theorem: the all-counter-clockwise path of the search tree always succeeds, so the 2^k branching factor disappears.</p></div>
+<p class="footer">[Name 3] · Part 3</p><p class="pg"></p>
+<aside>The core is a three-line exchange argument. Take any valid set and two consecutive chosen points s and s′. The first far point after s, called a(s), lies between them. Any other chosen point t sees both s and s′ as far, and because Far(t) is a contiguous arc, it also sees everything between them as far, including a(s). So we can slide each chosen point back to the greedy choice, one at a time. Result: a solution exists if and only if some greedy chain closes up. This proves Claim 2 of the original paper on this class, and even shows branching is unnecessary. Every step was also checked against brute force: more than 2.6 million comparisons, zero failures.</aside>
+</section>

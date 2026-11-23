@@ -1,0 +1,14 @@
+<section id="original" class="alt">
+<div class="head">
+<p class="eyebrow">THE ORIGINAL PAPER</p>
+<h2>Three results in Singireddy, Basappa and Mitchell</h2>
+</div>
+<div class="cards" style="flex:1;">
+<div class="card orig d1"><p class="tag-orig">RESULT 1 · SECTION 3</p><h3>Bounded search tree</h3><p>Grow a solution along the boundary in both directions, branching at each step.</p><p class="big">O(2^k n² log² n)</p><p>Fixed-parameter tractable in k.</p></div>
+<div class="card orig d2"><p class="tag-orig">RESULT 2 · SECTION 4</p><h3>Delaunay dynamic program</h3><p>The optimal set’s Delaunay triangulation is built triangle by triangle.</p><p class="big">O(n⁴ k²)</p><p>Exact for every k.</p></div>
+<div class="card orig d3"><p class="tag-orig">RESULT 3 · SECTION 5</p><h3>Approximation for k = 3</h3><p>Uses only the four extreme points and a few binary searches.</p><p class="big">O(log n)</p><p>Ratio 1/(2√2) ≈ 0.354.</p></div>
+</div>
+<div class="note"><p><b>Our project:</b> result 2 → a faster DP (Part 1) · results 1–3 → re-implemented and verified (Part 2) · result 1 → exact without branching for a special class (Part 3).</p></div>
+<p class="footer">[Name 1] · Part 1</p><p class="pg"></p>
+<aside>The original paper has three results. One: a bounded search tree that places disks along the boundary, branching left or right; this gives an FPT algorithm, exponential only in k. Two: a dynamic program over Delaunay triangulations, exact for any k, in O(n^4 k^2). Three: a very fast approximation for k = 3. The bottom line maps each result to the part of our talk that improves or examines it.</aside>
+</section>
