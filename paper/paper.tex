@@ -92,7 +92,7 @@ $k\ge4$, and the weakest property of this kind---some solution contains a
 radius. The counterexample for $k=4$ has eight points and can be checked by
 hand. Finally, we study the two-sided bounded search tree of Singireddy,
 Basappa and Mitchell, whose correctness rests on an informally proved claim.
-We prove the claim for $k\le 3$ and under the arc property below, prove that
+We prove the claim for $k\le 4$ and under the arc property, prove that
 the first step of the search can always be made safely, and show that the
 natural choices of the starting point (an endpoint of a closest pair, or a
 vertex of smallest angle) do not work in general.
@@ -208,7 +208,8 @@ of~\cite{sbm} grows a solution from a single point in both directions. Its
 correctness rests on a claim whose published proof is informal. We prove an
 attachment lemma that certifies individual steps, show via Delaunay ears that
 the first step can always be made safely (\cref{thm:firststep}), prove the
-claim under the arc property, and show that the claim cannot be proved by
+claim for $k\le4$ (\cref{thm:sbm4}) and under the arc property, and show
+that the claim cannot be proved by
 fixing the starting point to an endpoint of a closest pair or to a vertex of
 smallest angle (\cref{prop:rootrules}). We state a sharper conjecture that
 is supported by more than $10^7$ exact tests.
@@ -1009,7 +1010,113 @@ satisfies the hypothesis of \cref{lem:attach}.
 
 For $k=3$ a safe first step leaves a single point to add, and the next step
 is trivially safe, so $(\mathrm{SBM}_3)$ follows; this is a short proof of a
-special case of \cref{thm:k3}. Under the arc property the claim holds in a
+special case of \cref{thm:k3}.
+
+\paragraph{Four points.}
+For $k=4$ the claim holds. The proof needs two geometric lemmas.
+
+\begin{lemma}\label{lem:opposite}
+Let $p,q,s,t$ be in convex position in this ccw order. If
+$|qs|\ge\max\{|ps|,|qt|\}$, then the interior angles of the quadrilateral at
+$p$ and $t$ sum to at least $\pi$.
+\end{lemma}
+\begin{proof}
+In the triangle $pqs$, $|qs|\ge|ps|$ gives $\ang qps\ge\ang pqs$; in the
+triangle $qst$, $|qs|\ge|qt|$ gives $\ang qts\ge\ang qst$. The interior angle
+at $p$ is at least $\ang qps$ and the one at $t$ at least $\ang qts$, while
+the interior angles at $q$ and $s$ are $\ang pqs$ and $\ang qst$. Hence
+$\ang p+\ang t\ge\ang q+\ang s=2\pi-\ang p-\ang t$.
+\end{proof}
+
+\begin{lemma}\label{lem:core}
+There are no points $a,X,Y,c,d$ in strictly convex position in this ccw order
+with $|aX|,|ad|,|cd|\ge r$ and $|aY|,|Xd|<r$.
+\end{lemma}
+\begin{proof}
+The chords $aY$ and $Xd$ cross, so by (Q) applied to $a,X,Y,d$,
+$|Yd|<|aY|+|Xd|-|aX|<r$. Write $\alpha_1=\ang cYd$, $\alpha_2=\ang dYa$,
+$\alpha_3=\ang aYX$, $\varepsilon_1=\ang Yad$, $\varepsilon_2=\ang XaY$,
+$\eta=\ang adX$, $\mu=\ang XdY$, $\delta_1=\ang Ydc$, $\gamma=\ang Ycd$,
+$\lambda=\ang YXd$, $\zeta=\ang dXa$ and $\xi=\ang aXY$. By (A),
+$\ang aXY=\lambda+\zeta$, $\ang adY=\eta+\mu$, $\ang XYd=\alpha_2+\alpha_3$
+and $\ang Xad=\varepsilon_1+\varepsilon_2$. We use: convexity at $Y$,
+$\alpha_1+\alpha_2+\alpha_3<\pi$; the angle sums of the triangles $XYd$,
+$aXd$, $aYd$, $Ycd$, $acd$; and, comparing opposite sides,
+$\xi<\alpha_3$ (triangle $aXY$: $|aY|<|aX|$),
+$\gamma<\alpha_1$ (triangle $Ycd$: $|Yd|<|cd|$),
+$\eta+\mu<\alpha_2$ (triangle $aYd$: $|aY|<|ad|$), and
+$\varepsilon_1+\varepsilon_2<\min\{\eta,\zeta\}$ (triangle $aXd$:
+$|Xd|<|aX|,|ad|$), which gives $\varepsilon_1+\varepsilon_2<\pi/3$.
+
+From the triangles $XYd$ and $aXd$,
+$\xi+\eta+\mu=(\lambda+\mu)+(\zeta+\eta)
+=(\pi-\alpha_2-\alpha_3)+(\pi-\varepsilon_1-\varepsilon_2)$, hence with
+$\xi<\alpha_3$,
+\[\eta+\mu>2\pi-\alpha_2-2\alpha_3-\varepsilon_1-\varepsilon_2.\]
+In the triangle $acd$ the angle at $d$ is $\eta+\mu+\delta_1<\pi$, and in
+$Ycd$, $\delta_1=\pi-\alpha_1-\gamma>\pi-2\alpha_1$; so $\eta+\mu<2\alpha_1<
+2(\pi-\alpha_2-\alpha_3)$. Together, $\alpha_2<\varepsilon_1+\varepsilon_2$.
+Finally, in the triangle $aYd$,
+$\pi-\varepsilon_1=\alpha_2+(\eta+\mu)<2\alpha_2<2\varepsilon_1+2\varepsilon_2$,
+so $\pi<3(\varepsilon_1+\varepsilon_2)<\pi$, a contradiction.
+\end{proof}
+
+\begin{theorem}\label{thm:sbm4}
+$(\mathrm{SBM}_4)$ holds: if $P$ has an $r$-far $4$-set $T$, the two-sided
+search succeeds from a vertex of $T$, and even a witness-preserving search does.
+\end{theorem}
+\begin{proof}
+Let $T=(a,b,c,d)$ in ccw order. Call $(u,v)$ a \emph{good pair} if $u,v$ are
+hull neighbours in $T$ and $u$ is a nearest neighbour of $v$ in $T$. Start at
+$u$ and step towards $v$; by \cref{lem:attach} the step is safe. Let $w$ be
+the other neighbour of $u$ and $z$ the other neighbour of $v$; they are the
+two remaining witness points, and $wz$ is an edge of $T$. By \cref{lem:attach},
+applied with the chosen point $u$, one of the two next steps is safe unless $|wz|<|uw|$ and
+$|wz|<|uz|$; after a safe second step one witness point remains, and the last
+step always succeeds. So it suffices to find a good pair whose opposite edge
+$wz$ is not the strictly shortest side of the triangle $uwz$.
+
+Let a closest pair of $T$ be given. If it is a diagonal, say $ac$, then $ac$
+is the diagonal of every Delaunay triangulation of $T$ (\cref{lem:closest}),
+so $b$ is an ear and by \cref{lem:nnadjacent} a nearest neighbour of $b$ is
+$a$ or $c$. For the good pair $(a,b)$ the triangle is $adc$ and $|dc|\ge|ac|$;
+for $(c,b)$ it is $cda$ and $|da|\ge|ca|$. Either way we are done. If the
+closest pair is an edge, say $ab$, then $(a,b)$ and $(b,a)$ are good pairs,
+with triangles $adc$ and $bcd$. Unless $|cd|<|ad|,|ac|,|bc|,|bd|$, we are done.
+In that remaining case $|ab|\le|cd|$, so $|ab|$ and $|cd|$ are both strictly
+smaller than $|ac|,|ad|,|bc|,|bd|$, and $(a,b)$ and $(c,d)$ are good pairs.
+
+Suppose that both searches get stuck after their first step. For the root
+$a$, let $x\in(a,b]$ be the first point added; the witness is
+$\{a,x,c,d\}$, and being stuck means: the next ccw point $X\in(x,c)$, the
+first point after $x$ at distance at least $r$ from $a$ and $x$, satisfies
+$|Xd|<r$; the next cw point $Y\in(d,a)$ satisfies $|Yc|<r$, and $|Ya|\ge r$.
+Likewise for the root $c$, with first point $x'\in(c,d]$: the next ccw point
+$X'\in(x',a)$ has $|X'c|\ge r$ and $|X'b|<r$, and the next cw point
+$Y'\in(b,c)$ has $|Y'a|<r$.
+
+First, $X\in(b,c)$: $X\ne b$ because $|bd|\ge r>|Xd|$, and if $X$ lay before
+$b$, then (Q) for $a,X,b,d$ would give $|ab|>|bd|+(|aX|-|Xd|)>|bd|$, contrary
+to $|ab|<|bd|$. Symmetrically $X'\in(d,a)$, using $|cd|<|bd|$. Second, $Y'$
+precedes $X$ in $(b,c)$: otherwise $a,X,Y',c,d$ would contradict
+\cref{lem:core}. Symmetrically, $Y$ precedes $X'$ in $(d,a)$ (apply
+\cref{lem:core} to $c,X',Y,a,b$). Hence the eight points
+$a,b,Y',X,c,d,Y,X'$ are in convex position in this order.
+
+Apply \cref{lem:opposite} to $X',a,b,Y'$ (with $|ab|\ge r>|X'b|,|aY'|$) and to
+$X,c,d,Y$ (with $|cd|\ge r>|Xd|,|cY|$): in these two quadrilaterals the angles
+at $X'$ and $Y'$, and at $X$ and $Y$, sum to at least $\pi$ each. The octagon
+is the union of these two quadrilaterals and the quadrilateral
+$Y',X,Y,X'$, glued along $X'Y'$ and $XY$. Its interior angles at
+$Y',X,Y,X'$ are therefore the sums of the corresponding angles of the pieces,
+and they add up to at least $\pi+\pi+2\pi=4\pi$. But each is smaller than
+$\pi$, a contradiction. So one of the two searches has a safe second step.
+\end{proof}
+
+We also checked \cref{thm:sbm4} and its case analysis computationally: on
+$2.9\cdot10^7$ pairs $(T,r)$ from random and perturbed thin instances, some good
+pair led to success, and in the $9.5\cdot10^6$ instances of the last case one of
+the roots $a$ and $c$ did. Under the arc property the claim holds in a
 strong form.
 
 \begin{proposition}\label{prop:sbmarc}
@@ -1063,6 +1170,8 @@ For every $r$-far $k$-set $T$ there is a vertex $q\in T$ from which a
 witness-preserving search reaches $k$ points.
 \end{conjecture}
 
+\noindent By \cref{thm:sbm4} the conjecture holds for $k\le4$.
+
 We tested \cref{conj:sbm} on more than $1.2\cdot10^7$ pairs $(T,r)$ from random
 convex sets with up to $12$ points and $k\le7$, and under simulated annealing
 that minimises the number of good vertices for $k\le7$ and up to $14$
@@ -1072,8 +1181,9 @@ which both first steps are unsafe. The two-sided search itself
 ($(\mathrm{SBM}_k)$) succeeded in all $532{,}833$ random decision tests of our
 re-implementation and in about $3{,}000$ annealing runs designed to break it,
 for $k\le10$. So a proof must choose the root with care;
-\cref{prop:rootrules} rules out the obvious choices. We leave \cref{conj:sbm} and $(\mathrm{SBM}_k)$ open; until they are settled, the
-bound $O(2^kn^2\log^2n)$ of~\cite{sbm} should be regarded as conditional, and
+\cref{prop:rootrules} rules out the obvious choices. We leave \cref{conj:sbm} and $(\mathrm{SBM}_k)$ open for $k\ge5$; until they are
+settled, the bound $O(2^kn^2\log^2n)$ of~\cite{sbm} should be regarded as
+conditional for $k\ge5$, and
 \cref{alg:certified} below uses the search only as a sound heuristic.
 
 \subsection{A certified algorithm}\label{sec:certified}
@@ -1583,8 +1693,8 @@ do once the far sets are contiguous, which gives a near-linear algorithm for
 unimodal point sets. Several questions remain.
 \begin{enumerate}[leftmargin=*,itemsep=2pt]
 \item \emph{The two-sided search tree.} Prove $(\mathrm{SBM}_k)$, or the
-stronger \cref{conj:sbm}. \Cref{lem:attach,thm:firststep} handle the first
-step; the difficulty is that replaced points move away from the remaining
+stronger \cref{conj:sbm}, for $k\ge5$. \Cref{lem:attach,thm:firststep} handle the first
+step and \cref{thm:sbm4} the case $k=4$; the difficulty in general is that replaced points move away from the remaining
 witness points, so the attachment condition is not inherited, and
 \cref{prop:rootrules} shows that the root must be chosen with more care than
 by distances or angles alone.

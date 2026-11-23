@@ -8,10 +8,11 @@ Tools behind Section 6.3 of `../paper/paper.pdf`.
 | `strat.cpp`, `strat2.cpp` | the witness-preserving search (only safe steps); root rules |
 | `stuck.cpp` | classification of stuck states (both steps unsafe) |
 | `hunt_cp.cpp`, `hunt_sa.cpp`, `anneal_stuck.cpp`, `anneal_global.cpp` | simulated annealing against the root rules |
+| `k4check.cpp` | computational check of the proof of Theorem 23 (k = 4) and of its last case |
 | `firststep.cpp` | sanity test of Lemma 18 / Theorem 20 (attachment, safe first step) |
 | `check_roots.py`, `data/root_rule_instances.json` | independent exact check of Proposition 22 and of a vertex with no safe first step |
 
-Status: Claim 2 is proved for k <= 3 and under the arc property; the first
+Status: Claim 2 is proved for k <= 4 (Theorem 23) and under the arc property; the first
 step can always be made safe (Theorem 20). The general claim and the sharper
 Conjecture 23 remain open; natural root rules (closest-pair endpoint, smallest
 angle, globally smallest angle) provably do not work (Proposition 22).
