@@ -1,0 +1,11 @@
+sh_4_10.out: none; best score 3020
+sh_4_8.out: none; best score 4008
+sh_4_9.out: none; best score 3020
+sh_5_10.out: none; best score 4010
+sh_5_8.out: none; best score 4028
+sh_5_9.out: none; best score 4026
+sh2_6.out: none; best score 3082
+sh2_7.out: none; best score 2008
+sh3_6_13.out: none; best score 3082
+sh3_6_15.out: none; best score 4008
+sh3_6_18.out: none; best score 3058

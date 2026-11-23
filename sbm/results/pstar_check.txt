@@ -1,0 +1,3 @@
+P* : exhaustive optimum (2 r_max)^2 = 10240 set (0, 2, 4, 6)
+     SBM decision at the optimum      : [0, 2, 4, 6]
+     SBM Algorithm 1 returns (2r)^2   = 10240
