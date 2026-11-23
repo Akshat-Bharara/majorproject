@@ -212,7 +212,7 @@ def main():
              ("V3", "$(\\mathrm{ST}'_k)$ search tree, 3-point seed"),
              ("V5", "$(\\mathrm{AG}_k)$ alternating greedy"),
              ("C1", "$(\\mathrm{TP}_k)$ tight pair"),
-             ("V4", "$(\\mathrm{ST}_k)$ search tree")]
+             ("V4", "$(\\mathrm{ST}_k)$ seeded search tree")]
     lines = []
     for key, label in names:
         if key not in tot:

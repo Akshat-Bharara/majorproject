@@ -9,3 +9,7 @@ sh2_7.out: none; best score 2008
 sh3_6_13.out: none; best score 3082
 sh3_6_15.out: none; best score 4008
 sh3_6_18.out: none; best score 3058
+big_10_20.out: none; best score 4096
+big_8_16.out: none; best score 4034
+big_8_20.out: none; best score 4038
+big_9_18.out: none; best score 4068

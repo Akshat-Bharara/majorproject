@@ -22,6 +22,7 @@
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
 \theoremstyle{definition}
 \newtheorem{definition}[theorem]{Definition}
 \theoremstyle{remark}
@@ -89,8 +90,12 @@ that each of them fails for $k\ge 4$: the arc characterisation fails for every
 $k\ge4$, and the weakest property of this kind---some solution contains a
 \emph{tight pair} $\{q,a(q)\}$---fails for $k=4,5,6,7$, even at the optimal
 radius. The counterexample for $k=4$ has eight points and can be checked by
-hand. It refutes a conjecture that had survived more than $5.5\cdot 10^{7}$
-exact randomised tests, and was found only by adversarial optimisation.
+hand. Finally, we study the two-sided bounded search tree of Singireddy,
+Basappa and Mitchell, whose correctness rests on an informally proved claim.
+We prove the claim for $k\le 3$ and under the arc property below, prove that
+the first step of the search can always be made safely, and show that the
+natural choices of the starting point (an endpoint of a closest pair, or a
+vertex of smallest angle) do not work in general.
 
 \emph{(3) When greedy is exact.} The counterexamples are thin polygons. We
 show that thinness is the only obstruction: if for every point $q$ the points
@@ -146,7 +151,7 @@ known~\cite{kobayashi,tw25}.
 \toprule
 Reference & Time & Remarks\\
 \midrule
-Singireddy, Basappa, Mitchell~\cite{sbm} & $O(2^k n^2\log^2 n)$ & bounded search tree\\
+Singireddy, Basappa, Mitchell~\cite{sbm} & $O(2^k n^2\log^2 n)$ & search tree; see \cref{sec:sbm}\\
 Singireddy, Basappa, Mitchell~\cite{sbm} & $O(n^4k^2)$ & first polynomial algorithm\\
 Tkachenko, Wang~\cite{tw25} & $O(n^{7/2}\log n)$ & cuttings; $O(n^{37/11}\log n)$ expected\\
 Tkachenko, Wang~\cite{tw26} & $O(n^3\log^2 n)$ & via weighted independent set of disks\\
@@ -194,12 +199,19 @@ characterisation behind the $k=3$ algorithms holds
 for every $k\ge4$ (\cref{prop:gk}), and there are point sets in which no $r$-far
 $k$-set contains a tight pair $\{q,a(q)\}$ at all, for $k=4,\dots,7$
 (\cref{thm:tightpair}). Consequently no algorithm that grows a solution from a
-tight pair---alternating greedy or full search tree---is complete. The
-tight-pair property is the natural candidate for extending the $k=3$
-approach; it passed $\huntCone$ exact randomised tests, including targeted
-perturbations of all counterexamples to weaker properties, before an
-optimisation-based search refuted it. We regard this as a useful caution about
-randomised evidence for geometric conjectures.
+tight pair---alternating greedy or full search tree---is complete. These
+counterexamples were found only by adversarial optimisation; random instances
+(more than $\huntCone$ exact tests) never exhibit them.
+
+\item \textbf{The two-sided search tree} (\cref{sec:sbm}). The FPT algorithm
+of~\cite{sbm} grows a solution from a single point in both directions. Its
+correctness rests on a claim whose published proof is informal. We prove an
+attachment lemma that certifies individual steps, show via Delaunay ears that
+the first step can always be made safely (\cref{thm:firststep}), prove the
+claim under the arc property, and show that the claim cannot be proved by
+fixing the starting point to an endpoint of a closest pair or to a vertex of
+smallest angle (\cref{prop:rootrules}). We state a sharper conjecture that
+is supported by more than $10^7$ exact tests.
 
 \item \textbf{The arc property} (\cref{sec:arc}). All our counterexamples
 are thin. We show that if the set of points at distance at least $r$ from $q$
@@ -228,7 +240,8 @@ factor $\log n/\log k$, and the decision bound $O(n^3\log k)$ improves on
 $O(n^3\log n)$ whenever $k=n^{o(1)}$; the algorithm of~\cite{tw26} is more
 general (weighted disks of arbitrary radii). Compared with the search-tree
 bound $O(2^kn^2\log^2n)$ of~\cite{sbm}, ours is better once
-$2^k\gtrsim n\log k/\log n$. We stress that the main merits of the algorithm are
+$2^k\gtrsim n\log k/\log n$; moreover, the correctness of that bound depends
+on the claim discussed in \cref{sec:sbm}. We stress that the main merits of the algorithm are
 its simplicity and exactness: the whole decision procedure is a triple loop
 with a binary search inside. The structural results of \cref{sec:greedy} are
 new.
@@ -237,7 +250,8 @@ new.
 \Cref{sec:prelim} fixes notation. \Cref{sec:certificate} proves the Delaunay
 certificate, \cref{sec:dp} develops the dynamic program, and
 \cref{sec:opt} treats optimisation. \Cref{sec:greedy} studies greedy
-structure, \cref{sec:arc} treats point sets with the arc property,
+structure and the two-sided search tree, \cref{sec:arc} treats point sets
+with the arc property,
 \cref{sec:experiments} reports experiments, and
 \cref{sec:conclusion} lists open problems.
 
@@ -661,7 +675,7 @@ if and only if $\Arc(q)$ contains an $r$-far $(k-1)$-set for some $q\in P$.
 then it has one that contains $q$, $a(q)$ and $b(q)$ for some $q$.
 \item[$(\mathrm{TP}_k)$] \emph{Tight pair:} if $P$ has an $r$-far $k$-set, then
 it has one that contains a tight pair $\{q,a(q)\}$.
-\item[$(\mathrm{ST}_k)$] \emph{Search tree:} if $P$ has an $r$-far $k$-set, then
+\item[$(\mathrm{ST}_k)$] \emph{Seeded search tree:} if $P$ has an $r$-far $k$-set, then
 for some $q$ the following search reaches $k$ points: start with
 $\{q,a(q)\}$, a ccw frontier at $a(q)$ and a clockwise frontier at $q$, and
 repeatedly add, on a side of the search's choice, the first point beyond that
@@ -678,7 +692,10 @@ for all point sets, the decision problem could be solved in $O(2^kn^2k)$ time
 by exploring, for each of the $n$ seeds, a binary tree of depth $k-2$ whose
 nodes cost $O(nk)$; $(\mathrm{AG}_k)$ would even give $O(n^2k)$. Property
 $(\mathrm{TP}_k)$ is the weakest statement that ties a solution to the first
-far points, and therefore the most robust candidate.
+far points, and therefore the most robust candidate. The bounded search tree
+of Singireddy, Basappa and Mitchell~\cite{sbm} is a two-sided variant of
+$(\mathrm{ST}_k)$ that is seeded with a single point; we study it separately
+in \cref{sec:sbm}.
 
 \subsection{Triples}\label{sec:k3}
 
@@ -903,6 +920,162 @@ Property & $k$ & tests & failures & fails for $k$\\
 \end{tabular}
 \end{table}
 
+\subsection{The two-sided search tree}\label{sec:sbm}
+
+The fixed-parameter algorithm of Singireddy, Basappa and Mitchell~\cite{sbm}
+decides whether an $r$-far $k$-set exists by the following search. A
+\emph{state} is a set $C$ of chosen points that occupies a contiguous arc of
+the hull, together with the complementary open arc $F$ (the \emph{free arc}).
+Initially $C=\{q\}$ for a \emph{root} $q$, and $F=P\setminus\{q\}$. A
+\emph{ccw step} adds the first point of $F$, in ccw order from the ccw end of
+$C$, that is at distance at least $r$ from every point of $C$; a \emph{cw
+step} is the mirror image. The search branches on the side, so that each root
+spawns a binary tree of depth $k-1$; it succeeds if some root and some
+sequence of sides reaches $|C|=k$. Every set it reaches is $r$-far, so the
+search is sound. Its completeness is the following claim (Claim~2
+of~\cite{sbm}, rephrased).
+
+\begin{description}[leftmargin=3.2em,labelwidth=2.6em,itemsep=2pt]
+\item[$(\mathrm{SBM}_k)$] If $P$ has an $r$-far $k$-set, the two-sided search
+succeeds from some root.
+\end{description}
+
+\noindent The proof in~\cite{sbm} argues from a figure with three centres of a
+Delaunay triangle and does not specify which points block which; we have not
+been able to complete it. By \cref{thm:tightpair}, a proof must use both
+sides: on $P_\star$ every search that starts with a ccw step fails, whereas
+the two-sided search succeeds. In this subsection we give rigorous partial
+results.
+
+\paragraph{Witnesses.}
+Fix an $r$-far $k$-set $T$. We follow the search together with a
+\emph{witness} $W$: an $r$-far $k$-set with $C\subseteq W$ and $W\setminus
+C\subseteq F$. Write $W\setminus C=\{t_1,\dots,t_m\}$ in ccw order from the
+ccw end of $C$. Let $x$ be the point that a ccw step would add. Since $t_1$ is
+at distance at least $r$ from $C$, $x$ is $t_1$ or lies before $t_1$. We call
+the ccw step \emph{safe} if $(W\setminus\{t_1\})\cup\{x\}$ is $r$-far; then it
+is the new witness, and the state after the step again has a witness.
+Symmetrically for cw steps with $t_m$.
+
+\begin{lemma}[attachment]\label{lem:attach}
+If some $c\in C$ satisfies $|c\,t_1|\le|t_1t_j|$ for all $2\le j\le m$, then
+the ccw step is safe. Symmetrically, if some $c\in C$ satisfies
+$|c\,t_m|\le|t_mt_i|$ for all $1\le i\le m-1$, then the cw step is safe.
+\end{lemma}
+\begin{proof}
+If $x=t_1$ there is nothing to show. Otherwise $x$ lies strictly between the
+ccw end of $C$ and $t_1$, and it is at distance at least $r$ from all of $C$.
+Suppose that $|x\,t_j|<r$ for some $2\le j\le m$. The points $c,x,t_1,t_j$ are
+in convex position in this ccw order, so by (Q),
+$|c\,t_1|+|x\,t_j|>|c\,x|+|t_1t_j|$, that is,
+$|c\,t_1|>|t_1t_j|+(|c\,x|-|x\,t_j|)>|t_1t_j|$, a contradiction. Hence $x$ is
+at distance at least $r$ from $t_2,\dots,t_m$ and from $C$, and
+$(W\setminus\{t_1\})\cup\{x\}$ is $r$-far.
+\end{proof}
+
+\Cref{lem:attach} says that a step is safe whenever the next point of the
+witness has a chosen point among its nearest neighbours in the witness. At the
+root this can always be arranged.
+
+\begin{lemma}\label{lem:nnadjacent}
+Let $\mathcal T$ be a Delaunay triangulation of a set $S$ in strictly convex
+position. Every $p\in S$ has a nearest neighbour in $S$ that is adjacent to $p$
+in $\mathcal T$. Consequently, if $|S|\ge3$, some $p\in S$ has a nearest
+neighbour among its two neighbours on the hull of $S$.
+\end{lemma}
+\begin{proof}
+Let $q$ be a nearest neighbour of $p$, and suppose that no nearest neighbour
+of $p$ is adjacent to it. As in the proof of \cref{lem:closest}, the segment
+$pq$ crosses an edge $uv$ of a triangle $puv$ of $\mathcal T$, $p,u,q,v$ form a
+convex quadrilateral, $\ang puq+\ang pvq\ge\pi$ because $\mathcal T$ is
+Delaunay, and say $\ang puq\ge\pi/2$; then $|pu|<|pq|$, a contradiction. For
+the second claim, a triangulation of a convex polygon with at least four
+vertices has an \emph{ear}, a vertex of degree two whose neighbours in the
+triangulation are its two hull neighbours; for $|S|=3$ every vertex is such a
+vertex.
+\end{proof}
+
+\begin{theorem}[safe first step]\label{thm:firststep}
+Let $T$ be an $r$-far $k$-set, $k\ge2$. There are adjacent points $e,\rho$ of
+$T$ (adjacent on the hull of $T$) such that the first step of the search from
+root $\rho$ towards $e$ is safe with respect to the witness $T$.
+\end{theorem}
+\begin{proof}
+For $k=2$ every step is safe. Otherwise, by \cref{lem:nnadjacent} some $e\in T$
+has a hull neighbour $\rho$ in $T$ as a nearest neighbour in $T$. Start at
+$\rho$ and step towards $e$; then $e$ is $t_1$ (or $t_m$) and $c=\rho$
+satisfies the hypothesis of \cref{lem:attach}.
+\end{proof}
+
+For $k=3$ a safe first step leaves a single point to add, and the next step
+is trivially safe, so $(\mathrm{SBM}_3)$ follows; this is a short proof of a
+special case of \cref{thm:k3}. Under the arc property the claim holds in a
+strong form.
+
+\begin{proposition}\label{prop:sbmarc}
+If $P$ has the $r$-arc property (\cref{sec:arc}) and $T$ is an $r$-far
+$k$-set, then from every root $q\in T$ the path of $k-1$ ccw steps
+succeeds. In particular $(\mathrm{SBM}_k)$ holds, and no branching is
+necessary.
+\end{proposition}
+\begin{proof}
+By \cref{thm:arc}(i) the greedy chain $x_0=q$, $x_{i+1}=a(x_i)$ is proper and
+$r$-far. We show by induction that the $i$-th ccw step adds $x_i$. The points
+strictly between $x_{i-1}$ and $x_i$ are closer than $r$ to $x_{i-1}$, so they
+are not eligible; $x_i$ is at distance at least $r$ from $x_0,\dots,x_{i-1}$
+because the chain is $r$-far; and $x_i$ does not pass the cw end $q$ because
+the chain is proper.
+\end{proof}
+
+\paragraph{Natural choices of the root fail.}
+A proof of $(\mathrm{SBM}_k)$ along the lines of \cref{thm:firststep} would fix
+the root in terms of $T$ and show that the search, from that root, never runs
+out of safe steps. Our experiments suggest that this is true for \emph{some}
+vertex of every $T$, but not for the vertices one would pick first.
+
+\begin{proposition}\label{prop:rootrules}
+There are point sets in convex position, a radius $r$ and an $r$-far $k$-set
+$T$ such that
+\begin{enumerate}[label=(\alph*),itemsep=1pt,topsep=2pt]
+\item ($k=5$ and $k=6$) the two-sided search fails from an endpoint of a
+closest pair of $T$;
+\item ($k=7$) no sequence of safe steps from the vertex of $T$ with the
+smallest interior angle reaches $k$ points;
+\item ($k=7$) the same holds for the vertex of smallest angle over all $r$-far
+$k$-sets of $P$.
+\end{enumerate}
+In all these instances $(\mathrm{SBM}_k)$ holds.
+\end{proposition}
+\begin{proof}
+The instances have between $10$ and $14$ points with integer coordinates and
+are listed in \code{fpt/data/root_rule_instances.json}; each claim is verified
+by exhaustive search in exact arithmetic (\code{fpt/check_roots.py}).
+\end{proof}
+
+\paragraph{Evidence and a sharper conjecture.}
+Call a search from root $q\in T$ \emph{witness-preserving} if it only takes
+safe steps (with respect to the witness obtained from $T$ by the previous
+steps). Such a search is a sub-search of the two-sided search, so the
+following statement implies $(\mathrm{SBM}_k)$.
+
+\begin{conjecture}\label{conj:sbm}
+For every $r$-far $k$-set $T$ there is a vertex $q\in T$ from which a
+witness-preserving search reaches $k$ points.
+\end{conjecture}
+
+We tested \cref{conj:sbm} on more than $1.2\cdot10^7$ pairs $(T,r)$ from random
+convex sets with up to $12$ points and $k\le7$, and under simulated annealing
+that minimises the number of good vertices for $k\le7$ and up to $14$
+points; it never failed. Not every vertex is good, however: the last instance
+in \code{fpt/data/root_rule_instances.json} has $k=4$ and a vertex of $T$ from
+which both first steps are unsafe. The two-sided search itself
+($(\mathrm{SBM}_k)$) succeeded in all $532{,}833$ random decision tests of our
+re-implementation and in about $3{,}000$ annealing runs designed to break it,
+for $k\le10$. So a proof must choose the root with care;
+\cref{prop:rootrules} rules out the obvious choices. We leave \cref{conj:sbm} and $(\mathrm{SBM}_k)$ open; until they are settled, the
+bound $O(2^kn^2\log^2n)$ of~\cite{sbm} should be regarded as conditional, and
+\cref{alg:certified} below uses the search only as a sound heuristic.
+
 \subsection{A certified algorithm}\label{sec:certified}
 
 Although no seeded rule is complete, all of them are \emph{sound}: they only
@@ -1054,16 +1227,37 @@ $\rstar$ is a pairwise distance and is feasible.
 
 \paragraph{Recognising the hypotheses.}
 The arc property at a given $r$ is checked in $O(n^2)$ time by counting runs.
-Unimodality can be verified in $O(n\log n)$ time. For the hull edge
-$p_jp_{j+1}$, the points strictly closer to $p_j$ than to $p_{j+1}$ are cut
-off by the perpendicular bisector and therefore form a clockwise run
-$p_j,p_{j-1},\dots$ of some length $c_j$, found by binary search; let $z_j=1$
-if the next point is equidistant from both, and $z_j=0$ otherwise. In row $q$,
-the step from $p_{q+t}$ to $p_{q+t+1}$ increases the distance iff $t<c_{q+t}$
-and leaves it unchanged iff $t=c_{q+t}$ and $z_{q+t}=1$. Row $q$ fails to be
-unimodal iff a step that is not an increase is followed by one that is not a
-decrease, and a short calculation shows that this happens for some $q$ iff
-$c_j\le\min\{c_{j+1}+z_{j+1}-2,\;n-3\}$ for some $j$.
+Unimodality can be verified faster.
+
+\begin{lemma}\label{lem:unitest}
+Whether $P$ is unimodal can be decided in $O(n\log n)$ time.
+\end{lemma}
+\begin{proof}
+Fix $j$. The points strictly closer to $p_j$ than to $p_{j+1}$ are the points
+of $P$ in an open half-plane bounded by the perpendicular bisector of
+$p_jp_{j+1}$. Since $P$ is in strictly convex position, they form a run of
+consecutive points; it contains $p_j$ and not $p_{j+1}$, so it is
+$p_j,p_{j-1},\dots,p_{j-c_j+1}$ for some $1\le c_j\le n-1$. At most two points
+of $P$ lie on the bisector; one boundary crossing of the bisector is inside the
+edge $p_jp_{j+1}$, so the only candidate for a point equidistant from $p_j$ and
+$p_{j+1}$ is $p_{j-c_j}$. Let $z_j=1$ if it is equidistant and $z_j=0$
+otherwise. The predicate ``$p_{j-s}$ is strictly closer to $p_j$ than to
+$p_{j+1}$'' is monotone in $s$, so $c_j$ is found by binary search with
+$O(\log n)$ distance comparisons, and $z_j$ with one more.
+
+Now fix a row $q$ and $1\le t\le n-2$, and put $j=q+t$. The step from
+$p_{q+t}$ to $p_{q+t+1}$ increases the distance to $p_q$ iff $p_q=p_{j-t}$ is
+strictly closer to $p_j$ than to $p_{j+1}$, that is, iff $t<c_j$; it leaves the
+distance unchanged iff $t=c_j$ and $z_j=1$; otherwise it decreases. A row is
+unimodal (with at most one tie, at the top) iff no step that is not an
+increase is followed by a step that is not a decrease. Step $t$ is not an
+increase iff $t\ge c_j$, and step $t+1$ (whose edge is $p_{j}p_{j+1}$ shifted
+by one, i.e.\ index $j+1$) is not a decrease iff $t+1\le c_{j+1}-1+z_{j+1}$.
+Hence some row fails iff for some $j$ there is an integer
+$t\in[1,n-3]$ with $c_j\le t\le c_{j+1}+z_{j+1}-2$. As $c_j\ge1$, this is the
+case iff $c_j\le\min\{c_{j+1}+z_{j+1}-2,\;n-3\}$ for some $j$, which is
+checked in $O(n)$ time once all $c_j,z_j$ are known.
+\end{proof}
 
 For general convex input we use an \emph{adaptive} variant of \textsc{O1}: it
 checks the arc property at every radius it tests and reports ``not
@@ -1388,6 +1582,12 @@ $k$: none of those tied to first far points does in general, but all of them
 do once the far sets are contiguous, which gives a near-linear algorithm for
 unimodal point sets. Several questions remain.
 \begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \emph{The two-sided search tree.} Prove $(\mathrm{SBM}_k)$, or the
+stronger \cref{conj:sbm}. \Cref{lem:attach,thm:firststep} handle the first
+step; the difficulty is that replaced points move away from the remaining
+witness points, so the attachment condition is not inherited, and
+\cref{prop:rootrules} shows that the root must be chosen with more care than
+by distances or angles alone.
 \item \emph{Subcubic algorithms for fixed $k\ge4$.} For $k=3$ the problem is
 solvable in near-linear time. Is there an $O(n^{3-\varepsilon})$ algorithm for
 $k=4$? By \cref{prop:gk,thm:tightpair}, such an algorithm cannot rely on the
