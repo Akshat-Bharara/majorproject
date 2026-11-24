@@ -62,7 +62,7 @@ split & distribution & instances & $n$ & agree & exhaustive\\
 \end{table}
 
 \paragraph{Running time.}
-\Cref{fig:time} and \cref{tab:scaling} show the median running times on the
+\Cref{fig:time} shows the median running times on the
 \emph{scaling} split. The triple-state baseline grows roughly like $n^4$ and is
 already $\tripleSpeedupHundred$ times slower than the capped program at
 $n=100$.
@@ -204,22 +204,5 @@ $n$ & $k$ & \textsc{DP} & \textsc{O1} & \textsc{O2} & \textsc{O2}\\
 \end{tabular}
 \end{table}
 
-\section{Detailed running times}\label{app:times}
 
-\begin{table}[H]
-\centering
-\caption{Median solve time [ms] and mean number of exact decisions on the
-\emph{scaling} split. ``no window'': capped program with binary search over
-all distances. ``--'': not run.}
-\label{tab:scaling}
-\footnotesize\renewcommand{\arraystretch}{0.9}
-\begin{tabular}{@{}rr|rrrrr|rrr@{}}
-\toprule
- & & \multicolumn{5}{c|}{time [ms]} & \multicolumn{3}{c}{exact decisions}\\
-$k$ & $n$ & triple & uncapped & no window & capped & certified & no window & window & certified\\
-\midrule
-\tabinput{generated/table_scaling}
-\bottomrule
-\end{tabular}
-\end{table}
 

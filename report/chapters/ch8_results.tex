@@ -17,25 +17,11 @@ predicate and tested on large numbers of random and adversarially optimised
 instances against an exhaustive solver. Properties that failed produced
 explicit counterexamples, which were then minimised and verified independently
 in Python with exact integer arithmetic; properties that survived were proved.
-All algorithms use exact predicates only: squared distances are compared as
-$64$-bit integers and the in-circle test is evaluated with $128$-bit integers,
-so no result depends on floating-point rounding.
 
-\paragraph{Code organisation.} The repository contains four directories.
-\begin{description}[leftmargin=1.5em,style=nextline,itemsep=2pt]
-\item[\code{convex/}] The library \code{kdisp.hpp} with the capped dynamic
-program, the uncapped and triple-state baselines, the search window, the
-certified algorithm, exhaustive search, the instance generators, the
-benchmark and property-testing drivers, and the scripts producing the tables
-and plots of this chapter.
-\item[\code{arc/}] The arc-property algorithms (\code{arcdisp.hpp}): the greedy
-chain, the decision procedure, the unimodality test and the randomised
-optimisation, with tests, an independent Python brute force and the
-hypothesis checker.
-\item[\code{sbm/}] A re-implementation of the bounded search tree and the dynamic
-program of~\citet{sbm}, used to compare with the original algorithms.
-\item[\code{fpt/}] Tools for the analysis of the search tree: exhaustive checks
-for $k=4$, the root-rule counterexamples and the adversarial optimiser.
-\end{description}
+The code is organised in four directories of the repository:
+\code{convex/} (the general algorithms and their benchmarks), \code{arc/}
+(the arc-property algorithms), \code{sbm/} (a re-implementation of the
+algorithms of~\citet{sbm}) and \code{fpt/} (the tools used to analyse the
+search tree).
 
 \input{chapters/ch8_exp_body}

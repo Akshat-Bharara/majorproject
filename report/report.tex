@@ -1,5 +1,5 @@
 % Major project report -- compile with:  xelatex report && bibtex report && xelatex report && xelatex report
-\documentclass[12pt, twoside,openright]{report}
+\documentclass[12pt,oneside,openany]{report}
 
 \usepackage{pdfpages}
 \usepackage{setspace}
@@ -31,7 +31,7 @@
 }
 
 \usepackage[font=small]{caption}
-\usepackage[a4paper,bindingoffset=0.2in,left=1in,right=1in,top=1in,bottom=1in,footskip=.25in]{geometry}
+\usepackage[a4paper,left=1in,right=1in,top=1in,bottom=1in,footskip=.25in]{geometry}
 \usepackage{graphicx}
 \usepackage{multirow}
 \usepackage{booktabs}
@@ -96,14 +96,14 @@
 % ---------------------------------------------------------------------------
 % Project details -- EDIT THESE
 \newcommand{\ReportTitle}{Exact $k$-Dispersion for Points in Convex Position: Search Trees, Greedy Structure and a Capped Delaunay Dynamic Program}
-\newcommand{\StudentA}{Student Name 1}
-\newcommand{\StudentB}{Student Name 2}
-\newcommand{\StudentC}{Student Name 3}
-\newcommand{\RegA}{Reg.\ No.\ XXXXXXX}
-\newcommand{\RegB}{Reg.\ No.\ XXXXXXX}
-\newcommand{\RegC}{Reg.\ No.\ XXXXXXX}
-\newcommand{\Guide}{Dr.\ Guide Name}
-\newcommand{\GuideDesignation}{Assistant/Associate Professor}
+\newcommand{\StudentA}{Akshat Bharara}
+\newcommand{\StudentB}{Rakshith Ashok Kumar}
+\newcommand{\StudentC}{Utsav Singh Bhamra}
+\newcommand{\RegA}{231CS110}
+\newcommand{\RegB}{231CS147}
+\newcommand{\RegC}{231CS163}
+\newcommand{\Guide}{Prof.\ Manjanna B}
+\newcommand{\GuideDesignation}{Professor}
 \newcommand{\Department}{Computer Science and Engineering}
 \newcommand{\SubmissionDate}{November 2026}
 % ---------------------------------------------------------------------------
@@ -119,9 +119,6 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Declaration
-\newpage
-\thispagestyle{empty}
-\mbox{}
 \newpage
 \begin{titlepage}
 \begin{center}
@@ -162,9 +159,6 @@ National Institute of Technology Karnataka, Surathkal
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Certificate
 \newpage
-\thispagestyle{empty}
-\mbox{}
-\newpage
 \begin{titlepage}
 \begin{center}
 \large \textbf{CERTIFICATE}
@@ -197,9 +191,6 @@ Technology}} in {\bf\textit{\Department}}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Statements of Contribution
 \newpage
-\thispagestyle{empty}
-\mbox{}
-\newpage
 \begin{titlepage}
 \pagestyle{empty}
 \begin{center}
@@ -225,17 +216,11 @@ unimodality test and the near-linear algorithm for unimodal point sets
 (\cref{sec:arc}), with its validation and scaling experiments.
 \end{enumerate}
 
-\noindent The results of this report are being prepared for submission as a
-research article. Its preprint is listed under `List of publications' at the
-end of the report.
 \end{singlespacing}
 \end{titlepage}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Abstract
-\newpage
-\thispagestyle{empty}
-\mbox{}
 \newpage
 \begin{titlepage}
 \pagestyle{empty}
@@ -280,9 +265,6 @@ algorithms, fixed-parameter algorithms, computational geometry.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Acknowledgements
 \newpage
-\thispagestyle{empty}
-\mbox{}
-\newpage
 \begin{titlepage}
 \pagestyle{empty}
 \begin{center}
@@ -305,14 +287,11 @@ constant support.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \tableofcontents
-\listoffigures
-\addcontentsline{toc}{chapter}{List of figures}
-\listoftables
-\addcontentsline{toc}{chapter}{List of tables}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Main matter
-\cleardoublepage
+\clearpage
 \pagenumbering{arabic}
 \setcounter{page}{1}
 
@@ -332,29 +311,13 @@ constant support.
 \renewcommand{\thesection}{A.\arabic{section}}
 \setcounter{section}{0}
 \input{chapters/app_instances}
-\input{chapters/app_repro}
 
 \end{spacing}
 
-\cleardoublepage
+\clearpage
 \renewcommand{\bibname}{References}
 \bibliographystyle{apalike}
 \addcontentsline{toc}{chapter}{References}
 \bibliography{mybib}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter*{List of publications}
-\addcontentsline{toc}{chapter}{List of publications}
-
-\section*{Manuscripts in preparation}
-\begin{itemize}
-\item \StudentA, \StudentB, \StudentC\ and \Guide. \emph{Exact $k$-dispersion
-for points in convex position: a capped Delaunay dynamic program and the
-limits of greedy structure.} Manuscript, \SubmissionDate.
-\end{itemize}
-
-\newpage
-\thispagestyle{empty}
-\mbox{}
 
 \end{document}

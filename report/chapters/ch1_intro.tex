@@ -55,23 +55,6 @@ one of the $\binom n2$ pairwise distances and the decision is monotone in $r$,
 an algorithm for the decision version yields one for the optimisation version
 by binary search.
 
-\section{Motivation}
-
-Two questions motivated the project.
-
-\begin{enumerate}[leftmargin=*,itemsep=2pt]
-\item \emph{Is the search tree of~\citet{sbm} correct?} Its correctness rests on
-a claim (Claim~2 of~\citet{sbm}) that, if $k$ well-separated points exist, a
-solution can be grown from some starting point by repeatedly adding the first
-admissible point at one of the two ends of the chosen arc. The published proof
-of this claim is a picture argument. A rigorous proof would put the
-algorithm on solid ground; a counterexample would show that it is incorrect.
-\item \emph{When is the problem easy?} For $k=3$ much faster algorithms are
-known than for general $k$~\citep{kobayashi,tw25}. We wanted to understand
-which structural properties make $k=3$ easy, whether they extend to larger
-$k$, and for which inputs a simple greedy rule is exact.
-\end{enumerate}
-
 \section{Objectives of the project}
 
 \begin{itemize}[leftmargin=*,itemsep=2pt]
