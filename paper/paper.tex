@@ -166,8 +166,7 @@ $k$; for $k=4$ this gives $O(n^2\log^2n)$. For every $k$ we prove an
 attachment lemma that certifies single steps and show, via Delaunay ears,
 that the first step can always be made safely (\cref{thm:firststep}). We also
 show that the root cannot be fixed by distances or angles alone
-(\cref{prop:rootrules}), and state a sharper conjecture that is supported by
-more than $10^7$ exact tests.
+(\cref{prop:rootrules}).
 
 \item \textbf{Greedy structure} (\cref{sec:greedy}). For a radius $r$ let $a(q)$
 and $b(q)$ be the first points at distance at least $r$ from $q$ in ccw and cw
@@ -213,8 +212,7 @@ Our threshold representation (\cref{lem:thresholds}) is the same monotonicity,
 specialised to points and stated with the in-circle predicate; what is new is
 the cap at $k-2$ thresholds, which replaces $\log n$ by $\log k$ in the
 decision procedure and $O(n^3)$ space by $O(n^2k)$, and the correctness proof
-via the Delaunay certificate. The algorithm of~\cite{tw26} is more general
-(weighted disks of arbitrary radii). For points on a circle a linear-time
+via the Delaunay certificate. For points on a circle a linear-time
 algorithm is known~\cite{akagi}; our near-linear algorithm covers all
 unimodal point sets, which need not be cocircular, and the arc property, to
 our knowledge, has not been studied before. Neither~\cite{tw25,tw26}
@@ -227,7 +225,8 @@ in~\cite{diametral}; we include a proof for completeness.
 Delaunay certificate. \Cref{sec:greedy} studies greedy structure,
 \cref{sec:sbm} the two-sided search tree and \cref{sec:arc} point sets with
 the arc property. \Cref{sec:dp,sec:opt} present the exact algorithm, and
-\cref{sec:conclusion} lists open problems. The appendix contains the
+\cref{sec:limitations} discusses limitations and \cref{sec:conclusion}
+concludes. The appendix contains the
 experiments, the explicit instances and detailed running times.
 
 \section{Preliminaries}\label{sec:prelim}
@@ -579,13 +578,8 @@ $j\notin\{i,i+1\}$. So every counterexample contains a convex $2k$-gon
 $s_1a_1s_2a_2\cdots s_ka_k$ with $\{s_1,\dots,s_k\}$ $r$-far, $|s_ia_i|\ge r$,
 and every $a_i$ blocked in this way; in particular it has at least $2k$
 points, and our instances are smallest possible. For $k=3$ no such hexagon
-exists by \cref{thm:k3}(ii). For $k=4$ the blocked configurations occupy a
-tiny part of the configuration space: the short diagonal must lie within
-about $1\%$ of $r$, which explains why random instances never contain them.
+exists by \cref{thm:k3}(ii).
 
-The properties above were also tested on large numbers of random and perturbed
-instances; \cref{app:greedytests} reports the tests and explains why random
-testing never found the counterexamples of \cref{thm:tightpair}.
 
 \section{The two-sided search tree}\label{sec:sbm}
 
@@ -607,12 +601,11 @@ of~\cite{sbm}, rephrased).
 succeeds from some root.
 \end{description}
 
-\noindent The proof in~\cite{sbm} argues from a figure with three centres of a
-Delaunay triangle and does not specify which points block which; we have not
-been able to complete it. By \cref{thm:tightpair}, a proof must use both
-sides: on $P_\star$ every search that starts with a ccw step fails, whereas
-the two-sided search succeeds. In this subsection we give rigorous partial
-results.
+\noindent By \cref{thm:tightpair}, both sides are needed: on $P_\star$ every
+search that starts with a ccw step fails, whereas the two-sided search
+succeeds. In this section we prove $(\mathrm{SBM}_k)$ for $k\le4$, prove that
+the first step can always be made safely for every $k$, and show that the
+starting point cannot be chosen by distances or angles alone.
 
 \paragraph{Witnesses.}
 Fix an $r$-far $k$-set $T$. We follow the search together with a
@@ -779,10 +772,7 @@ and they add up to at least $\pi+\pi+2\pi=4\pi$. But each is smaller than
 $\pi$, a contradiction. So one of the two searches has a safe second step.
 \end{proof}
 
-We also checked \cref{thm:sbm4} and its case analysis computationally: on
-$2.9\cdot10^7$ pairs $(T,r)$ from random and perturbed thin instances, some good
-pair led to success, and in the $9.5\cdot10^6$ instances of the last case one of
-the roots $a$ and $c$ did. Under the arc property the claim holds in a
+Under the arc property the claim holds in a
 strong form.
 
 \begin{proposition}\label{prop:sbmarc}
@@ -801,10 +791,8 @@ the chain is proper.
 \end{proof}
 
 \subsection{Natural choices of the root fail}
-A proof of $(\mathrm{SBM}_k)$ along the lines of \cref{thm:firststep} would fix
-the root in terms of $T$ and show that the search, from that root, never runs
-out of safe steps. Our experiments suggest that this is true for \emph{some}
-vertex of every $T$, but not for the vertices one would pick first.
+The proof of \cref{thm:sbm4} fixes the root in terms of $T$. The natural
+candidates for such a rule do not work for larger $k$.
 
 \begin{proposition}\label{prop:rootrules}
 There are point sets in convex position, a radius $r$ and an $r$-far $k$-set
@@ -824,33 +812,6 @@ The instances have between $10$ and $14$ points with integer coordinates and
 are listed in \code{fpt/data/root_rule_instances.json}; each claim is verified
 by exhaustive search in exact arithmetic (\code{fpt/check_roots.py}).
 \end{proof}
-
-\subsection{Evidence and a sharper conjecture}
-Call a search from root $q\in T$ \emph{witness-preserving} if it only takes
-safe steps (with respect to the witness obtained from $T$ by the previous
-steps). Such a search is a sub-search of the two-sided search, so the
-following statement implies $(\mathrm{SBM}_k)$.
-
-\begin{conjecture}\label{conj:sbm}
-For every $r$-far $k$-set $T$ there is a vertex $q\in T$ from which a
-witness-preserving search reaches $k$ points.
-\end{conjecture}
-
-\noindent By \cref{thm:sbm4} the conjecture holds for $k\le4$.
-
-We tested \cref{conj:sbm} on more than $1.2\cdot10^7$ pairs $(T,r)$ from random
-convex sets with up to $12$ points and $k\le7$, and under simulated annealing
-that minimises the number of good vertices for $k\le7$ and up to $14$
-points; it never failed. Not every vertex is good, however: the last instance
-in \code{fpt/data/root_rule_instances.json} has $k=4$ and a vertex of $T$ from
-which both first steps are unsafe. The two-sided search itself
-($(\mathrm{SBM}_k)$) succeeded in all $532{,}833$ random decision tests of our
-re-implementation and in about $3{,}000$ annealing runs designed to break it,
-for $k\le10$. So a proof must choose the root with care;
-\cref{prop:rootrules} rules out the obvious choices. We leave \cref{conj:sbm} and $(\mathrm{SBM}_k)$ open for $k\ge5$; until they are
-settled, the bound $O(2^kn^2\log^2n)$ of~\cite{sbm} should be regarded as
-conditional for $k\ge5$, and
-\cref{alg:certified} below uses the search only as a sound heuristic.
 
 \section{When greedy is exact: the arc property}\label{sec:arc}
 
@@ -1001,16 +962,26 @@ checks the arc property at every radius it tests and reports ``not
 applicable'' if the check fails. It takes $O(n^2\log n)$ time, is exact
 whenever it answers, and never answers incorrectly.
 
-\paragraph{How far does the hypothesis reach?}
-The arc property cannot be weakened in the two obvious ways. If only the
-points of one $r$-far $k$-set have contiguous far sets, greedy chains can all
-fail ($k=6$, ten points); if the arc property holds only at $r=\rstar$, the
-closing test of \cref{thm:arc}(ii) is unreliable at other radii and a binary
-search with it can return a wrong value ($k=4$, six points). On the other
-hand, at the optimal radius the arc property held in all our tests on hulls of
-random point clouds and on near-circular sets, and never on thin ellipses and
-lenses. Details, the counterexamples and running times are in
-\cref{app:arcexp}.
+\paragraph{Weaker hypotheses.}
+The hypothesis of \cref{thm:arc} cannot be weakened in the two obvious ways.
+
+\begin{proposition}\label{prop:weaker}
+\begin{enumerate}[label=(\alph*),itemsep=1pt,topsep=2pt]
+\item There is a set of $10$ points and an $r$-far $6$-set $S$ such that
+$\mathrm{Far}_r(s)$ is contiguous for every $s\in S$, but no greedy chain of six
+points is $r$-far.
+\item There is a set of $6$ points with the $\rstar$-arc property for $k=4$ on
+which binary search over the candidate distances with the test of
+\cref{thm:arc}(ii) returns a value larger than $\rstar$.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+The instances are listed in \code{arc/data/hypothesis_counterexamples.json} and
+verified by exhaustive search in exact arithmetic
+(\code{arc/check\_hypotheses.py}).
+\end{proof}
+
+Running times of the near-linear algorithm are reported in \cref{app:arcexp}.
 
 \section{The capped Delaunay dynamic program}\label{sec:dp}
 
@@ -1325,46 +1296,71 @@ per evaluation of $H$ and $O(\log n)$ evaluations, followed by a single call
 to \cref{alg:capped} if $\rho=\rstar$.
 \end{proof}
 
-\section{Conclusion and open problems}\label{sec:conclusion}
+\section{Limitations}\label{sec:limitations}
+
+\paragraph{The two-sided search tree.}
+$(\mathrm{SBM}_k)$ remains unproved for $k\ge5$, so the bound
+$O(2^kn^2\log^2n)$ of~\cite{sbm} is established here only for $k\le4$; the
+published argument for general $k$ is a picture argument with three centres of
+a Delaunay triangle that we have not been able to complete. Our method does not
+extend directly: after a replacement the new point moves away from the
+remaining witness points, so the attachment condition of \cref{lem:attach} is
+not inherited, and \cref{prop:rootrules} shows that the root must be chosen
+with more care than by distances or angles alone. Not even every vertex of a
+solution is a good root for $k=4$ (the last instance in
+\code{fpt/data/root\_rule\_instances.json}). We conjecture the following
+strengthening of $(\mathrm{SBM}_k)$, which holds for $k\le4$ by
+\cref{thm:sbm4}: \emph{for every $r$-far $k$-set $T$ there is a vertex of $T$
+from which a search that only takes safe steps reaches $k$ points.} The
+evidence is experimental: the conjecture held on more than $1.2\cdot10^7$
+pairs $(T,r)$ with $k\le7$, including adversarially optimised instances, and
+the two-sided search succeeded in all $532{,}833$ random tests and about
+$3{,}000$ adversarial runs for $k\le10$. Until a proof is found,
+\cref{alg:certified} uses the search only as a sound heuristic.
+
+\paragraph{The arc property.}
+The near-linear bound of \cref{thm:arcopt} requires a unimodal point set; for
+points exactly on a circle a linear-time algorithm was already
+known~\cite{akagi}. For general convex input the arc property must be checked
+at every tested radius, which costs $O(n^2)$ per radius, and the adaptive
+algorithm may report that it is not applicable. The arc property fails on thin
+inputs: in our experiments it held at the optimal radius on every hull of a
+random point cloud and on near-circular sets, but never on thin ellipses and
+lenses, and applying the decision procedure without the hypothesis gave wrong
+answers in $\arcUncheckedWrong\%$ of the cases on thin families. The question
+whether contiguous far sets for the points of one solution suffice is open for
+$k=4,5$ (\cref{prop:weaker} settles $k=6$).
+
+\paragraph{The exact algorithm.}
+The worst-case improvement over~\cite{tw26} is a factor $\log n/\log k$, which
+vanishes when $k=n^{\Omega(1)}$, and the per-chord monotonicity behind it is
+that of~\cite{tw26}; their algorithm also handles weighted disks of arbitrary
+radii, which ours does not. In our experiments the cap made the decision
+procedure $\capSpeedupKFour$ times faster for $k=4$ but only $1.1$--$1.4$ times
+faster for larger $k$, and the measured growth was $n^{\expCappedFour}$ to
+$n^{\expCappedSixteen}$ rather than $n^3$, because the number of binary-search
+steps grows with $\log n$ and the table of $\Theta(n^2k)$ entries leaves the
+cache. The certified algorithm is no faster than the exact one in the worst
+case: when the heuristic bound is not tight, which happened only on thin
+inputs, it was about $\certOverhead\%$ slower.
+
+\paragraph{Experiments.}
+All experiments use synthetic instances (hulls of random point clouds, points
+on or near circles, thin ellipses and lenses) on a single machine. Integer
+coordinates are bounded by $2^{29}$ so that the predicates fit into $128$ bits;
+unimodal instances with $10^5$ or more points do not fit into this range and
+were run with $128$-bit squared distances.
+
+\section{Conclusion}\label{sec:conclusion}
 
 We proved that the two-sided search tree of Singireddy, Basappa and
-Mitchell is complete for $k\le4$, identified the obstacles to a general proof,
-and showed that greedy structure, which fails for $k\ge4$ in general, becomes
-exact once the far sets are contiguous; for unimodal point sets this gives a
-near-linear algorithm. We also gave a simple exact algorithm that needs
-nothing but the in-circle predicate. Several questions remain.
-\begin{enumerate}[leftmargin=*,itemsep=2pt]
-\item \emph{The two-sided search tree.} Prove $(\mathrm{SBM}_k)$, or the
-stronger \cref{conj:sbm}, for $k\ge5$. \Cref{lem:attach,thm:firststep} handle the first
-step and \cref{thm:sbm4} the case $k=4$; the difficulty in general is that replaced points move away from the remaining
-witness points, so the attachment condition is not inherited, and
-\cref{prop:rootrules} shows that the root must be chosen with more care than
-by distances or angles alone.
-\item \emph{Subcubic algorithms for fixed $k\ge4$.} For $k=3$ the problem is
-solvable in near-linear time. Is there an $O(n^{3-\varepsilon})$ algorithm for
-$k=4$? By \cref{prop:gk,thm:tightpair}, such an algorithm cannot rely on the
-arc characterisation or on tight pairs, and a conditional lower bound seems
-equally plausible.
-\item \emph{Larger $k$.} We exhibited point sets without tight pairs for
-$k\le7$ and found blocked $2k$-gons by search in each of these cases. We expect
-that $(\mathrm{TP}_k)$ fails for every $k\ge4$, but have no uniform
-construction.
-\item \emph{Between the arc property and the general case.} Is the greedy
-chain exact for $k=4,5$ when only the points of some solution have contiguous
-far sets? Is $k$-dispersion fixed-parameter tractable in the number $\beta$ of
-excess runs of the far sets (\cref{sec:arc}), so that the near-linear
-algorithm for unimodal sets degrades gracefully towards the cubic one?
-\item \emph{Removing logarithms.} Can the $\log n$ factor of the binary search
-be avoided, for instance by a parametric search over the threshold
-representation, or the $\log k$ factor by amortising the in-circle queries of
-a chord over its parents?
-\item \emph{Certification.} The certified algorithm is fast when a cheap
-heuristic already attains the optimum. Which additional sound heuristics make
-this the common case on hard instances such as thin lenses?
-\item \emph{Weights and disks.} The algorithm of~\cite{tw26} handles weighted
-disks of arbitrary radii. Does capping help for the weighted problem, where
-values are no longer small integers?
-\end{enumerate}
+Mitchell is complete for $k\le4$, showed that greedy structure, which fails
+for $k\ge4$ in general, becomes exact once the far sets are contiguous, and
+obtained a near-linear algorithm for unimodal point sets. We also gave a simple
+exact algorithm that needs nothing but the in-circle predicate. Natural next
+steps are a proof of $(\mathrm{SBM}_k)$ for all $k$, an
+$O(n^{3-\varepsilon})$ algorithm for fixed $k\ge4$, and algorithms whose running
+time depends on how far the far sets are from being contiguous.
 
 \paragraph{Reproducibility.}
 The source code, the instance generators, all instances and counterexamples,
@@ -1512,11 +1508,7 @@ split & distribution & instances & $n$ & agree & exhaustive\\
 
 \paragraph{Running time.}
 \Cref{fig:time} and \cref{tab:scaling} show the median running times on the
-\emph{scaling} split. Between $n=100$ and $n=400$ the running time of the capped program grows
-like $n^{\expCappedFour}$ for $k=4$ and like $n^{\expCappedSixteen}$ for
-$k=16$. This is somewhat faster than cubic: the number of binary-search steps
-grows with $\log n$, and we attribute the remainder to memory effects, since
-the threshold table has $\Theta(n^2k)$ entries. The triple-state baseline grows roughly like $n^4$ and is
+\emph{scaling} split. The triple-state baseline grows roughly like $n^4$ and is
 already $\tripleSpeedupHundred$ times slower than the capped program at
 $n=100$.
 At the optimum, a median of $\farTripleMedian\%$ of all triples are
@@ -1563,12 +1555,7 @@ $n\le100$ and the uncapped program for $n\le200$.}
 \end{figure}
 
 \paragraph{Effect of the cap.}
-\Cref{tab:ksweep} isolates the effect of capping at $n=200$. For $k=4$ the
-capped program is $\capSpeedupKFour$ times faster than the uncapped one; for
-larger $k$ the advantage is a factor between $1.1$ and $1.4$ and decreases as
-$k$ approaches the size of the largest $r$-far sets in the search range, as
-the analysis predicts ($\log k$ versus $\log n$, and the early exit). The memory advantage,
-$O(n^2k)$ versus $O(n^3)$ table entries, is independent of this.
+\Cref{tab:ksweep} compares the capped and the uncapped program at $n=200$.
 
 \begin{table}[tb]
 \centering
@@ -1586,16 +1573,6 @@ $k$ & uncapped & capped & uncapped/capped & certified & in-circle tests [$10^6$]
 \end{tabular}
 \end{table}
 
-\paragraph{Effect of the window.}
-On the \emph{scaling} split the window of \cref{lem:window} keeps a median of
-$\windowMedian\%$ (at most $\windowMax\%$) of the distinct pairwise distances
-and saves $\windowSaved$ exact decisions per instance on average
-(\cref{tab:scaling}); the median speed-up over binary search on all distances
-is $\windowSpeedup\times$. The gain is smaller than the reduction of the
-search range suggests because the binary search is logarithmic in the number
-of candidates, and because the decisions that are saved are the cheap ones
-far away from $\rstar$.
-
 \paragraph{Certification.}
 \Cref{tab:certified} reports how often the heuristic phase of
 \cref{alg:certified} already attains the optimum, over all
@@ -1606,13 +1583,7 @@ a single exact decision is made, and the certified algorithm is
 $\certSpeedup$ times faster than the capped binary search in the median
 (interquartile range $\certSpeedupLo$--$\certSpeedupHi$). The farthest-first
 set alone is optimal far less often, so the seeded greedies do most of the
-work. The failures are confined to the two thin families---the $1{:}20$
-ellipse and the two-chain lens---which is consistent with \cref{sec:greedy}:
-these are the shapes in which the cyclic order and geometric proximity
-disagree. When the heuristic bound is not tight, the exact binary search has
-to be run after all and the certified algorithm is about $\certOverhead\%$
-slower than the plain one (median over the $\certScalingNo$ such instances of
-the scaling split). The output is exact in either case.
+work. The output is exact in every case.
 
 \begin{table}[tb]
 \centering
@@ -1635,81 +1606,6 @@ distribution & instances & FF optimal & certified & rate & mean gap & max gap\\
 
 \section{Experiments for the arc property}\label{app:arcexp}
 
-\paragraph{How far do the hypotheses go?}
-We searched for counterexamples to weaker hypotheses, exhaustively on random
-and perturbed instances with at most $13$ points and $k\le6$
-(\cref{tab:archyp}); all counterexamples were re-verified by an independent
-script.
-\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
-\item \emph{Arc-shaped far sets only for the points of some $r$-far $k$-set.}
-For $k=3$ this suffices, since the proof of \cref{thm:arc}(i) then only uses
-points of $S$. For $k=6$ it does not: there is a $10$-point set with an
-$r$-far $6$-set whose points all have contiguous far sets, yet no greedy
-chain is $r$-far. For $k=4,5$ the random search found no counterexample in
-$\arcHoneFourFive$ cases; in view of \cref{sec:greedy} we do not regard this as
-evidence and leave the question open.
-\item \emph{Arc property only at $r=\rstar$.} Then the chain of every point
-of an optimal set is $\rstar$-far, but the test of \cref{thm:arc}(ii) is
-unreliable at other radii, and a binary search with it can return a wrong
-value; a $6$-point example exists for $k=4$. Binary search with chains that
-are verified pairwise returned $\rstar$ in all $\arcHtwo$ cases.
-\item \emph{No hypothesis.} As expected from \cref{thm:tightpair}, no greedy
-chain needs to be $\rstar$-far for $k\ge4$; this happens in $6$--$9\%$ of
-the instances of this search, most of which are thin.
-\end{itemize}
-
-\begin{table}[tb]
-\centering
-\caption{Search for counterexamples to weakened hypotheses ($n\le13$,
-exhaustive over radii and $k$-sets). H1: some $r$-far $k$-set has only
-arc-shaped far sets $\Rightarrow$ some greedy chain is $r$-far. H2: arc
-property at $\rstar$ $\Rightarrow$ binary search with pairwise-verified chains
-returns $\rstar$; H2u: the same with the test of \cref{thm:arc}(ii). H3: some
-greedy chain is $\rstar$-far.}
-\label{tab:archyp}
-\small
-\begin{tabular}{@{}lrrrr@{}}
-\toprule
- & \multicolumn{4}{c}{cases in which the premise holds / violations}\\
-hypothesis & $k=3$ & $k=4$ & $k=5$ & $k=6$\\
-\midrule
-\tabinput{generated/arc_hyp}
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{How common is the arc property?}
-\Cref{tab:arcstats} reports, for instances with $20\le n\le60$ and
-$k\in\{4,8\}$, the structure at the optimal radius (computed by
-\cref{alg:capped}). Let $\beta=\sum_q(\#\text{runs of }\mathrm{Far}_{\rstar}(q)-1)$,
-so that $\beta=0$ is the arc property at $\rstar$. For all hulls of random
-point clouds, for cocircular points and for jittered regular polygons we
-found $\beta=0$ in every test, and the adaptive algorithm answered on all of
-them except for about a third of the instances drawn from a square and two
-Gaussian ones, where the arc
-property fails at some smaller radius visited by the binary search. On thin
-ellipses and two-chain lenses the arc property always fails. Greedy chains
-succeed at $\rstar$ in all tests with $\beta\le2$, and their success rate
-drops as $\beta$ grows, which suggests looking for algorithms that are
-fixed-parameter tractable in $\beta$.
-
-\begin{table}[tb]
-\centering
-\caption{Structure at the optimal radius ($20\le n\le60$, $k\in\{4,8\}$).
-``arc pts'': mean fraction of points with a contiguous far set; ``greedy'':
-some greedy chain is $\rstar$-far; ``adaptive'': the adaptive algorithm
-answers (and is then correct).}
-\label{tab:arcstats}
-\small
-\begin{tabular}{@{}lrrrrrr@{}}
-\toprule
-group & tests & arc pts & mean $\beta$ & $\beta=0$ & greedy & adaptive\\
-\midrule
-\tabinput{generated/arc_stats}
-\bottomrule
-\end{tabular}
-\end{table}
-
 \paragraph{Verification.}
 The implementation (\code{arc/arcdisp.hpp}) was validated before any timing.
 On $\arcSmallInst$ instances with $n\le16$ from ten families, at every
@@ -1721,26 +1617,21 @@ and the adaptive variant return the exhaustive optimum with a valid witness
 $20\le n\le150$ they agree with \cref{alg:capped} ($\arcBigChecks$ checks).
 An independent Python script recomputes the optima of exported instances by
 brute force and checks \cref{thm:arc} directly ($\arcPyAtwo$ checks). No
-discrepancy occurred. When the decision procedure is applied \emph{without}
-the arc property, it is wrong in $\arcUncheckedWrong\%$ of the cases on the
-thin families, so the hypothesis cannot be dropped.
+discrepancy occurred.
 
 \paragraph{Running time.}
 Unimodal instances are points at jittered equally spaced angles on a circle,
 rounded to integers; every instance is verified to be strictly convex and
 unimodal by the exact $O(n\log n)$ test. With coordinates bounded by $2^{29}$
-such instances exist for $n\le50000$ but not for $n=10^5$, where rounding
-destroys convexity; convex lattice polygons with $10^6$ vertices do fit into
-this box (take all primitive vectors of norm at most $724$ as edges), but they
-are not unimodal. For $n\ge10^5$ we therefore use a circle of radius $2^{60}$
-and $128$-bit squared distances (``wide'' mode); \textsc{O1} needs
-$\Theta(n^2)$ memory and was run for $n\le10^4$. Every reported witness was
+such instances exist for $n\le50000$; for $n\ge10^5$ we use a circle of radius
+$2^{60}$ and $128$-bit squared distances. \textsc{O1} needs $\Theta(n^2)$
+memory and was run for $n\le10^4$. Every reported witness was
 checked by an exact closest-pair computation. \Cref{tab:arcscaling} shows the
 medians over three instances. \textsc{O2} solves instances with a million
 points in about $\arcMillion$ seconds, and its running time grows like
 $n^{\arcSlope}$ between $n=10^3$ and $n=10^6$, compared with
 $n^{\arcSlopeOone}$ for \textsc{O1}. At $n=400$ it is between $300$ ($k=4$) and $40\,000$ ($k=64$) times faster
-than the cubic dynamic program, which of course does not need the hypothesis.
+than the cubic dynamic program.
 
 \begin{table}[tb]
 \centering
@@ -1757,48 +1648,6 @@ $n$ & $k$ & \textsc{DP} & \textsc{O1} & \textsc{O2} & \textsc{O2}\\
 \bottomrule
 \end{tabular}
 \end{table}
-
-\section{Tests of the greedy properties}\label{app:greedytests}
-
-\paragraph{Random tests versus adversarial search.}
-Before finding $P_\star$ we tested all properties on random instances, in
-exact arithmetic (\cref{tab:hunt}): hulls of random point clouds, points on
-circles and thin ellipses, thin ``two-chain'' polygons bounded by two flat
-arcs, small integer grids with many cocircular points, and random
-perturbations (jitter, deletion and insertion of points) of every
-counterexample to a weaker property. On instances with at most $13$ points
-all radii and all $k$-sets were examined exhaustively; on larger ones
-$(\mathrm{TP}_k)$ was decided by the dynamic program of \cref{sec:dp} run on
-cyclic chords, since a tight pair $\{q,a(q)\}$ is contained in an $r$-far
-$k$-set iff $F(a(q),q\mid\pi)\ge k-2$. Counterexamples to $(\mathrm{G}_k)$
-and $(\mathrm{TT}_k)$ for $k\ge4$ and to $(\mathrm{AG}_k)$ for $k\ge6$ appear
-quickly, always on thin polygons in which the cyclic order is far from
-geometric proximity. In contrast, $(\mathrm{TP}_k)$ and $(\mathrm{ST}_k)$
-passed all $\huntCone$ tests. The counterexamples of \cref{thm:tightpair} were
-found only when we switched to an adversarial search: a penalty method that
-moves the $2k$ points of the polygon $s_1a_1\cdots s_ka_k$ so as to satisfy
-all constraints of the previous paragraph with a positive margin, followed by
-rounding to integers and exact verification. For $k=4$ this search succeeds
-within seconds.
-
-\begin{table}[tb]
-\centering
-\caption{Randomised tests of the properties of \cref{sec:greedy}. A test is a
-triple $(P,k,r)$ (for all properties except $(\mathrm{G}_k)$: one for which an
-$r$-far $k$-set exists). $(\mathrm{AG}'_k)$ and $(\mathrm{ST}'_k)$ are the
-variants seeded with $\{q,a(q),b(q)\}$. The last two properties are false
-(\cref{thm:tightpair}) although no random test detected it.}
-\label{tab:hunt}
-\small
-\begin{tabular}{@{}lrrrr@{}}
-\toprule
-Property & $k$ & tests & failures & fails for $k$\\
-\midrule
-\tabinput{generated/table_hunt}
-\bottomrule
-\end{tabular}
-\end{table}
-
 
 \section{Point sets without tight pairs}\label{app:instances}
 
