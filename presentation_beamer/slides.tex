@@ -2,6 +2,7 @@
 \documentclass[aspectratio=169]{beamer}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage{lmodern}
 \usepackage{tgheros}\renewcommand{\sfdefault}{qhv}
 \newcommand{\head}{\fontseries{b}\selectfont}
 \usepackage{newunicodechar}
@@ -64,14 +65,56 @@
 \newcommand{\tsz}{\fontsize{6.6}{9}\selectfont\color{ink}}
 \newenvironment{dtable}[1]{\tsz\renewcommand{\arraystretch}{1.35}\begin{tabular}{#1}\arrayrulecolor{line}}{\end{tabular}}
 
+% ---------------- extra symbols used in this deck ----------------
+\newunicodechar{⁶}{\textsuperscript{6}}
+\newunicodechar{⁺}{\ensuremath{^{+}}}
+\newunicodechar{₀}{\ensuremath{_0}}
+\newunicodechar{₁}{\ensuremath{_1}}
+\newunicodechar{₂}{\ensuremath{_2}}
+\newunicodechar{₃}{\ensuremath{_3}}
+\newunicodechar{₄}{\ensuremath{_4}}
+\newunicodechar{₆}{\ensuremath{_6}}
+\newunicodechar{ᵢ}{\ensuremath{_i}}
+\newunicodechar{ⱼ}{\ensuremath{_j}}
+\newunicodechar{ₗ}{\ensuremath{_l}}
+\newunicodechar{ₖ}{\ensuremath{_k}}
+\newunicodechar{₊}{\ensuremath{_+}}
+\newunicodechar{₋}{\ensuremath{_-}}
+\newunicodechar{★}{\ensuremath{\star}}
+\newunicodechar{←}{\ensuremath{\leftarrow}}
+\newunicodechar{→}{\ensuremath{\rightarrow}}
+\newunicodechar{⇔}{\ensuremath{\Leftrightarrow}}
+\newunicodechar{∪}{\ensuremath{\cup}}
+\newunicodechar{∩}{\ensuremath{\cap}}
+\newunicodechar{∈}{\ensuremath{\in}}
+\newunicodechar{∠}{\ensuremath{\angle}}
+\newunicodechar{⊆}{\ensuremath{\subseteq}}
+\newunicodechar{∞}{\ensuremath{\infty}}
+\newunicodechar{≠}{\ensuremath{\neq}}
+\newunicodechar{π}{\ensuremath{\pi}}
+\newunicodechar{φ}{\ensuremath{\varphi}}
+\newunicodechar{τ}{\ensuremath{\tau}}
+\newunicodechar{ρ}{\ensuremath{\rho}}
+\newunicodechar{′}{\ensuremath{'}}
+\newunicodechar{…}{\ldots}
+\newunicodechar{★}{\ensuremath{\star}}
+\usepackage{amssymb}
+% code blocks
+\newtcolorbox{code}[1][]{enhanced,colback=ink,colframe=ink,arc=1.7mm,left=3.3mm,right=3.3mm,top=2.6mm,bottom=2.6mm,fontupper=\ttfamily\fontsize{5.6}{8.4}\selectfont\color{lighttext},#1}
+\newcommand{\kw}[1]{{\color{lorng}#1}}
+\newcommand{\cm}[1]{{\color{pillb!80!blu}#1}}
+\newcommand{\fn}[1]{{\bfseries #1}}
+\newcommand{\I}{\hspace*{1.2em}}
+\newtcolorbox{formula}[1][]{enhanced,colback=cardbg,colframe=line,boxrule=0.4pt,arc=1.3mm,left=2.4mm,right=2.4mm,top=1.8mm,bottom=1.8mm,fontupper=\ttfamily\fontsize{6}{8.6}\selectfont\color{ink},#1}
+\newcommand{\step}[1]{{\fontsize{6.4}{9}\selectfont\color{soft}#1\par}\vspace{1.2mm}}
+\newcommand{\hthree}[1]{{\head\fontsize{9.5}{12}\selectfont\color{ink}#1\par}\vspace{1.5mm}}
 \begin{document}
 
 %================ 1 cover
 {\darkslide
 \begin{frame}[c]\relax
 \eyebrow{\color{lorng}MAJOR PROJECT · DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING, NITK SURATHKAL}
-{\head\fontsize{22.5}{24}\selectfont\color{lighttext}Exact k-Dispersion for\\Points in Convex Position\par}\vspace{3mm}
-{\fontsize{8.5}{11}\selectfont\color{darktext}Search trees, greedy structure and a capped Delaunay dynamic program\par}\vspace{6mm}
+{\head\fontsize{22.5}{24}\selectfont\color{lighttext}Exact k-Dispersion for\\Points in Convex Position\par}\vspace{9mm}
 {\fontsize{7}{10}\selectfont\color{lighttext}
 \begin{tabular}{@{}l@{\hspace{1.2cm}}l@{}}
 Akshat Bharara · 231CS110 & Guide\\
@@ -102,12 +145,22 @@ Utsav Singh Bhamra · 231CS163 &
 \foot{Orange: the chosen points (k = 4). Grey: points not chosen.}
 \end{frame}}
 
-%================ 3 start
+%================ 3 known bounds
 {\altslide
 \begin{frame}[t]\relax
-\eyebrow{WHERE WE START}
+\vspace{3mm}
+\ttl{Summary of known bounds}
+\begin{center}
+\fcolorbox{line}{white}{\includegraphics[width=10.5cm]{image2.png}}
+\end{center}
+\end{frame}}
+
+%================ 4 what we add
+{\altslide
+\begin{frame}[t]\relax
+\vspace{3mm}
 \ttl{What we add}
-\vspace{10mm}
+\vspace{6mm}
 \begin{tcbraster}[raster columns=3,raster equal height,raster column skip=2.7mm]
 \begin{card}\pill{Part 1}\cttl{Is the search tree correct?}\clbl{Which greedy shortcuts work, and a proof that the base paper’s search is correct for k ≤ 4.}\end{card}
 \begin{card}\pill[pillb]{Part 2}\cttl{When is greedy enough?}\clbl{The arc property: one greedy walk is exact. Near-linear time for “round” point sets.}\end{card}
@@ -116,18 +169,18 @@ Utsav Singh Bhamra · 231CS163 &
 \foot{All algorithms are implemented in C++ with exact integer arithmetic and tested against brute force.}
 \end{frame}}
 
-%================ 4
+%================ 5 divider
 {\darkslide
 \begin{frame}[c]\relax
 {\head\fontsize{47}{48}\selectfont\color{lorng}01\par}\vspace{3mm}
 {\head\fontsize{22.5}{24}\selectfont\color{lighttext}Greedy structure and\\the two-sided search tree\par}
 \end{frame}}
 
-%================ 5 firstfar
+%================ 6 firstfar
 {\plainbg
 \begin{frame}[t]\relax
 \eyebrow{SECTION 4 · THE GREEDY IDEA}
-\ttl{Start somewhere, take the first point far enough away}
+\ttl{Take the first point that is far enough away}
 \begin{columns}[c,onlytextwidth]
 \begin{column}{0.58\textwidth}
 \lead{Fix a target distance \textbf{r}. Walk around the hull from a point \textbf{q}.}\vspace{2mm}
@@ -137,7 +190,7 @@ Utsav Singh Bhamra · 231CS163 &
 \end{column}
 \begin{column}{0.36\textwidth}
 \begin{tikzpicture}
-\node[inner sep=0,anchor=south west] (im) at (0,0) {\includegraphics[width=5.33cm]{image2.png}};
+\node[inner sep=0,anchor=south west] at (0,0) {\includegraphics[width=5.33cm]{image3.png}};
 \node[font=\fontsize{7}{8}\selectfont\bfseries,text=ink] at (3.15,4.82) {q};
 \node[font=\fontsize{7}{8}\selectfont\bfseries,text=orng] at (4.45,1.55) {a(q)};
 \node[font=\fontsize{6}{7}\selectfont,text=blu] at (1.85,2.75) {closer than r};
@@ -146,7 +199,7 @@ Utsav Singh Bhamra · 231CS163 &
 \end{columns}
 \end{frame}}
 
-%================ 6 k3k4
+%================ 7 k3k4
 {\altslide
 \begin{frame}[t]\relax
 \eyebrow{SECTION 4 · RESULT}
@@ -157,17 +210,61 @@ Utsav Singh Bhamra · 231CS163 &
 \begin{card}\cttl{k ≥ 4: it all fails}\clbl{We built 8 points where the only valid group of 4 contains no tight pair, so no greedy start can find it. Similar sets exist for k = 5, 6, 7.}\end{card}
 \end{column}
 \begin{column}{0.48\textwidth}
-\includegraphics[width=5.8cm]{image3.png}\par\vspace{1mm}
+\includegraphics[width=5.8cm]{image4.png}\par\vspace{1mm}
 \smalltxt{Blue: the only valid 4-set. White: each is a first far point, but too close to another blue point.}
 \end{column}
 \end{columns}
 \end{frame}}
 
-%================ 7 greedyres
+%================ 8 pstar
+{\plainbg
+\begin{frame}[t]\relax
+\eyebrow{SECTION 4 · COUNTEREXAMPLE FOR k = 4 (THEOREM 4.5)}
+\ttl{The 8-point set P★}
+\vspace{4mm}
+\begin{columns}[c,onlytextwidth]
+\begin{column}{0.56\textwidth}
+\fcolorbox{white}{white}{\includegraphics[width=7.6cm]{image5.png}}
+\end{column}
+\begin{column}{0.4\textwidth}
+\step{\textbf{\color{ink}Radius:} r² = 10240.}
+\step{\textbf{\color{ink}Only valid 4-set:} \{p₀, p₂, p₄, p₆\}, with |p₀p₄|² = 10240 exactly.}
+\step{\textbf{\color{ink}First far points:} a(p₀) = p₁, a(p₂) = p₃, but |p₁p₄|² = 9965 and |p₃p₀|² = 9685, both below r².}
+\end{column}
+\end{columns}
+\foot{Dashed orange: each first far point (white) is too close to a blue point, so no valid set contains a tight pair.}
+\end{frame}}
+
+%================ 9 cex567
+{\altslide
+\begin{frame}[t]\relax
+\eyebrow{SECTION 4 · COUNTEREXAMPLES FOR k = 5, 6, 7}
+\ttl{The same failure for larger k}
+\begin{columns}[t,onlytextwidth]
+\begin{column}{0.4\textwidth}
+\includegraphics[width=4.6cm]{image6.png}
+\end{column}
+\begin{column}{0.56\textwidth}
+\begin{dtable}{@{}p{1.4cm}>{\raggedleft}p{2.6cm}>{\raggedleft\arraybackslash}p{3.4cm}@{}}
+\toprule
+\textbf{k} & \textbf{points n} & \textbf{r²}\\\midrule
+5 & 10 & 1,000,000\\\midrule
+6 & 12 & 418,609\\\midrule
+7 & 14 & 13,155,129\\\bottomrule
+\end{dtable}\par\vspace{3mm}
+\step{Each set has \textbf{\color{ink}2k points} with integer coordinates and \textbf{\color{ink}exactly one} valid k-set, which contains no tight pair.}
+\step{Verified by listing \textbf{\color{ink}all k-subsets} in exact integer arithmetic.}
+\end{column}
+\end{columns}
+\foot{Blue: the unique valid k-set. White: points not chosen. Full coordinates are in the report’s appendix.}
+\end{frame}}
+
+%================ 10 greedyres
 {\plainbg
 \begin{frame}[t]\relax
 \eyebrow{SECTION 4 · EXPERIMENTS}
 \ttl{Testing each greedy rule on millions of cases}
+\vspace{4mm}
 \begin{dtable}{@{}p{6cm}>{\raggedleft}p{2.4cm}>{\raggedleft}p{2.4cm}>{\raggedleft\arraybackslash}p{2.6cm}@{}}
 \toprule
 \textbf{Greedy rule} & \textbf{Cases tested} & \textbf{Failures} & \textbf{Fails for}\\\midrule
@@ -176,14 +273,13 @@ Arc characterisation & 173.8 million & 7.1 million & k = 4–8\\\midrule
 Tight triple & 54.0 million & 107,512 & k = 4–6\\\midrule
 Alternating greedy & 55.7 million & 34,474 & k = 6–12\\\midrule
 Tight pair & 55.7 million & 0 random & our examples\\\bottomrule
-\end{dtable}\vspace{4mm}
-\begin{callout}Random testing never broke the tight-pair rule. \hl{Only hand-built and optimised examples did}, and every one is checked by brute force in exact arithmetic.\end{callout}
+\end{dtable}
 \end{frame}}
 
-%================ 8 sbmtree
+%================ 11 sbmtree
 {\altslide
 \begin{frame}[t]\relax
-\eyebrow{SECTION 5 · THE BASE PAPER’S SEARCH}
+\eyebrow{SECTION 5}
 \ttl{Grow the solution from one point, in both directions}
 \begin{tcbraster}[raster columns=4,raster equal height,raster column skip=2.7mm]
 \begin{card}\cnum{1}\cttl{Pick a start}\clbl{Choose any point q of the hull as the first chosen point.}\end{card}
@@ -194,63 +290,129 @@ Tight pair & 55.7 million & 0 random & our examples\\\bottomrule
 \begin{callout}Fast when k is small: \hl{O(2\textasciicircum k n² log² n)}. But it is only correct if some start and some choice of sides always reaches k points. The paper’s proof of this claim is an informal picture argument.\end{callout}
 \end{frame}}
 
-%================ 9 sbmresult
+%================ 12 sbmcode
+{\altslide
+\begin{frame}[t]\relax
+\eyebrow{SECTION 5 · PSEUDOCODE}
+\ttl{The two-sided search}
+\begin{columns}[t,onlytextwidth]
+\begin{column}{0.62\textwidth}
+\begin{code}
+\kw{function} \fn{TwoSidedSearch}(P, k, r):\\
+\I\kw{for each} root q \kw{in} P:\\
+\I\I\kw{if} Grow(\{q\}) \kw{then return} YES\\
+\I\kw{return} NO\\[3mm]
+\kw{function} \fn{Grow}(C):\ \ \cm{// C = a contiguous arc of chosen points}\\
+\I\kw{if} |C| = k \kw{then return} true\\
+\I x ← first point ccw after C with dist ≥ r to all of C\\
+\I y ← first point cw before C with dist ≥ r to all of C\\
+\I\kw{return} (x exists \kw{and} Grow(C ∪ \{x\}))\\
+\I\I\I\I\kw{or} (y exists \kw{and} Grow(C ∪ \{y\}))
+\end{code}
+\end{column}
+\begin{column}{0.33\textwidth}
+\begin{card}\cttl{Completeness}\clbl{From Claim 2 of base paper, we prove it for k ≤ 4.}\end{card}
+\begin{card}\cttl{Cost}\clbl{n roots × 2\textasciicircum(k−1) paths; with binary search over distances: O(2\textasciicircum k n² log² n).}\end{card}
+\end{column}
+\end{columns}
+\end{frame}}
+
+%================ 13 sbmresult
 {\plainbg
 \begin{frame}[t]\relax
 \eyebrow{SECTION 5 · WHAT WE PROVED}
 \ttl{The search is correct for up to four points}
 \begin{tcbraster}[raster columns=3,raster equal height,raster column skip=2.7mm]
 \begin{card}\pill{Theorem}\cttl{Correct for k ≤ 4}\clbl{A full proof that the two-sided search never misses a solution of 3 or 4 points. It uses two new facts about angles in convex quadrilaterals and pentagons.}\end{card}
-\begin{card}\pill[pillb]{For every k}\cttl{The first step is always safe}\clbl{Using the “ears” of a Delaunay triangulation, we show the search can always make its first move without losing the solution.}\end{card}
+\begin{card}\pill[pillb]{For every k}\cttl{The first step is always safe}\clbl{Using the ears of a Delaunay triangulation, we show the search can always make its first move without losing the solution.}\end{card}
 \begin{card}\pill{Counterexamples}\cttl{Simple start rules fail}\clbl{Starting at a closest pair fails for k = 5, 6. Starting at the sharpest corner fails for k = 7.}\end{card}
 \end{tcbraster}\vspace{3mm}
-\begin{callout}The base paper’s algorithm is now \hl{proven correct for k ≤ 4}, and we know the start point must be chosen with care.\end{callout}
+\begin{callout}The base paper’s algorithm is now \hl{proven correct for k ≤ 4}\end{callout}
 \end{frame}}
 
-%================ 10 sbmres
+%================ 14 attach
 {\altslide
 \begin{frame}[t]\relax
-\eyebrow{SECTION 5 · IMPLEMENTATION AND EXPERIMENTS}
-\ttl{Checking the search tree in code}
-\begin{tcbraster}[raster columns=3,raster equal height,raster column skip=2.7mm]
-\begin{card}\cnum{29 M}\clbl{random cases with k = 4 checked against the proof: no failure}\end{card}
-\begin{card}\cnum[blu]{532,833}\clbl{random tests plus about 3,000 adversarial runs for k ≤ 10: the search always succeeded}\end{card}
-\begin{card}\cnum{10–14}\clbl{points in our counterexamples to the start rules, verified by exhaustive search}\end{card}
-\end{tcbraster}\vspace{2mm}
-{\fontsize{7.6}{11}\selectfont\color{soft}
-\begin{itemize}\setlength{\itemsep}{1mm}
-\item We re-implemented the base paper’s search tree and dynamic program in C++ (folder \textbf{sbm/}).
-\item Adversarial runs move points on purpose to make the search fail; this is how the start-rule counterexamples were found.
-\item All distances are compared as exact integers, so no answer depends on rounding.
-\end{itemize}}
+\eyebrow{SECTION 5 · TOOLS FOR THE PROOF}
+\ttl{When is a single step safe?}
+\begin{columns}[t,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\hthree{Witness and safe steps}
+\step{Track a \textbf{\color{ink}witness} W: a valid k-set that contains the chosen points C. A step that adds x is \textbf{\color{ink}safe} if swapping x for the next witness point t₁ keeps W valid.}
+\begin{formula}Attachment lemma: if some c ∈ C has\\|c t₁| ≤ |t₁ tⱼ| for every other witness point tⱼ,\\then the next step is safe.\end{formula}\vspace{1mm}
+\step{\textbf{\color{ink}Why:} in a convex quadrilateral the two diagonals are longer together than two opposite sides (fact Q). Applied to c, x, t₁, tⱼ this rules out |x tⱼ| < r.}
+\end{column}
+\begin{column}{0.48\textwidth}
+\hthree{Safe first step, for every k}
+\step{Take a \textbf{\color{ink}Delaunay triangulation} of a solution T. Every point has a nearest neighbour it is joined to.}
+\step{A triangulated convex polygon always has an \textbf{\color{ink}ear}: a corner joined only to its two hull neighbours.}
+\step{So some point e has a hull neighbour ρ as nearest neighbour. Start at ρ and step towards e: the lemma says this is safe.}
+\begin{callout}For k = 3 this already finishes the proof.\end{callout}
+\end{column}
+\end{columns}
 \end{frame}}
 
-%================ 11
+%================ 15 k4proof
+{\plainbg
+\begin{frame}[t]\relax
+\eyebrow{SECTION 5 · PROOF FOR k = 4 (THEOREM 5.6)}
+\ttl{Why the search cannot get stuck with 4 points}
+\begin{columns}[c,onlytextwidth]
+\begin{column}{0.38\textwidth}
+\includegraphics[width=5.2cm]{image7.png}
+\end{column}
+\begin{column}{0.58\textwidth}
+\step{\textbf{\color{ink}1.} Start from a \textbf{\color{ink}good pair} (u, v): hull neighbours in T = \{a, b, c, d\}, u nearest to v. The first step is safe.}
+\step{\textbf{\color{ink}2.} The second step is safe unless the opposite edge is the shortest. Only one hard case is left: two short opposite edges ab and cd.}
+\step{\textbf{\color{ink}3.} Suppose the searches from a and from c both get stuck. That forces blocking points X, Y, X′, Y′.}
+\step{\textbf{\color{ink}4.} A \textbf{\color{ink}five-point lemma} (angle chasing) fixes their order: a, b, Y′, X, c, d, Y, X′ is a convex octagon.}
+\step{\textbf{\color{ink}5.} A \textbf{\color{ink}quadrilateral lemma} gives angle sums ≥ π in each orange piece, and 2π in the blue one. So 4 octagon angles add to ≥ 4π, but each is < π. \textbf{\color{ink}Contradiction.}}
+\end{column}
+\end{columns}
+\end{frame}}
+
+%================ 16 rootcex
+{\altslide
+\begin{frame}[t]\relax
+\eyebrow{SECTION 5 · COUNTEREXAMPLES TO START RULES (PROPOSITION 5.8)}
+\ttl{Where to start the search matters}
+\begin{center}\includegraphics[width=11.5cm]{image8.png}\end{center}\vspace{-1mm}
+\smalltxt{k = 5, n = 10, r² = 52,090. Orange: the closest pair of the solution T. The two-sided search fails when started at an endpoint of this pair, but succeeds from another root.}\vspace{3mm}
+\begin{dtable}{@{}p{6cm}p{2.3cm}>{\raggedleft}p{2.4cm}>{\raggedleft\arraybackslash}p{2.7cm}@{}}
+\toprule
+\textbf{Start rule} & \textbf{k} & \textbf{points n} & \textbf{Result}\\\midrule
+Endpoint of a closest pair of T & 5, 6 & 10, 12 & search fails\\\midrule
+Vertex of T with smallest angle & 7 & 13 & no safe path\\\midrule
+Smallest angle over all solutions & 7 & 14 & no safe path\\\bottomrule
+\end{dtable}
+\end{frame}}
+
+%================ 17 divider
 {\darkslide
 \begin{frame}[c]\relax
 {\head\fontsize{47}{48}\selectfont\color{lorng}02\par}\vspace{3mm}
 {\head\fontsize{22.5}{24}\selectfont\color{lighttext}When greedy is exact:\\the arc property\par}
 \end{frame}}
 
-%================ 12 arcidea
+%================ 18 arcidea
 {\plainbg
 \begin{frame}[t]\relax
 \eyebrow{SECTION 6 · THE ARC PROPERTY}
 \ttl{The far points of every point form one stretch}
 \begin{columns}[t,onlytextwidth]
 \begin{column}{0.48\textwidth}\centering
-\includegraphics[width=4.6cm]{image4.png}\par\vspace{1mm}
+\includegraphics[width=4.6cm]{image9.png}\par\vspace{1mm}
 \pill{Round shape: one stretch — property holds}
 \end{column}
 \begin{column}{0.48\textwidth}\centering
-\includegraphics[width=4.6cm]{image5.png}\par\vspace{1mm}
+\includegraphics[width=4.6cm]{image10.png}\par\vspace{1mm}
 \pill[pillb]{Thin shape: two pieces — property fails}
 \end{column}
 \end{columns}
 \foot{Dark point: q. Orange: points at least r away from q. Grey: points closer than r.}
 \end{frame}}
 
-%================ 13 chain
+%================ 19 chain
 {\altslide
 \begin{frame}[t]\relax
 \eyebrow{SECTION 6 · MAIN THEOREM}
@@ -258,12 +420,12 @@ Tight pair & 55.7 million & 0 random & our examples\\\bottomrule
 \begin{columns}[c,onlytextwidth]
 \begin{column}{0.58\textwidth}
 \lead{Start anywhere. Keep jumping to the \textbf{first far point}. Stop when the walk comes back around.}\vspace{2mm}
-\body{If the walk fits k jumps before it returns to the start, the answer is \textbf{yes}; if not, it is \textbf{no}. No branching, no backtracking.}\vspace{2mm}
-\begin{callout}Decision in \hl{O(n log n)} time, and the base paper’s claim holds with no branching at all.\end{callout}
+\body{If the walk fits k jumps before it returns to the start, the answer is \textbf{yes}; if not, it is \textbf{no}.}\vspace{4mm}
+\begin{callout}Decision in \hl{O(n log n)} time\end{callout}
 \end{column}
 \begin{column}{0.37\textwidth}
 \begin{tikzpicture}
-\node[inner sep=0,anchor=south west] at (0,0) {\includegraphics[width=5.17cm]{image6.png}};
+\node[inner sep=0,anchor=south west] at (0,0) {\includegraphics[width=5.17cm]{image11.png}};
 \foreach \x/\y/\t/\c in {3.0/4.55/start/ink, 4.0/3.0/1/orng, 2.95/0.35/2/orng, 0.45/3.0/3/orng}
   \node[font=\fontsize{7}{8}\selectfont\bfseries,text=\c] at (\x,\y) {\t};
 \end{tikzpicture}
@@ -271,7 +433,61 @@ Tight pair & 55.7 million & 0 random & our examples\\\bottomrule
 \end{columns}
 \end{frame}}
 
-%================ 14 unimodal
+%================ 20 exchange
+{\plainbg
+\begin{frame}[t]\relax
+\eyebrow{SECTION 6 · WHY ONE WALK IS ENOUGH (LEMMA 6.1, THEOREM 6.2)}
+\ttl{Swap one point at a time onto the greedy walk}
+\begin{columns}[t,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\begin{formula}Exchange lemma: if S is valid and s, s′ are\\consecutive in S, then (S − \{s′\}) ∪ \{a(s)\}\\is still valid.\end{formula}\vspace{1mm}
+\step{\textbf{\color{ink}Proof:} a(s) lies between s and s′. For any other point t of S, the far points of t form one stretch that contains s and s′, so it also contains everything between them, including a(s).}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{formula}Greedy chain of q:\\x₀ = q,\ \ xᵢ₊₁ = a(xᵢ)\end{formula}\vspace{1mm}
+\step{\textbf{\color{ink}(i)} If q is in a valid k-set S, apply the lemma k − 1 times: S turns into the chain of q, so the chain is valid.}
+\step{\textbf{\color{ink}(ii)} A chain that does not wrap around is valid exactly when its \textbf{\color{ink}last point is far from its first}: |x₀ xₖ₋₁| ≥ r.}
+\end{column}
+\end{columns}\vspace{2mm}
+\begin{callout}So: \hl{a valid k-set exists ⇔ some q has a non-wrapping chain with |x₀ xₖ₋₁| ≥ r}. Without the arc property, P★ breaks this.\end{callout}
+\end{frame}}
+
+%================ 21 arccode
+{\plainbg
+\begin{frame}[t]\relax
+\eyebrow{SECTION 6 · PSEUDOCODE}
+\ttl{Decision and optimisation for unimodal sets}
+\begin{tcbraster}[raster columns=2,raster equal height,raster column skip=3mm]
+\begin{code}
+\kw{function} \fn{ArcDecision}(P, k, r):\\
+\I\kw{for each} q: a[q] ← first point ccw\\
+\I\I\kw{with} |q a[q]| ≥ r\ \ \cm{// binary search}\\
+\I\kw{for each} q:\\
+\I\I x ← a\textasciicircum(k−1)[q]\ \ \cm{// repeated squaring}\\
+\I\I\kw{if} no wrap-around \kw{and} |q x| ≥ r:\\
+\I\I\I\kw{return} YES, chain of q\\
+\I\kw{return} NO\\[2mm]
+\cm{// O(n log n) when P is unimodal}
+\end{code}
+\begin{code}
+\kw{function} \fn{O2}(P, k):\\
+\I rows → 2n sorted lists\\
+\I\I\cm{// split each row at its maximum}\\
+\I lo ← feasible, hi ← infeasible\\
+\I\kw{while} candidates in (lo, hi) remain:\\
+\I\I d ← random remaining candidate\\
+\I\I\kw{if} ArcDecision(P, k, d): lo ← d\\
+\I\I\kw{else}: hi ← d\\
+\I\I shrink all lists to (lo, hi)\\
+\I\kw{return} lo\ \ \cm{// = r*}
+\end{code}
+\end{tcbraster}\vspace{2mm}
+\smalltxt{O(log n) rounds in expectation, each O(n log n)}\vspace{1mm}
+\smalltxt{Total expected :}
+\smalltxt{\textbf{\color{ink}O(n log² n) time , O(n) memory}}
+\end{frame}}
+
+%================ 22 unimodal
 {\plainbg
 \begin{frame}[t]\relax
 \eyebrow{SECTION 6 · UNIMODAL POINT SETS}
@@ -281,59 +497,110 @@ Tight pair & 55.7 million & 0 random & our examples\\\bottomrule
 \begin{card}\pill[pillb]{Why it helps}\cttl{Arc property at every r}\clbl{So the greedy walk is exact for every distance we try, and we can search for the best distance quickly.}\end{card}
 \begin{card}\pill{Safety check}\cttl{Test it first}\clbl{Whether a set is unimodal can be checked exactly in O(n log n) time before we run.}\end{card}
 \end{tcbraster}\vspace{3mm}
-\begin{callout}Exact answer in expected \hl{O(n log² n)} time, compared with about n³ for general point sets.\end{callout}
+\begin{callout}Exact answer in expected \hl{O(n log² n)} time, compared with O(n³) for general point sets.\end{callout}
 \end{frame}}
 
-%================ 15 arcres
-{\altslide
+%================ 23 arcgraph
+{\plainbg
 \begin{frame}[t]\relax
-\eyebrow{SECTION 6 · IMPLEMENTATION AND EXPERIMENTS}
-\ttl{Exact on every test, and fast at a million points}
-\begin{columns}[t,onlytextwidth]
-\begin{column}{0.52\textwidth}
-\begin{dtable}{@{}p{2.5cm}>{\raggedleft}p{2.2cm}>{\raggedleft\arraybackslash}p{2.4cm}@{}}
-\toprule
-\textbf{Points n} & \textbf{Cubic DP} & \textbf{Our algorithm}\\\midrule
-400 & 4.7 s & 0.4 ms\\\midrule
-10,000 & not run & 19 ms\\\midrule
-100,000 & not run & 0.56 s\\\midrule
-1,000,000 & not run & 8.2 s\\\bottomrule
-\end{dtable}\par\vspace{1.5mm}
-\smalltxt{k = 16, median of three unimodal instances; 128-bit arithmetic from 100,000 points.}
+\eyebrow{SECTION 6 · RUNNING TIME}
+\ttl{Near-linear growth up to a million points}
+\begin{columns}[c,onlytextwidth]
+\begin{column}{0.6\textwidth}
+\includegraphics[width=8.4cm]{image12.png}
 \end{column}
-\begin{column}{0.42\textwidth}
-\begin{card}\cnum{2.65 M}\clbl{answers compared with brute force: no mismatch}\end{card}
-\begin{card}\cnum[blu]{≈ n\textasciicircum1.15}\clbl{measured growth, close to linear}\end{card}
+\begin{column}{0.36\textwidth}
+\begin{card}\cnum{n\textasciicircum1.15}\clbl{measured growth of O2 from 10³ to 10⁶ points}\end{card}
+\begin{card}\cnum[blu]{n\textasciicircum2.11}\clbl{growth of O1, which sorts all distances}\end{card}
+\smalltxt{k = 16, median of three instances; log–log axes.}
 \end{column}
-\end{columns}\vspace{2mm}
-\smalltxt{On thin shapes the property fails, and running the walk without checking gave wrong answers in 8\% of cases. That is why the algorithm tests the property first.}
+\end{columns}
 \end{frame}}
 
-%================ 16
+%================ 24 divider
 {\darkslide
 \begin{frame}[c]\relax
 {\head\fontsize{47}{48}\selectfont\color{lorng}03\par}\vspace{3mm}
 {\head\fontsize{22.5}{24}\selectfont\color{lighttext}A simple exact algorithm:\\the capped dynamic program\par}
 \end{frame}}
 
-%================ 17 certificate
+%================ 25 certificate
 {\plainbg
 \begin{frame}[t]\relax
-\ttl{Checking “all pairs far apart” using only triangles}
+\eyebrow{SECTION 7}
+\ttl{Checking all pairs far apart using only triangles}
 \begin{columns}[c,onlytextwidth]
 \begin{column}{0.58\textwidth}
-\lead{A set of k points is valid exactly when it can be cut into triangles whose \textbf{edges are all at least r long} and whose diagonals are \textbf{Delaunay} (no fourth point inside a triangle’s circle).}\vspace{2mm}
+\lead{A set of k points is valid exactly when it can be cut into triangles whose \textbf{edges are all at least r long} and whose diagonals are \textbf{Delaunay} (no fourth point inside a triangle’s circumcircle).}\vspace{2mm}
 \body{So we never compare every pair. We only build triangles, one diagonal at a time, and test small local conditions.}\vspace{2mm}
 \begin{callout}This turns a global condition into \hl{local checks}, which is exactly what a dynamic program needs.\end{callout}
 \end{column}
 \begin{column}{0.37\textwidth}
-\includegraphics[width=5.17cm]{image7.png}
+\includegraphics[width=5.17cm]{image13.png}
 \end{column}
 \end{columns}
 \foot{Orange: diagonals of the triangulation. Dashed: the circle through one triangle, with no other chosen point inside.}
 \end{frame}}
 
-%================ 18 capdp
+%================ 26 dprec
+{\altslide
+\begin{frame}[t]\relax
+\eyebrow{SECTION 7 · THE RECURRENCE (LEMMA 7.2)}
+\ttl{One chord, one apex, two smaller chords}
+\begin{columns}[c,onlytextwidth]
+\begin{column}{0.42\textwidth}
+\fcolorbox{paper}{paper}{\includegraphics[width=5.6cm]{image14.png}}
+\end{column}
+\begin{column}{0.54\textwidth}
+\step{\textbf{\color{ink}F(i, j | φ)} = most points that fit below chord (i, j) in a valid triangulation whose apex angle is at most φ.}
+\begin{formula}F(i,j | φ) = max over apexes l with ∠pᵢpₗpⱼ ≤ φ of\\1 + F(i,l | π − ∠pᵢpⱼpₗ)\\\ \ + F(l,j | π − ∠pₗpᵢpⱼ)\end{formula}\vspace{1mm}
+\step{The angle bound \textbf{\color{ink}is} the Delaunay check: x may be used exactly when it is \textbf{\color{ink}not inside} the circle through pᵢ, pₗ, pⱼ.}
+\step{\textbf{\color{ink}Answer:} yes ⇔ some long chord has F(i, j | π) ≥ k − 2.}
+\end{column}
+\end{columns}
+\end{frame}}
+
+%================ 27 thresholds
+{\plainbg
+\begin{frame}[t]\relax
+\eyebrow{SECTION 7 · THE CAP (LEMMA 7.4)}
+\ttl{Each chord needs only k − 2 numbers}
+\begin{columns}[t,onlytextwidth]
+\begin{column}{0.48\textwidth}
+\begin{formula}τ\_c(i,j) = smallest apex angle that\\gets c points under chord (i, j)\end{formula}\vspace{1mm}
+\step{The thresholds increase: τ₁ ≤ τ₂ ≤ … and \textbf{\color{ink}F(i, j | φ) = number of thresholds ≤ φ}. So the whole function F is a short sorted list.}
+\step{We only ever ask “is F ≥ k − 2?”, so we keep the \textbf{\color{ink}first K = k − 2 thresholds} and drop the rest. The first K of a chord depend only on the first K of shorter chords.}
+\end{column}
+\begin{column}{0.48\textwidth}
+\step{We store each threshold as the apex point that reaches it. A query “how many of x’s thresholds pass?” is a \textbf{\color{ink}binary search over K} with in-circle tests.}
+\begin{formula}time\ \ O(n²k + n³/w + T\_r log k)\\\hspace*{3em}⊆ O(n³ log k)\\space O(n²k)\end{formula}\vspace{1mm}
+\smalltxt{T\_r = number of triples that are pairwise ≥ r apart; w = word size (bit-parallel apex lists).}
+\end{column}
+\end{columns}
+\end{frame}}
+
+%================ 28 capcode
+{\altslide
+\begin{frame}[t]\relax
+\eyebrow{SECTION 7 · ALGORITHM 7.1}
+\ttl{CappedDecision(P, k, r)}
+\begin{code}
+K ← k − 2\\[1mm]
+\kw{for} g = 2 … n−1:\ \ \cm{// chords by increasing length j − i}\\
+\I\kw{for each} long chord (i, j) with j = i + g:\\
+\I\I best[1..K] ← none\\
+\I\I\kw{for each} apex l of (i, j) far from pᵢ and pⱼ:\ \ \cm{// bit-parallel}\\
+\I\I\I q₁ ← \# thresholds L\_c(i,l) not inside circle(pᵢ, pₗ, pⱼ)\ \ \cm{// binary search}\\
+\I\I\I q₂ ← \# thresholds L\_c(l,j) not inside circle(pᵢ, pₗ, pⱼ)\ \ \cm{// binary search}\\
+\I\I\I v ← min(K, 1 + q₁ + q₂)\\
+\I\I\I\kw{if} best[v] = none \kw{or} ∠pᵢpₗpⱼ < ∠pᵢ best[v] pⱼ: best[v] ← l\\
+\I\I\kw{for} c = K … 1: L\_c(i, j) ← smallest-angle apex in best[c..K]\ \ \cm{// suffix minima}\\
+\I\I\kw{if} L\_K(i, j) ≠ none: \kw{return} TRUE\\[1mm]
+\kw{return} FALSE
+\end{code}
+\end{frame}}
+
+%================ 29 capdp
 {\altslide
 \begin{frame}[t]\relax
 \eyebrow{SECTION 7 · THE ALGORITHM}
@@ -352,31 +619,57 @@ Our capped dynamic program & O(n³ log k)\\\bottomrule
 \end{dtable}
 \end{frame}}
 
-%================ 19 window
+%================ 30 window
 {\plainbg
 \begin{frame}[t]\relax
 \eyebrow{SECTION 7 · FINDING THE BEST DISTANCE}
 \ttl{Search only where the answer can be}
 \begin{columns}[t,onlytextwidth]
 \begin{column}{0.47\textwidth}
-{\head\fontsize{9.5}{12}\selectfont\color{ink}Search window\par}\vspace{1.5mm}
+\hthree{Search window}
 \body{A quick greedy (always take the point farthest from those chosen) gives a distance \textbf{g}. The true answer is guaranteed to lie between \textbf{g} and \textbf{2g}, and below perimeter ÷ k.}\vspace{1.5mm}
 \body{So binary search only looks at distances in that window.}
 \end{column}
 \begin{column}{0.47\textwidth}
-{\head\fontsize{9.5}{12}\selectfont\color{ink}Certified algorithm\par}\vspace{1.5mm}
+\hthree{Certified algorithm}
 \body{Greedy rules are fast and never give a wrong set, but may give a smaller distance than the best.}\vspace{1.5mm}
 \body{So we run greedy first, then \textbf{one exact check} just above its answer. If that check says “no”, greedy was optimal and we are done.}
 \end{column}
 \end{columns}\vspace{4mm}
-\begin{callout}Full optimisation in \hl{O(n³ log k log n)} time, and usually only one or two exact checks in practice.\end{callout}
+\begin{callout}Full optimisation in \hl{O(n³ log k log n)} time, and atmost two exact checks in practice.\end{callout}
 \end{frame}}
 
-%================ 20 dpres
+%================ 31 certcode
+{\altslide
+\begin{frame}[t]\relax
+\eyebrow{SECTION 7 · ALGORITHM 7.2}
+\ttl{Certified(P, k): greedy first, exact only to confirm}
+\begin{columns}[t,onlytextwidth]
+\begin{column}{0.62\textwidth}
+\begin{code}
+G ← farthest-first k points;\ \ g ← min distance in G\\
+W ← sorted distances in [g, min(2g, per(P)/k)]\\[2.5mm]
+ρ ← largest d in W where some greedy run\\
+\I\I succeeds\ \ \cm{// binary search, cheap heuristic}\\
+ρ⁺ ← next distance in W after ρ\\[2.5mm]
+\kw{if} ρ = max W \kw{or not} CappedDecision(P, k, ρ⁺):\\
+\I\kw{return} ρ\ \ \cm{// greedy was optimal: one exact call}\\[2.5mm]
+\kw{return} binary search on W ∩ [ρ⁺, ∞)\\
+\I\I\I with CappedDecision
+\end{code}
+\end{column}
+\begin{column}{0.33\textwidth}
+\begin{card}\cttl{Always exact}\clbl{Greedy only outputs valid sets, so ρ ≤ r*; the exact call proves ρ = r*.}\end{card}
+\begin{card}\cttl{Time}\clbl{O(n²k log n + n³ log k) if greedy is optimal; O(n³ log k log n) worst case.}\end{card}
+\end{column}
+\end{columns}
+\end{frame}}
+
+%================ 32 dpres
 {\altslide
 \begin{frame}[t]\relax
 \eyebrow{SECTION 7 · IMPLEMENTATION AND EXPERIMENTS}
-\ttl{Always exact, and the speed-ups pay off}
+\ttl{Always exact, with speed-ups}
 \begin{tcbraster}[raster columns=3,raster equal height,raster column skip=2.7mm]
 \begin{card}\cnum{846 / 846}\clbl{instances solved correctly, checked against brute force and independent code}\end{card}
 \begin{card}\cnum[blu]{6\%}\clbl{of all distances fall in the search window (median)}\end{card}
@@ -391,28 +684,36 @@ Our capped dynamic program & O(n³ log k)\\\bottomrule
 \end{dtable}
 \end{frame}}
 
-%================ 21 summary
+%================ 33 dpgraph
+{\plainbg
+\begin{frame}[t]\relax
+\eyebrow{SECTION 7 · RUNNING TIME (FIGURE 8.1)}
+\ttl{Exact solve time as n grows}
+\begin{center}\includegraphics[width=13.8cm]{image15.png}\end{center}
+\step{Triple-state baseline grows like \textbf{\color{ink}n⁴} (3.6× slower than ours at n = 100). Capped grows like \textbf{\color{ink}n\textasciicircum3.3–3.5}. Certified is fastest: median \textbf{\color{ink}5.2×} faster than plain exact search.}
+\end{frame}}
+
+%================ 34 summary
 {\plainbg
 \begin{frame}[t]\relax
 \eyebrow{SUMMARY}
 \ttl{What the project adds}
+\vspace{6mm}
 \begin{dtable}{@{}p{5.9cm}p{3.6cm}p{4.3cm}@{}}
 \toprule
 \textbf{Result} & \textbf{Before} & \textbf{Now}\\\midrule
 Base paper’s search tree & informal proof & proven correct for k ≤ 4\\\midrule
-Greedy rules for k ≥ 4 & unknown & all fail, with small examples\\\midrule
+Greedy rules for k ≥ 4 & unknown & Counter examples found\\\midrule
 Round (unimodal) point sets & about n³ time & O(n log² n) expected\\\midrule
 Exact decision, any convex set & O(n³ log n) & O(n³ log k)\\\midrule
 Implementation & — & C++, exact arithmetic, all tests pass\\\bottomrule
-\end{dtable}\vspace{4mm}
-\begin{callout}Proofs where there were pictures, a \hl{near-linear algorithm} for round inputs, and a \hl{simpler exact algorithm} for all inputs.\end{callout}
+\end{dtable}
 \end{frame}}
 
-%================ 22 thanks
+%================ 35 thanks
 {\darkslide
 \begin{frame}[c]\relax
-{\head\fontsize{22.5}{24}\selectfont\color{lighttext}Thank you\par}\vspace{3mm}
-{\fontsize{9.5}{12}\selectfont\color{darktext}Questions?\par}\vspace{8mm}
+{\head\fontsize{22.5}{24}\selectfont\color{lighttext}Thank you\par}\vspace{8mm}
 {\fontsize{7}{10}\selectfont\color{darktext}Akshat Bharara · Rakshith Ashok Kumar · Utsav Singh Bhamra\\Guide: Prof. Manjanna B · NITK Surathkal\par}
 \end{frame}}
 
