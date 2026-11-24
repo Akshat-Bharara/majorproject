@@ -1,9 +1,18 @@
-% Compile with: xelatex slides.tex   (run twice)
+% Compiles with pdfLaTeX (Overleaf default), XeLaTeX or LuaLaTeX
 \documentclass[aspectratio=169]{beamer}
-\usepackage{fontspec}
-\setsansfont{Inter}[UprightFont=*,BoldFont=* SemiBold]
-\newfontfamily\head{Inter}[UprightFont=* Bold,BoldFont=* Bold]
-\newfontfamily\mono{DejaVu Sans Mono}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{tgheros}\renewcommand{\sfdefault}{qhv}
+\newcommand{\head}{\fontseries{b}\selectfont}
+\usepackage{newunicodechar}
+\newunicodechar{≤}{\ensuremath{\le}}
+\newunicodechar{≥}{\ensuremath{\ge}}
+\newunicodechar{≈}{\ensuremath{\approx}}
+\newunicodechar{÷}{\ensuremath{\div}}
+\newunicodechar{−}{\ensuremath{-}}
+\newunicodechar{²}{\textsuperscript{2}}
+\newunicodechar{³}{\textsuperscript{3}}
+\newunicodechar{⁴}{\textsuperscript{4}}
 \usepackage{tikz}
 \usepackage[most]{tcolorbox}
 \usepackage{array,booktabs,colortbl}
@@ -31,7 +40,7 @@
 \setbeamertemplate{itemize item}{\color{soft}\textbullet}
 
 % ---------------- type scale (1920 px = 16 cm) ----------------
-\newcommand{\eyebrow}[1]{{\fontsize{6.2}{8}\selectfont\bfseries\color{orng}\addfontfeature{LetterSpace=8}#1\par}\vspace{1.6mm}}
+\newcommand{\eyebrow}[1]{{\fontsize{6.2}{8}\selectfont\bfseries\color{orng}#1\par}\vspace{1.6mm}}
 \newcommand{\ttl}[1]{{\head\fontsize{15}{17}\selectfont\color{ink}#1\par}\vspace{3.2mm}}
 \newcommand{\lead}[1]{{\fontsize{9.5}{12.8}\selectfont\color{ink}#1\par}}
 \newcommand{\body}[1]{{\fontsize{7.6}{11}\selectfont\color{soft}#1\par}}
