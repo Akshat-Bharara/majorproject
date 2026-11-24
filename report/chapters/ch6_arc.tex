@@ -1,0 +1,170 @@
+\chapter{When greedy is exact: the arc property}\label{sec:arc}
+
+The counterexamples of \cref{sec:greedy} are thin polygons in which the
+distance from a point is far from unimodal along the hull. This section shows
+that this is the only obstruction: if the set of points far from $q$ is always
+contiguous, the simplest greedy rule is exact, and for unimodal point sets it
+gives a near-linear algorithm.
+
+For $r>0$ and $q\in P$ let $\mathrm{Far}_r(q)=\{x\in P\setminus\{q\}:|qx|\ge r\}$.
+We say that $P$ has the \emph{$r$-arc property} if for every $q$ the set
+$\mathrm{Far}_r(q)$ consists of consecutive points in the order
+$p_{q+1},\dots,p_{q-1}$; then $\mathrm{Far}_r(q)$ is exactly the ccw arc from
+$a(q)$ to $b(q)$. We call $P$ \emph{unimodal} if for every $q$ the sequence
+$|p_qp_{q+t}|$, $t=1,\dots,n-1$, is strictly increasing and then strictly
+decreasing, where the maximum may be attained at two consecutive values of
+$t$. A unimodal set has the $r$-arc property for every $r$. Points on a circle
+are unimodal, since the chord length is $2R\sin(\theta/2)$ for the ccw angle
+$\theta\in(0,2\pi)$; the tie at the top occurs, for instance, in every regular
+polygon with an odd number of vertices, which is why it has to be admitted.
+
+\begin{lemma}[Exchange]\label{lem:a1}
+Assume the $r$-arc property. Let $S$ be an $r$-far set and let $s,s'$ be
+consecutive points of $S$ in ccw order. Then $(S\setminus\{s'\})\cup\{a(s)\}$
+is $r$-far.
+\end{lemma}
+\begin{proof}
+By \cref{lem:arcbasic}, $a(s)$ lies on the ccw arc from $s$ to $s'$, and
+$|s\,a(s)|\ge r$. Let $t\in S\setminus\{s,s'\}$. The set $\mathrm{Far}_r(t)$
+is a set of consecutive points in the order that starts and ends next to $t$,
+and it contains $s$ and $s'$. The ccw arc from $s$ to $s'$ does not contain
+$t$, so all its points lie between $s$ and $s'$ in that order and belong to
+$\mathrm{Far}_r(t)$. Hence $|t\,a(s)|\ge r$.
+\end{proof}
+
+For $q\in P$ and $k\ge2$ the \emph{greedy chain} of $q$ is $x_0=q$,
+$x_{i+1}=a(x_i)$ for $i<k-1$. It is \emph{proper} if all $a(x_i)$ are defined
+and the chain does not wrap around, i.e.\ the ccw offsets of $x_0,\dots,x_{k-1}$
+from $q$ are strictly increasing and smaller than $n$.
+
+\begin{theorem}\label{thm:arc}
+Assume the $r$-arc property and let $k\ge2$.
+\begin{enumerate}[label=(\roman*),itemsep=1pt,topsep=2pt]
+\item If $S$ is an $r$-far $k$-set and $q\in S$, then the greedy chain of $q$
+is proper and $r$-far.
+\item A proper greedy chain is $r$-far if and only if $|x_0x_{k-1}|\ge r$.
+\end{enumerate}
+Hence $P$ has an $r$-far $k$-set if and only if some $q$ has a proper greedy
+chain with $|x_0x_{k-1}|\ge r$.
+\end{theorem}
+\begin{proof}
+(i) Let $S=\{s_1,\dots,s_k\}$ in ccw order with $s_1=q$. Applying
+\cref{lem:a1} to the consecutive pair $(x_0,s_2)$ replaces $s_2$ by $x_1$;
+then $(x_1,s_3)$ is a consecutive pair of the new $r$-far set, and we replace
+$s_3$ by $x_2$, and so on. After $k-1$ steps the set is the chain, which is
+$r$-far, and since $x_i$ lies on the ccw arc from $x_{i-1}$ to $s_{i+1}$, the
+chain is proper.
+
+(ii) Only ``if'' needs a proof. Fix $i$. Starting after $x_i$, the other
+chain points appear in the order
+$x_{i+1},\dots,x_{k-1},x_0,\dots,x_{i-1}$. The first of them is $a(x_i)$ and
+lies in $\mathrm{Far}_r(x_i)$. The last one also does: for $i\ge1$ because
+$x_i=a(x_{i-1})$, and for $i=0$ by assumption. Since $\mathrm{Far}_r(x_i)$ is
+contiguous, it contains all of them.
+\end{proof}
+
+Part~(ii) is the difference to \cref{sec:greedy}: without the arc property a
+greedy chain can close up and still contain a close pair, and by
+\cref{thm:tightpair} there may be no $r$-far chain at all. Indeed the set
+$P_\star$ violates the arc property at $r^2=10240$ ($\mathrm{Far}_r(p_0)$
+consists of the three runs $\{p_1,p_2\}$, $\{p_4\}$, $\{p_6\}$).
+
+\paragraph{Decision.}
+Given the offsets of $a(q)$ for all $q$, the function $a^{k-1}$ together with
+the offset travelled is obtained by repeated squaring in $O(n\log k)$ time and
+$O(n)$ space, after which \cref{thm:arc} is tested in $O(1)$ per seed. (The
+obvious $O(nk)$ walk works as well.) Computing $a(q)$ takes $O(n)$ time by
+scanning. For unimodal $P$ we first find, for every row $q$, the position of
+its maximum by binary search; then $a(q)$ is found by binary search on the
+increasing part of the row.
+
+\begin{theorem}\label{thm:arcdecision}
+Under the $r$-arc property, the decision problem can be solved in
+$O(n^2)$ time, and in $O(n\log n)$ time if $P$ is unimodal. A witness is
+reported within the same bounds.
+\end{theorem}
+
+\paragraph{Optimisation.}
+For unimodal $P$, sorting the $\binom n2$ distances and binary search gives
+$O(n^2\log n)$ time; we call this variant \textsc{O1}. To avoid generating
+all distances, observe that every row splits at its maximum into an increasing
+and a decreasing list, so that the candidates are available as $2n$ implicit
+sorted lists. Algorithm \textsc{O2} maintains an open interval $(lo,hi)$ with
+$lo$ feasible and $hi$ infeasible and, for each list, the range of its entries
+inside the interval. In each round it picks one of the remaining entries
+uniformly at random, tests it, and shrinks all ranges by binary search.
+
+\begin{theorem}\label{thm:arcopt}
+For $n$ points in convex position that form a unimodal set, $k$-dispersion can
+be solved exactly in expected $O(n\log^2n)$ time and $O(n)$ space.
+\end{theorem}
+\begin{proof}
+A round costs $O(n\log n)$: $O(n)$ to select the pivot, $O(n\log n)$ for the
+decision (\cref{thm:arcdecision}) and $O(n\log n)$ to update the ranges. All
+remaining entries equal to the pivot are removed, and with probability at
+least $1/2$ the pivot has rank between $1/4$ and $3/4$ among the remaining
+entries, in which case at least a quarter of them are removed. So the expected
+number of rounds is $O(\log n)$. When no entry is left, $lo=\rstar$, because
+$\rstar$ is a pairwise distance and is feasible.
+\end{proof}
+
+\paragraph{Recognising the hypotheses.}
+The arc property at a given $r$ is checked in $O(n^2)$ time by counting runs.
+Unimodality can be verified faster.
+
+\begin{lemma}\label{lem:unitest}
+Whether $P$ is unimodal can be decided in $O(n\log n)$ time.
+\end{lemma}
+\begin{proof}
+Fix $j$. The points strictly closer to $p_j$ than to $p_{j+1}$ are the points
+of $P$ in an open half-plane bounded by the perpendicular bisector of
+$p_jp_{j+1}$. Since $P$ is in strictly convex position, they form a run of
+consecutive points; it contains $p_j$ and not $p_{j+1}$, so it is
+$p_j,p_{j-1},\dots,p_{j-c_j+1}$ for some $1\le c_j\le n-1$. At most two points
+of $P$ lie on the bisector; one boundary crossing of the bisector is inside the
+edge $p_jp_{j+1}$, so the only candidate for a point equidistant from $p_j$ and
+$p_{j+1}$ is $p_{j-c_j}$. Let $z_j=1$ if it is equidistant and $z_j=0$
+otherwise. The predicate ``$p_{j-s}$ is strictly closer to $p_j$ than to
+$p_{j+1}$'' is monotone in $s$, so $c_j$ is found by binary search with
+$O(\log n)$ distance comparisons, and $z_j$ with one more.
+
+Now fix a row $q$ and $1\le t\le n-2$, and put $j=q+t$. The step from
+$p_{q+t}$ to $p_{q+t+1}$ increases the distance to $p_q$ iff $p_q=p_{j-t}$ is
+strictly closer to $p_j$ than to $p_{j+1}$, that is, iff $t<c_j$; it leaves the
+distance unchanged iff $t=c_j$ and $z_j=1$; otherwise it decreases. A row is
+unimodal (with at most one tie, at the top) iff no step that is not an
+increase is followed by a step that is not a decrease. Step $t$ is not an
+increase iff $t\ge c_j$, and step $t+1$ (whose edge is $p_{j}p_{j+1}$ shifted
+by one, i.e.\ index $j+1$) is not a decrease iff $t+1\le c_{j+1}-1+z_{j+1}$.
+Hence some row fails iff for some $j$ there is an integer
+$t\in[1,n-3]$ with $c_j\le t\le c_{j+1}+z_{j+1}-2$. As $c_j\ge1$, this is the
+case iff $c_j\le\min\{c_{j+1}+z_{j+1}-2,\;n-3\}$ for some $j$, which is
+checked in $O(n)$ time once all $c_j,z_j$ are known.
+\end{proof}
+
+For general convex input we use an \emph{adaptive} variant of \textsc{O1}: it
+checks the arc property at every radius it tests and reports ``not
+applicable'' if the check fails. It takes $O(n^2\log n)$ time, is exact
+whenever it answers, and never answers incorrectly.
+
+\paragraph{Weaker hypotheses.}
+The hypothesis of \cref{thm:arc} cannot be weakened in the two obvious ways.
+
+\begin{proposition}\label{prop:weaker}
+\begin{enumerate}[label=(\alph*),itemsep=1pt,topsep=2pt]
+\item There is a set of $10$ points and an $r$-far $6$-set $S$ such that
+$\mathrm{Far}_r(s)$ is contiguous for every $s\in S$, but no greedy chain of six
+points is $r$-far.
+\item There is a set of $6$ points with the $\rstar$-arc property for $k=4$ on
+which binary search over the candidate distances with the test of
+\cref{thm:arc}(ii) returns a value larger than $\rstar$.
+\end{enumerate}
+\end{proposition}
+\begin{proof}
+The instances are listed in \code{arc/data/hypothesis_counterexamples.json} and
+verified by exhaustive search in exact arithmetic
+(\code{arc/check\_hypotheses.py}).
+\end{proof}
+
+Running times of the near-linear algorithm are reported in \cref{app:arcexp}.
+

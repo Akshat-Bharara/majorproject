@@ -1,0 +1,115 @@
+\chapter{Literature Survey}\label{ch:lit}
+
+\begin{chapterabstract}
+This chapter surveys exact and approximation algorithms for dispersion,
+with emphasis on points in convex position, and describes the two papers on
+which the project builds: the bounded search tree and dynamic program of
+Singireddy, Basappa and Mitchell, and the independent-set approach of
+Tkachenko and Wang.
+\end{chapterabstract}
+
+\section{Dispersion in general}
+
+For a set of $n$ points with arbitrary distances, $k$-dispersion is NP-hard
+even when the distances satisfy the triangle inequality, and for Euclidean
+points in the plane it is NP-hard as well~\citep{wangkuo}. Ravi, Rosenkrantz
+and Tayi~\citep{ravi} showed that no polynomial algorithm achieves a ratio
+better than $1/2$ for metric distances unless $\mathrm{P}=\mathrm{NP}$, and gave a
+$1/2$-approximation; the same guarantee had been obtained earlier by
+Tamir~\citep{tamir}. The algorithm is the farthest-first greedy rule, which is
+also the classical $2$-approximation for $k$-center~\citep{gonzalez}.
+
+For exact algorithms in the plane, Akagi et al.~\citep{akagi} gave an
+$n^{O(\sqrt k)}$-time algorithm, together with linear-time algorithms for the
+special cases in which the points lie on a line or on a circle; Araki and
+Nakano~\citep{arakinakano} improved the line case to $O(\log n)$ time after
+preprocessing. Chen and Dumitrescu~\citep{chendumitrescu} recently gave simple
+algorithms for small~$k$. Agarwal, Overmars and Sharir~\citep{agarwal} studied
+maximally separated sets in the plane, and Fekete and
+Meijer~\citep{feketemeijer} considered dispersion with an average-distance
+objective.
+
+\section{Dispersion for points in convex position}
+
+For $k=3$, Horiyama et al.~\citep{horiyama} gave an $O(n^2\log n)$ algorithm
+for the Euclidean metric, and Kobayashi et al.~\citep{kobayashi} an $O(n^2)$
+algorithm for points in convex position. Mishra, Rao and
+Das~\citep{mishra} studied an approximation for points on a convex polygon.
+
+\paragraph{Singireddy, Basappa and Mitchell.}
+The paper of Singireddy, Basappa and Mitchell~\citep{sbm} is the starting point
+of this project. It contains three results.
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item A \emph{bounded search tree}. The first point is placed at a vertex of the
+hull; afterwards the chosen points always form a contiguous arc, and the next
+point is the first vertex beyond one of the two ends of this arc that is far
+enough from all chosen points. Branching on the end gives at most $2^{k}$
+paths per starting vertex, and binary search over the candidate distances
+gives an $O(2^kn^2\log^2n)$ algorithm, which is fixed-parameter tractable in
+$k$. Its correctness rests on the claim that some starting vertex and some
+sequence of ends reach $k$ points whenever a solution exists (Claim~2
+of~\citep{sbm}). This claim is the subject of \cref{sec:sbm}.
+\item A \emph{dynamic program} over Delaunay triangulations of the solution,
+running in $O(n^4k^2)$ time. It was the first polynomial algorithm for
+general~$k$.
+\item An $O(\log n)$-time $1/(2\sqrt2)$-approximation for $k=3$ that uses only the
+extreme points of the polygon.
+\end{enumerate}
+
+\paragraph{Tkachenko and Wang.}
+Tkachenko and Wang~\citep{tw25} observed that the decision version of
+dispersion is a maximum-independent-set problem in the unit-disk graph of the
+points, and solved it by dynamic programming over triangulations; for
+dispersion their algorithm runs in $O(n^{37/11}\log n)$ time, and for $k=3$
+the decision problem can be solved in $O(n\log n)$ time. In a recent
+paper~\citep{tw26} they compute a maximum-weight independent set of $n$ disks
+in convex position in $O(n^3\log n)$ time, which gives an $O(n^3\log^2 n)$
+algorithm for dispersion. A key ingredient~\citep[Lemma~12]{tw26} is that, for
+a fixed chord, the constraints imposed by the triangle on the other side of
+the chord are monotone along the bisector of the chord; all subproblems of a
+chord can therefore be evaluated by sorting and binary search. The dynamic
+program of \cref{ch:exact} uses the same monotonicity.
+
+\section{Summary of known bounds}
+
+\Cref{tab:known} summarises the exact algorithms for points in convex position,
+together with the results of this project.
+
+\begin{table}[htb]
+\centering
+\caption{Exact algorithms for $k$-dispersion of $n$ points in convex position.
+The general bound of~\citet{tw25} is as reported in~\citet{tw26}.}
+\label{tab:known}
+\small\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Reference & Time & Remarks\\
+\midrule
+\citet{sbm} & $O(2^k n^2\log^2 n)$ & search tree; correct for $k\le4$ by \cref{thm:sbm4}\\
+\citet{sbm} & $O(n^4k^2)$ & Delaunay dynamic program\\
+\citet{tw25} & $O(n^{37/11}\log n)$ & via unit-disk independent set\\
+\citet{tw26} & $O(n^3\log^2 n)$ & via weighted independent set of disks\\
+\citet{kobayashi} & $O(n^2)$ & $k=3$\\
+\citet{tw25} & $O(n\log n)$ & $k=3$, decision version\\
+\citet{akagi} & $O(n)$ after sorting & points on a circle\\
+\midrule
+\textbf{This project} (\cref{thm:arcopt}) & $O(n\log^2n)$ expected & unimodal point sets\\
+\textbf{This project} (\cref{thm:opt}) & $O(n^3\log k\log n)$ & decision in $O(n^3\log k)$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Research gaps}
+
+The survey leaves the following gaps, which this project addresses.
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+\item The correctness of the fixed-parameter algorithm of~\citet{sbm} depends on
+a claim without a complete proof.
+\item The fast algorithms for $k=3$ exploit structure tied to the first far
+points of a point; it was not known which of these properties survive for
+larger~$k$.
+\item Apart from points on a circle, no class of point sets in convex
+position was known on which dispersion can be solved in near-linear time.
+\item The cubic algorithms for general $k$ pay a $\log n$ factor per decision even
+when $k$ is small.
+\end{itemize}

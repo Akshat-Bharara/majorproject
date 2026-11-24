@@ -1,0 +1,55 @@
+\section{Limitations}\label{sec:limitations}
+
+\paragraph{The two-sided search tree.}
+$(\mathrm{SBM}_k)$ remains unproved for $k\ge5$, so the bound
+$O(2^kn^2\log^2n)$ of~\citet{sbm} is established here only for $k\le4$; the
+published argument for general $k$ is a picture argument with three centres of
+a Delaunay triangle that we have not been able to complete. Our method does not
+extend directly: after a replacement the new point moves away from the
+remaining witness points, so the attachment condition of \cref{lem:attach} is
+not inherited, and \cref{prop:rootrules} shows that the root must be chosen
+with more care than by distances or angles alone. Not even every vertex of a
+solution is a good root for $k=4$ (the last instance in
+\code{fpt/data/root\_rule\_instances.json}). We conjecture the following
+strengthening of $(\mathrm{SBM}_k)$, which holds for $k\le4$ by
+\cref{thm:sbm4}: \emph{for every $r$-far $k$-set $T$ there is a vertex of $T$
+from which a search that only takes safe steps reaches $k$ points.} The
+evidence is experimental: the conjecture held on more than $1.2\cdot10^7$
+pairs $(T,r)$ with $k\le7$, including adversarially optimised instances, and
+the two-sided search succeeded in all $532{,}833$ random tests and about
+$3{,}000$ adversarial runs for $k\le10$. Until a proof is found,
+\cref{alg:certified} uses the search only as a sound heuristic.
+
+\paragraph{The arc property.}
+The near-linear bound of \cref{thm:arcopt} requires a unimodal point set; for
+points exactly on a circle a linear-time algorithm was already
+known~\citep{akagi}. For general convex input the arc property must be checked
+at every tested radius, which costs $O(n^2)$ per radius, and the adaptive
+algorithm may report that it is not applicable. The arc property fails on thin
+inputs: in our experiments it held at the optimal radius on every hull of a
+random point cloud and on near-circular sets, but never on thin ellipses and
+lenses, and applying the decision procedure without the hypothesis gave wrong
+answers in $\arcUncheckedWrong\%$ of the cases on thin families. The question
+whether contiguous far sets for the points of one solution suffice is open for
+$k=4,5$ (\cref{prop:weaker} settles $k=6$).
+
+\paragraph{The exact algorithm.}
+The worst-case improvement over~\citet{tw26} is a factor $\log n/\log k$, which
+vanishes when $k=n^{\Omega(1)}$, and the per-chord monotonicity behind it is
+that of~\citet{tw26}; their algorithm also handles weighted disks of arbitrary
+radii, which ours does not. In our experiments the cap made the decision
+procedure $\capSpeedupKFour$ times faster for $k=4$ but only $1.1$--$1.4$ times
+faster for larger $k$, and the measured growth was $n^{\expCappedFour}$ to
+$n^{\expCappedSixteen}$ rather than $n^3$, because the number of binary-search
+steps grows with $\log n$ and the table of $\Theta(n^2k)$ entries leaves the
+cache. The certified algorithm is no faster than the exact one in the worst
+case: when the heuristic bound is not tight, which happened only on thin
+inputs, it was about $\certOverhead\%$ slower.
+
+\paragraph{Experiments.}
+All experiments use synthetic instances (hulls of random point clouds, points
+on or near circles, thin ellipses and lenses) on a single machine. Integer
+coordinates are bounded by $2^{29}$ so that the predicates fit into $128$ bits;
+unimodal instances with $10^5$ or more points do not fit into this range and
+were run with $128$-bit squared distances.
+

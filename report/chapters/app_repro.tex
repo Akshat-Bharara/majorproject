@@ -1,0 +1,24 @@
+\section{Reproducing the results}\label{app:repro}
+
+All code, instances, counterexamples and scripts are in the project
+repository. The C++ code needs a C++17 compiler; the scripts need
+Python~3 (the verification scripts use only the standard library).
+
+\paragraph{General algorithms.} In \code{convex/}, \code{make} builds the
+library tests and the benchmark drivers; the self-test compares the capped
+program, the baselines and exhaustive search on random instances, and
+\code{make\_tables.py} turns the raw results in \code{convex/results/} into
+the tables and plots of \cref{ch:results}. The counterexamples of
+\cref{thm:tightpair} are verified by
+\code{convex/experiments/check\_counterexamples.py}.
+
+\paragraph{Arc property.} In \code{arc/}, \code{arc\_tests} checks the
+greedy chain and the decision procedure against brute force, \code{pybrute.py}
+is an independent Python check, \code{check\_hypotheses.py} verifies the
+recorded counterexamples to weaker hypotheses, and \code{arc\_bench} produces
+the scaling experiments.
+
+\paragraph{Search tree.} \code{sbm/} re-implements the algorithms
+of~\citet{sbm}; \code{fpt/k4check.cpp} and \code{fpt/firststep.cpp} test the
+statements of \cref{sec:sbm}, and \code{fpt/check\_roots.py} verifies the
+root-rule counterexamples of \cref{prop:rootrules} in exact arithmetic.

@@ -1,0 +1,139 @@
+\chapter{Introduction}\label{ch:intro}
+
+\begin{chapterabstract}
+This chapter introduces the $k$-dispersion problem, explains why points in
+convex position are an interesting special case, states the problem
+precisely, lists the objectives of the project and summarises its
+contributions.
+\end{chapterabstract}
+
+\section{Background}
+
+Facility location asks where to place a number of facilities so that some
+objective is optimised. In the classical versions, such as $k$-center or
+$k$-median, facilities should be \emph{close} to the clients they serve. In
+\emph{obnoxious} facility location the opposite is true: facilities should be
+far from one another, because they interfere with or endanger each other.
+Typical examples are radio transmitters that must not interfere, franchise
+outlets that should not compete for the same customers, and storage plants for
+hazardous material that should be placed so that an accident at one plant does
+not reach another~\citep{tamir,ravi}.
+
+The most basic problem of this kind is \emph{max--min dispersion}, also called
+$k$-dispersion or the maximally separated set problem~\citep{agarwal}: given a
+set $P$ of $n$ candidate locations and an integer $k$, choose $k$ of them so
+that the smallest distance between two chosen locations is as large as
+possible. For points in the plane with Euclidean distances the problem is
+NP-hard~\citep{wangkuo}; the best exact algorithms take $n^{O(\sqrt k)}$
+time~\citep{akagi}, and a ratio of $1/2$ is the best known approximation
+guarantee in polynomial time~\citep{ravi,tamir}.
+
+A natural way to obtain efficient algorithms is to restrict the input. When the
+candidate locations lie on the boundary of a convex region---for example, on
+the coast of a convex island, the setting used to motivate the problem
+in~\citet{sbm}---the points are in \emph{convex position}, and the problem
+becomes solvable in polynomial time. This project studies $k$-dispersion for
+points in convex position. Our starting point is the recent paper of
+Singireddy, Basappa and Mitchell in \emph{Discrete Applied
+Mathematics}~\citep{sbm}, which gives a fixed-parameter algorithm based on a
+bounded search tree, a polynomial dynamic program and an approximation for
+$k=3$.
+
+\section{Problem statement}\label{sec:problem}
+
+Let $P$ be a set of $n$ points in the plane in \emph{convex position}, that is,
+every point of $P$ is a vertex of the convex hull $\conv(P)$. For an integer
+$2\le k\le n$, the \emph{$k$-dispersion} problem asks for a subset
+$S\subseteq P$ with $|S|=k$ that maximises
+\[
+  \delta(S)=\min_{p\ne q\in S}|pq| .
+\]
+We write $\rstar=\rstar_k(P)$ for the optimum. The \emph{decision version}
+asks, for a given radius $r$, whether $P$ contains $k$ points whose pairwise
+distances are all at least $r$ (an \emph{$r$-far $k$-set}). Since $\rstar$ is
+one of the $\binom n2$ pairwise distances and the decision is monotone in $r$,
+an algorithm for the decision version yields one for the optimisation version
+by binary search.
+
+\section{Motivation}
+
+Two questions motivated the project.
+
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \emph{Is the search tree of~\citet{sbm} correct?} Its correctness rests on
+a claim (Claim~2 of~\citet{sbm}) that, if $k$ well-separated points exist, a
+solution can be grown from some starting point by repeatedly adding the first
+admissible point at one of the two ends of the chosen arc. The published proof
+of this claim is a picture argument. A rigorous proof would put the
+algorithm on solid ground; a counterexample would show that it is incorrect.
+\item \emph{When is the problem easy?} For $k=3$ much faster algorithms are
+known than for general $k$~\citep{kobayashi,tw25}. We wanted to understand
+which structural properties make $k=3$ easy, whether they extend to larger
+$k$, and for which inputs a simple greedy rule is exact.
+\end{enumerate}
+
+\section{Objectives of the project}
+
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+\item Study the algorithms of~\citet{sbm} and the related work, and re-implement
+them in exact integer arithmetic.
+\item Prove or refute the claim on which the bounded search tree of~\citet{sbm}
+relies, at least for small $k$.
+\item Determine which greedy properties that hold for $k=3$ extend to larger
+$k$, and identify a natural class of inputs on which greedy is exact.
+\item Obtain a faster algorithm for such a special class, and a simple exact
+algorithm for the general problem.
+\item Implement all algorithms, validate them against exhaustive search, and
+evaluate them experimentally.
+\end{itemize}
+
+\section{Contributions}\label{sec:contributions}
+
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \textbf{The two-sided search tree} (\cref{sec:sbm}). We prove the claim
+of~\citet{sbm} for $k\le4$ (\cref{thm:sbm4}), which makes their algorithm
+correct for these $k$. For every $k$ we prove an attachment lemma that
+certifies single steps of the search and show, using Delaunay ears, that the
+first step can always be made safely (\cref{thm:firststep}). We also give point
+sets showing that the starting point cannot be chosen by distances or angles
+alone (\cref{prop:rootrules}).
+
+\item \textbf{Greedy structure} (\cref{sec:greedy}). For $k=3$ every $r$-far
+triple can be turned into one of a few canonical forms by a single
+replacement, and an arc characterisation of $r$-far triples holds. For
+$k\ge4$ these properties fail; in particular there are point sets in which no
+solution contains a point together with the first point at distance at least
+$r$ from it (\cref{thm:tightpair}). The $8$-point example for $k=4$ can be
+checked by hand.
+
+\item \textbf{The arc property} (\cref{sec:arc}). If, for every point $q$, the
+points at distance at least $r$ from $q$ are contiguous along the hull, then a
+single greedy chain decides the problem (\cref{thm:arc}). For unimodal point
+sets, which include perturbed points on a circle, this gives an exact
+algorithm with expected running time $O(n\log^2n)$ (\cref{thm:arcopt}).
+
+\item \textbf{A simple exact algorithm} (\cref{ch:exact}). A set in convex
+position is $r$-far if and only if it has a triangulation with long edges and
+locally Delaunay diagonals (\cref{thm:cert-delaunay}). This certificate gives a
+short correctness proof for a dynamic program over chords; capping the
+per-chord information at $k-2$ thresholds decides the problem in
+$O(n^3\log k)$ time and solves it in $O(n^3\log k\log n)$ time.
+
+\item \textbf{Implementation and evaluation} (\cref{ch:results}). All
+algorithms are implemented in C++ with exact integer predicates, cross-checked
+against exhaustive search and independent code, and evaluated on instances
+with up to $10^6$ points.
+\end{enumerate}
+
+\section{Organisation of the report}
+
+\textbf{Chapter~\ref{ch:lit}} reviews the literature.
+\textbf{Chapter~\ref{ch:prelim}} fixes notation and proves the Delaunay
+certificate. \textbf{Chapter~\ref{sec:greedy}} studies greedy structure for
+$k=3$ and $k\ge4$. \textbf{Chapter~\ref{sec:sbm}} analyses the two-sided search
+tree of~\citet{sbm} and proves its correctness for $k\le4$.
+\textbf{Chapter~\ref{sec:arc}} treats point sets with the arc property.
+\textbf{Chapter~\ref{ch:exact}} presents the exact algorithm.
+\textbf{Chapter~\ref{ch:results}} describes the implementation and the
+experimental results, and \textbf{Chapter~\ref{ch:conclusion}} concludes with
+limitations and future work.

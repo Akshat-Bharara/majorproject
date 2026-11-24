@@ -1,0 +1,110 @@
+\chapter{Preliminaries}\label{ch:prelim}
+\section{Notation and conventions}\label{sec:prelim}
+
+Throughout, $P=(p_0,\dots,p_{n-1})$ is a sequence of $n\ge3$ points in
+\emph{strictly} convex position (no three collinear), listed counterclockwise
+(ccw); indices are taken modulo~$n$. We write $|pq|$ for the Euclidean
+distance. For $i\ne j$, $P(i,j)$ denotes the points strictly between $p_i$ and
+$p_j$ when going ccw from $p_i$ to $p_j$. For $r>0$, a set is \emph{$r$-far}
+if all its pairwise distances are at least $r$, and $\far_r(i,j)$ is the
+predicate $|p_ip_j|\ge r$. For three points, $\ang abc\in(0,\pi)$ is the angle
+at $b$ in the triangle $abc$, and $\circlethree abc$ is the circle through
+them. $\per(P)$ is the perimeter of $\conv(P)$.
+
+A \emph{triangulation} of a set $S$ in convex position, $|S|\ge3$, is a
+maximal set of pairwise non-crossing segments (\emph{edges}) between points of
+$S$; its edges are the sides of $\conv(S)$ and the \emph{diagonals}. A
+diagonal $ab$ with incident triangles $abc$ and $bad$ is \emph{locally
+Delaunay} if $d$ is not strictly inside $\circlethree abc$. Since $acbd$ is a
+convex quadrilateral, this is equivalent to
+\begin{equation}\label{eq:ld}
+\ang acb+\ang adb\le\pi .
+\end{equation}
+A triangulation is \emph{Delaunay} if no point of $S$ lies strictly inside the
+circumcircle of any of its triangles. Delaunay triangulations exist for every
+finite point set not contained in a line (triangulate the cells of the
+Delaunay subdivision arbitrarily).
+
+We repeatedly use two elementary facts.
+\begin{description}[leftmargin=1.5em,itemsep=1pt]
+\item[(Q)] In a convex quadrilateral $abcd$ the diagonals are together longer
+than either pair of opposite sides: $|ac|+|bd|>|ab|+|cd|$ and
+$|ac|+|bd|>|bc|+|da|$. (Apply the triangle inequality at the crossing point of
+the diagonals.)
+\item[(A)] Seen from a vertex $v$ of a convex polygon, the other vertices
+appear in their cyclic order within an angle smaller than $\pi$. Hence, if
+$v,u_1,u_2,u_3$ occur in this ccw order, $\ang u_1vu_3=\ang u_1vu_2+\ang u_2vu_3$.
+\end{description}
+
+\paragraph{Model of computation and exact predicates.}
+Our algorithms compare distances and evaluate the in-circle predicate; no other
+geometric primitive is used. The analysis holds on a real RAM, where the term
+$n^3/w$ below is to be read as $n^3$, and on a word RAM with word size
+$w=\Omega(\log n)$ for integer input. For integer coordinates of absolute value
+at most $2^{29}$, squared distances fit into $62$ bits and the in-circle
+determinant is smaller than $2^{124}$ in absolute value, so that signed
+$128$-bit integers suffice; this is what our implementation does. All angle
+comparisons below reduce to in-circle tests by the inscribed angle theorem:
+\begin{description}[leftmargin=1.5em,itemsep=1pt]
+\item[(I1)] if $x$ and $y$ lie on the same side of the line $ab$, then
+$\ang axb>\ang ayb$ iff $x$ is strictly inside $\circlethree ayb$;
+\item[(I2)] if $x$ and $c$ lie on opposite sides of the line $ab$, then
+$\ang axb+\ang acb>\pi$ iff $x$ is strictly inside $\circlethree acb$.
+\end{description}
+
+\section{A Delaunay certificate for \texorpdfstring{$r$}{r}-far sets}\label{sec:certificate}
+
+\begin{lemma}[Delaunay lemma {\citep{delaunay,edelsbrunner}}]\label{lem:delaunay}
+If every diagonal of a triangulation $T$ of a finite point set $S$ is locally
+Delaunay, then $T$ is a Delaunay triangulation of $S$.
+\end{lemma}
+
+It is well known that a closest pair of a point set is joined by an edge of
+its Delaunay triangulation. We need the statement for an \emph{arbitrary}
+Delaunay triangulation in the presence of cocircular points, and give the
+short proof for sets in convex position.
+
+\begin{lemma}\label{lem:closest}
+Let $T$ be a Delaunay triangulation of a set $S$ in strictly convex position,
+$|S|\ge3$. Then every closest pair of $S$ is joined by an edge of $T$.
+\end{lemma}
+\begin{proof}
+Let $p,q$ be a closest pair and suppose that $pq$ is not an edge of $T$. Then
+$pq$ is not a side of $\conv(S)$, and it does not pass through a third point
+of $S$. Hence, starting at $p$, the segment $pq$ runs through the interior of
+a triangle $puv$ of $T$ and leaves it through an interior point of the side
+$uv$. So $u$ and $v$ lie strictly on opposite sides of the line $pq$, and
+$p,u,q,v$ are the vertices of a convex quadrilateral in this cyclic order,
+with diagonals $pq$ and $uv$. Because $T$ is Delaunay, $q$ is not strictly
+inside $\circlethree puv$, that is, $\ang upv+\ang uqv\le\pi$ by~(I2). The
+angles of the quadrilateral sum to $2\pi$, so $\ang puq+\ang pvq\ge\pi$, and
+one of them, say $\ang puq$, is at least $\pi/2$. Then $pq$ is the strictly
+longest side of the triangle $puq$, so $|pu|<|pq|$, contradicting the choice
+of $p,q$.
+\end{proof}
+
+\begin{theorem}[Delaunay certificate]\label{thm:cert-delaunay}
+Let $S$ be a set in strictly convex position, $|S|\ge3$, and let $r>0$. Then
+$S$ is $r$-far if and only if $S$ has a triangulation $T$ such that
+\begin{enumerate}[label=(\alph*),itemsep=0pt,topsep=2pt]
+\item every edge of $T$ has length at least $r$, and
+\item every diagonal of $T$ is locally Delaunay.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+($\Leftarrow$) By (b) and \cref{lem:delaunay}, $T$ is a Delaunay
+triangulation. By \cref{lem:closest} the minimum pairwise distance of $S$ is
+the length of an edge of $T$, which is at least $r$ by~(a).
+($\Rightarrow$) Take any Delaunay triangulation $T$ of $S$. It satisfies (b)
+by definition, and (a) because all its edges join points of the $r$-far
+set~$S$.
+\end{proof}
+
+Conditions (a) and (b) are \emph{local}: (a) concerns single edges and (b)
+pairs of adjacent triangles. The dynamic program of
+Tkachenko and Wang~\citep{tw26} is built on the same idea of gluing triangles
+under a local compatibility condition (for disks it is phrased with
+Voronoi vertices of triples); \cref{thm:cert-delaunay} isolates the
+statement that makes such a program correct and reduces its proof to the
+Delaunay lemma.
+

@@ -1,0 +1,360 @@
+% Major project report -- compile with:  xelatex report && bibtex report && xelatex report && xelatex report
+\documentclass[12pt, twoside,openright]{report}
+
+\usepackage{pdfpages}
+\usepackage{setspace}
+\usepackage{mathrsfs}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage[no-math]{mathspec}
+\IfFontExistsTF{Times New Roman}{%
+  \setmainfont{Times New Roman}
+  \setmathsfont(Digits,Latin,Greek){Times New Roman}}{%
+  \setmainfont{TeX Gyre Termes}
+  \setmathsfont(Digits,Latin,Greek){TeX Gyre Termes}}
+
+\usepackage[toc,page]{appendix}
+\usepackage{float}
+\graphicspath{{Figures/}}
+\usepackage{wrapfig}
+\usepackage{xcolor}
+
+\newenvironment{chapterabstract}{%
+  \par\nobreak\noindent
+  \textbf{\textit{Summary}\hrulefill}\par\nobreak
+  \small
+  \noindent\ignorespaces
+}{%
+  \par\nobreak\normalsize
+  \vskip-\ht\strutbox\noindent
+  \textbf{\hrulefill}%
+}
+
+\usepackage[font=small]{caption}
+\usepackage[a4paper,bindingoffset=0.2in,left=1in,right=1in,top=1in,bottom=1in,footskip=.25in]{geometry}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\usepgfplotslibrary{groupplots}
+\usepackage{natbib}
+\usepackage[english]{babel}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    citecolor=blue,
+    pdftitle={Exact k-Dispersion for Points in Convex Position},
+}
+\usepackage[capitalise,noabbrev]{cleveref}
+
+\setlength{\arrayrulewidth}{.3mm}
+
+% ---------------------------------------------------------------------------
+% Theorem environments and notation
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\floatstyle{ruled}
+\newfloat{algorithm}{tbp}{loa}[chapter]
+\floatname{algorithm}{Algorithm}
+\crefname{algorithm}{Algorithm}{Algorithms}
+\floatstyle{plain}
+\restylefloat{figure}
+\restylefloat{table}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\far}{\mathrm{far}}
+\newcommand{\per}{\mathrm{per}}
+\newcommand{\conv}{\mathrm{conv}}
+\newcommand{\ang}{\angle}
+\newcommand{\rstar}{r^{*}}
+\newcommand{\circlethree}[3]{\bigcirc(#1,#2,#3)}
+\newcommand{\Arc}{\mathrm{A}}
+\newcommand{\Tr}{T_r}
+\newcommand{\nil}{\bot}
+\newcommand{\AlgCapped}{\textsc{CappedDecision}}
+\newcommand{\AlgCert}{\textsc{Certified}}
+\newcommand{\code}[1]{\nolinkurl{#1}}
+\makeatletter\newcommand{\tabinput}[1]{\@@input #1.tex }\makeatother
+\input{generated/macros}
+\input{generated/arc_macros}
+
+% ---------------------------------------------------------------------------
+% Project details -- EDIT THESE
+\newcommand{\ReportTitle}{Exact $k$-Dispersion for Points in Convex Position: Search Trees, Greedy Structure and a Capped Delaunay Dynamic Program}
+\newcommand{\StudentA}{Student Name 1}
+\newcommand{\StudentB}{Student Name 2}
+\newcommand{\StudentC}{Student Name 3}
+\newcommand{\RegA}{Reg.\ No.\ XXXXXXX}
+\newcommand{\RegB}{Reg.\ No.\ XXXXXXX}
+\newcommand{\RegC}{Reg.\ No.\ XXXXXXX}
+\newcommand{\Guide}{Dr.\ Guide Name}
+\newcommand{\GuideDesignation}{Assistant/Associate Professor}
+\newcommand{\Department}{Computer Science and Engineering}
+\newcommand{\SubmissionDate}{November 2026}
+% ---------------------------------------------------------------------------
+
+\pagenumbering{roman}
+\begin{document}
+\emergencystretch=2em
+
+\input{./title.tex}
+\thispagestyle{empty}
+
+\begin{spacing}{1.5}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Declaration
+\newpage
+\thispagestyle{empty}
+\mbox{}
+\newpage
+\begin{titlepage}
+\begin{center}
+\large \textbf{DECLARATION} \\
+\textit{By the B.Tech.\ Students}
+\end{center}
+
+\vspace*{0.4in}
+\indent We hereby \textit{declare} that the Major Project Report entitled
+{\bf\textquotedblleft\ReportTitle\textquotedblright}, which is being submitted
+to the {\bf\textit{National Institute of Technology Karnataka, Surathkal}} in
+partial fulfilment of the requirements for the award of the Degree of
+{\bf\textit{Bachelor of Technology}} in {\bf\textit{\Department}} is a
+\textit{bonafide report of the work carried out by us}. The material contained
+in this report has not been submitted to any University or Institution for the
+award of any degree.
+
+\vspace*{0.5in}
+\begin{singlespacing}
+\noindent
+\begin{tabular}{@{}l@{\hspace{3em}}l@{\hspace{3em}}l@{}}
+\textbf{Name} & \textbf{Register No.} & \textbf{Signature}\\[6pt]
+\StudentA & \RegA & \rule{1.3in}{0.4pt}\\[18pt]
+\StudentB & \RegB & \rule{1.3in}{0.4pt}\\[18pt]
+\StudentC & \RegC & \rule{1.3in}{0.4pt}
+\end{tabular}
+
+\vspace*{0.4in}
+\noindent Department of \Department\\
+National Institute of Technology Karnataka, Surathkal
+\end{singlespacing}
+
+\vspace*{0.5in}
+\noindent Place: NITK, Surathkal\\
+\noindent Date: \rule{1.2in}{0.4pt}
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Certificate
+\newpage
+\thispagestyle{empty}
+\mbox{}
+\newpage
+\begin{titlepage}
+\begin{center}
+\large \textbf{CERTIFICATE}
+\end{center}
+
+\vspace*{0.4in}
+\indent This is to \textit{certify} that the Major Project Report entitled
+{\bf\textquotedblleft\ReportTitle\textquotedblright}, submitted by
+{\bf \StudentA} (\RegA), {\bf \StudentB} (\RegB) and {\bf \StudentC} (\RegC)
+as the record of the work carried out by them, is \textit{accepted} as the
+\textit{B.Tech.\ Major Project Report submission} in partial fulfilment of the
+requirements for the award of the degree of {\bf\textit{Bachelor of
+Technology}} in {\bf\textit{\Department}}.
+
+\vspace*{0.9in}
+\begin{singlespacing}
+\hspace*{2.5in}
+\parbox{3in}
+{\noindent {\bf \Guide} \\
+\noindent Project Guide \\
+\noindent \GuideDesignation\\
+\noindent Department of \Department\\
+\noindent NITK Surathkal -- 575025
+\vspace*{1.1in}\\
+\noindent {\bf Head of the Department} \\
+\noindent (Signature with Date and Seal)}
+\end{singlespacing}
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Statements of Contribution
+\newpage
+\thispagestyle{empty}
+\mbox{}
+\newpage
+\begin{titlepage}
+\pagestyle{empty}
+\begin{center}
+\large \textbf{Statements of Contribution}
+\end{center}
+
+\begin{singlespacing}
+\noindent The work reported here was divided into three parts of roughly equal
+size; each part includes the theory, its implementation and the corresponding
+experiments.
+
+\begin{enumerate}[leftmargin=*,itemsep=6pt]
+\item \textbf{\StudentA}: problem formulation, literature survey, the Delaunay
+certificate for $r$-far sets, the capped Delaunay dynamic program, the search
+window and the certified algorithm (\cref{ch:prelim,ch:exact}), and the
+benchmarks of the general algorithms.
+\item \textbf{\StudentB}: re-implementation of the algorithms
+of~\citet{sbm}, the greedy structure for $k=3$ and its failure for $k\ge4$,
+and the analysis of the two-sided search tree including the proof for $k\le4$
+and the root-rule counterexamples (\cref{sec:greedy,sec:sbm}).
+\item \textbf{\StudentC}: the arc property, the greedy-chain algorithm, the
+unimodality test and the near-linear algorithm for unimodal point sets
+(\cref{sec:arc}), with its validation and scaling experiments.
+\end{enumerate}
+
+\noindent The results of this report are being prepared for submission as a
+research article. Its preprint is listed under `List of publications' at the
+end of the report.
+\end{singlespacing}
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Abstract
+\newpage
+\thispagestyle{empty}
+\mbox{}
+\newpage
+\begin{titlepage}
+\pagestyle{empty}
+\begin{center}
+\large \textbf{ABSTRACT}
+\end{center}
+
+\begin{singlespacing}
+Given $n$ points in convex position in the plane and an integer $k$, the
+\emph{$k$-dispersion} problem asks for $k$ of the points whose minimum pairwise
+distance is as large as possible. It models the placement of facilities that
+must be kept apart, such as transmitters or hazardous plants along a coastline.
+Singireddy, Basappa and Mitchell (Discrete Applied Mathematics, 2026) gave a
+fixed-parameter algorithm that grows a solution from one point in both
+directions along the hull; its correctness rests on a claim whose published
+proof is informal. Tkachenko and Wang (SWAT 2026) gave an $O(n^3\log^2n)$
+algorithm.
+
+This project makes three contributions. First, we prove the claim of
+Singireddy et al.\ for $k\le4$, which makes their algorithm correct for these
+values of $k$; for every $k$ we show that the first step of the search can be
+made safely, and we give point sets showing that natural rules for choosing the
+starting point fail for $k=5,6,7$. Along the way we show that the structural
+properties that make $k=3$ easy all fail for $k\ge4$. Second, we identify the
+\emph{arc property}---for every point, the points far from it are contiguous
+along the hull---under which a single greedy chain is exact; for unimodal point
+sets this gives an $O(n\log^2n)$ expected-time algorithm that solves instances
+with a million points in seconds. Third, a Delaunay certificate for
+well-separated sets yields a simple exact algorithm that decides the problem in
+$O(n^3\log k)$ time and solves it in $O(n^3\log k\log n)$ time.
+
+All algorithms are implemented in C++ with exact integer arithmetic and were
+validated against exhaustive search on thousands of instances.
+
+\vspace*{12pt}
+\noindent \textit{Keywords}: $k$-dispersion, obnoxious facility location,
+convex position, Delaunay triangulation, dynamic programming, greedy
+algorithms, fixed-parameter algorithms, computational geometry.
+\end{singlespacing}
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Acknowledgements
+\newpage
+\thispagestyle{empty}
+\mbox{}
+\newpage
+\begin{titlepage}
+\pagestyle{empty}
+\begin{center}
+\large \textbf{Acknowledgements}
+\end{center}
+
+We thank our project guide, \Guide, for guidance and encouragement throughout
+this project. We thank the Head of the Department and the faculty of the
+Department of \Department, NITK Surathkal, for providing the facilities and
+support needed to carry out this work, and the members of the evaluation panel
+for their comments. Finally, we thank our families and friends for their
+constant support.
+
+\vspace*{0.5in}
+\hfill \StudentA\\
+\hspace*{\fill} \StudentB\\
+\hspace*{\fill} \StudentC
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\tableofcontents
+\listoffigures
+\addcontentsline{toc}{chapter}{List of figures}
+\listoftables
+\addcontentsline{toc}{chapter}{List of tables}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Main matter
+\cleardoublepage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\include{chapters/ch1_intro}
+\include{chapters/ch2_lit}
+\include{chapters/ch3_prelim}
+\include{chapters/ch4_greedy}
+\include{chapters/ch5_sbm}
+\include{chapters/ch6_arc}
+\include{chapters/ch7_exact}
+\include{chapters/ch8_results}
+\include{chapters/ch9_conclusion}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter*{Appendix}
+\addcontentsline{toc}{chapter}{Appendix}
+\renewcommand{\thesection}{A.\arabic{section}}
+\setcounter{section}{0}
+\input{chapters/app_instances}
+\input{chapters/app_repro}
+
+\end{spacing}
+
+\cleardoublepage
+\renewcommand{\bibname}{References}
+\bibliographystyle{apalike}
+\addcontentsline{toc}{chapter}{References}
+\bibliography{mybib}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter*{List of publications}
+\addcontentsline{toc}{chapter}{List of publications}
+
+\section*{Manuscripts in preparation}
+\begin{itemize}
+\item \StudentA, \StudentB, \StudentC\ and \Guide. \emph{Exact $k$-dispersion
+for points in convex position: a capped Delaunay dynamic program and the
+limits of greedy structure.} Manuscript, \SubmissionDate.
+\end{itemize}
+
+\newpage
+\thispagestyle{empty}
+\mbox{}
+
+\end{document}

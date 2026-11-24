@@ -1,0 +1,232 @@
+\chapter{The two-sided search tree}\label{sec:sbm}
+
+The fixed-parameter algorithm of Singireddy, Basappa and Mitchell~\citep{sbm}
+decides whether an $r$-far $k$-set exists by the following search. A
+\emph{state} is a set $C$ of chosen points that occupies a contiguous arc of
+the hull, together with the complementary open arc $F$ (the \emph{free arc}).
+Initially $C=\{q\}$ for a \emph{root} $q$, and $F=P\setminus\{q\}$. A
+\emph{ccw step} adds the first point of $F$, in ccw order from the ccw end of
+$C$, that is at distance at least $r$ from every point of $C$; a \emph{cw
+step} is the mirror image. The search branches on the side, so that each root
+spawns a binary tree of depth $k-1$; it succeeds if some root and some
+sequence of sides reaches $|C|=k$. Every set it reaches is $r$-far, so the
+search is sound. Its completeness is the following claim (Claim~2
+of~\citet{sbm}, rephrased).
+
+\begin{description}[leftmargin=3.2em,labelwidth=2.6em,itemsep=2pt]
+\item[$(\mathrm{SBM}_k)$] If $P$ has an $r$-far $k$-set, the two-sided search
+succeeds from some root.
+\end{description}
+
+\noindent By \cref{thm:tightpair}, both sides are needed: on $P_\star$ every
+search that starts with a ccw step fails, whereas the two-sided search
+succeeds. In this section we prove $(\mathrm{SBM}_k)$ for $k\le4$, prove that
+the first step can always be made safely for every $k$, and show that the
+starting point cannot be chosen by distances or angles alone.
+
+\paragraph{Witnesses.}
+Fix an $r$-far $k$-set $T$. We follow the search together with a
+\emph{witness} $W$: an $r$-far $k$-set with $C\subseteq W$ and $W\setminus
+C\subseteq F$. Write $W\setminus C=\{t_1,\dots,t_m\}$ in ccw order from the
+ccw end of $C$. Let $x$ be the point that a ccw step would add. Since $t_1$ is
+at distance at least $r$ from $C$, $x$ is $t_1$ or lies before $t_1$. We call
+the ccw step \emph{safe} if $(W\setminus\{t_1\})\cup\{x\}$ is $r$-far; then it
+is the new witness, and the state after the step again has a witness.
+Symmetrically for cw steps with $t_m$.
+
+\begin{lemma}[attachment]\label{lem:attach}
+If some $c\in C$ satisfies $|c\,t_1|\le|t_1t_j|$ for all $2\le j\le m$, then
+the ccw step is safe. Symmetrically, if some $c\in C$ satisfies
+$|c\,t_m|\le|t_mt_i|$ for all $1\le i\le m-1$, then the cw step is safe.
+\end{lemma}
+\begin{proof}
+If $x=t_1$ there is nothing to show. Otherwise $x$ lies strictly between the
+ccw end of $C$ and $t_1$, and it is at distance at least $r$ from all of $C$.
+Suppose that $|x\,t_j|<r$ for some $2\le j\le m$. The points $c,x,t_1,t_j$ are
+in convex position in this ccw order, so by (Q),
+$|c\,t_1|+|x\,t_j|>|c\,x|+|t_1t_j|$, that is,
+$|c\,t_1|>|t_1t_j|+(|c\,x|-|x\,t_j|)>|t_1t_j|$, a contradiction. Hence $x$ is
+at distance at least $r$ from $t_2,\dots,t_m$ and from $C$, and
+$(W\setminus\{t_1\})\cup\{x\}$ is $r$-far.
+\end{proof}
+
+\Cref{lem:attach} says that a step is safe whenever the next point of the
+witness has a chosen point among its nearest neighbours in the witness. At the
+root this can always be arranged.
+
+\begin{lemma}\label{lem:nnadjacent}
+Let $\mathcal T$ be a Delaunay triangulation of a set $S$ in strictly convex
+position. Every $p\in S$ has a nearest neighbour in $S$ that is adjacent to $p$
+in $\mathcal T$. Consequently, if $|S|\ge3$, some $p\in S$ has a nearest
+neighbour among its two neighbours on the hull of $S$.
+\end{lemma}
+\begin{proof}
+Let $q$ be a nearest neighbour of $p$, and suppose that no nearest neighbour
+of $p$ is adjacent to it. As in the proof of \cref{lem:closest}, the segment
+$pq$ crosses an edge $uv$ of a triangle $puv$ of $\mathcal T$, $p,u,q,v$ form a
+convex quadrilateral, $\ang puq+\ang pvq\ge\pi$ because $\mathcal T$ is
+Delaunay, and say $\ang puq\ge\pi/2$; then $|pu|<|pq|$, a contradiction. For
+the second claim, a triangulation of a convex polygon with at least four
+vertices has an \emph{ear}, a vertex of degree two whose neighbours in the
+triangulation are its two hull neighbours; for $|S|=3$ every vertex is such a
+vertex.
+\end{proof}
+
+\begin{theorem}[safe first step]\label{thm:firststep}
+Let $T$ be an $r$-far $k$-set, $k\ge2$. There are adjacent points $e,\rho$ of
+$T$ (adjacent on the hull of $T$) such that the first step of the search from
+root $\rho$ towards $e$ is safe with respect to the witness $T$.
+\end{theorem}
+\begin{proof}
+For $k=2$ every step is safe. Otherwise, by \cref{lem:nnadjacent} some $e\in T$
+has a hull neighbour $\rho$ in $T$ as a nearest neighbour in $T$. Start at
+$\rho$ and step towards $e$; then $e$ is $t_1$ (or $t_m$) and $c=\rho$
+satisfies the hypothesis of \cref{lem:attach}.
+\end{proof}
+
+For $k=3$ a safe first step leaves a single point to add, and the next step
+is trivially safe, so $(\mathrm{SBM}_3)$ follows; this is a short proof of a
+special case of \cref{thm:k3}.
+
+\section{Four points}
+For $k=4$ the claim holds. The proof needs two geometric lemmas.
+
+\begin{lemma}\label{lem:opposite}
+Let $p,q,s,t$ be in convex position in this ccw order. If
+$|qs|\ge\max\{|ps|,|qt|\}$, then the interior angles of the quadrilateral at
+$p$ and $t$ sum to at least $\pi$.
+\end{lemma}
+\begin{proof}
+In the triangle $pqs$, $|qs|\ge|ps|$ gives $\ang qps\ge\ang pqs$; in the
+triangle $qst$, $|qs|\ge|qt|$ gives $\ang qts\ge\ang qst$. The interior angle
+at $p$ is at least $\ang qps$ and the one at $t$ at least $\ang qts$, while
+the interior angles at $q$ and $s$ are $\ang pqs$ and $\ang qst$. Hence
+$\ang p+\ang t\ge\ang q+\ang s=2\pi-\ang p-\ang t$.
+\end{proof}
+
+\begin{lemma}\label{lem:core}
+There are no points $a,X,Y,c,d$ in strictly convex position in this ccw order
+with $|aX|,|ad|,|cd|\ge r$ and $|aY|,|Xd|<r$.
+\end{lemma}
+\begin{proof}
+The chords $aY$ and $Xd$ cross, so by (Q) applied to $a,X,Y,d$,
+$|Yd|<|aY|+|Xd|-|aX|<r$. Write $\alpha_1=\ang cYd$, $\alpha_2=\ang dYa$,
+$\alpha_3=\ang aYX$, $\varepsilon_1=\ang Yad$, $\varepsilon_2=\ang XaY$,
+$\eta=\ang adX$, $\mu=\ang XdY$, $\delta_1=\ang Ydc$, $\gamma=\ang Ycd$,
+$\lambda=\ang YXd$, $\zeta=\ang dXa$ and $\xi=\ang aXY$. By (A),
+$\ang aXY=\lambda+\zeta$, $\ang adY=\eta+\mu$, $\ang XYd=\alpha_2+\alpha_3$
+and $\ang Xad=\varepsilon_1+\varepsilon_2$. We use: convexity at $Y$,
+$\alpha_1+\alpha_2+\alpha_3<\pi$; the angle sums of the triangles $XYd$,
+$aXd$, $aYd$, $Ycd$, $acd$; and, comparing opposite sides,
+$\xi<\alpha_3$ (triangle $aXY$: $|aY|<|aX|$),
+$\gamma<\alpha_1$ (triangle $Ycd$: $|Yd|<|cd|$),
+$\eta+\mu<\alpha_2$ (triangle $aYd$: $|aY|<|ad|$), and
+$\varepsilon_1+\varepsilon_2<\min\{\eta,\zeta\}$ (triangle $aXd$:
+$|Xd|<|aX|,|ad|$), which gives $\varepsilon_1+\varepsilon_2<\pi/3$.
+
+From the triangles $XYd$ and $aXd$,
+$\xi+\eta+\mu=(\lambda+\mu)+(\zeta+\eta)
+=(\pi-\alpha_2-\alpha_3)+(\pi-\varepsilon_1-\varepsilon_2)$, hence with
+$\xi<\alpha_3$,
+\[\eta+\mu>2\pi-\alpha_2-2\alpha_3-\varepsilon_1-\varepsilon_2.\]
+In the triangle $acd$ the angle at $d$ is $\eta+\mu+\delta_1<\pi$, and in
+$Ycd$, $\delta_1=\pi-\alpha_1-\gamma>\pi-2\alpha_1$; so $\eta+\mu<2\alpha_1<
+2(\pi-\alpha_2-\alpha_3)$. Together, $\alpha_2<\varepsilon_1+\varepsilon_2$.
+Finally, in the triangle $aYd$,
+$\pi-\varepsilon_1=\alpha_2+(\eta+\mu)<2\alpha_2<2\varepsilon_1+2\varepsilon_2$,
+so $\pi<3(\varepsilon_1+\varepsilon_2)<\pi$, a contradiction.
+\end{proof}
+
+\begin{theorem}\label{thm:sbm4}
+$(\mathrm{SBM}_4)$ holds: if $P$ has an $r$-far $4$-set $T$, the two-sided
+search succeeds from a vertex of $T$, and even a witness-preserving search does.
+\end{theorem}
+\begin{proof}
+Let $T=(a,b,c,d)$ in ccw order. Call $(u,v)$ a \emph{good pair} if $u,v$ are
+hull neighbours in $T$ and $u$ is a nearest neighbour of $v$ in $T$. Start at
+$u$ and step towards $v$; by \cref{lem:attach} the step is safe. Let $w$ be
+the other neighbour of $u$ and $z$ the other neighbour of $v$; they are the
+two remaining witness points, and $wz$ is an edge of $T$. By \cref{lem:attach},
+applied with the chosen point $u$, one of the two next steps is safe unless $|wz|<|uw|$ and
+$|wz|<|uz|$; after a safe second step one witness point remains, and the last
+step always succeeds. So it suffices to find a good pair whose opposite edge
+$wz$ is not the strictly shortest side of the triangle $uwz$.
+
+Let a closest pair of $T$ be given. If it is a diagonal, say $ac$, then $ac$
+is the diagonal of every Delaunay triangulation of $T$ (\cref{lem:closest}),
+so $b$ is an ear and by \cref{lem:nnadjacent} a nearest neighbour of $b$ is
+$a$ or $c$. For the good pair $(a,b)$ the triangle is $adc$ and $|dc|\ge|ac|$;
+for $(c,b)$ it is $cda$ and $|da|\ge|ca|$. Either way we are done. If the
+closest pair is an edge, say $ab$, then $(a,b)$ and $(b,a)$ are good pairs,
+with triangles $adc$ and $bcd$. Unless $|cd|<|ad|,|ac|,|bc|,|bd|$, we are done.
+In that remaining case $|ab|\le|cd|$, so $|ab|$ and $|cd|$ are both strictly
+smaller than $|ac|,|ad|,|bc|,|bd|$, and $(a,b)$ and $(c,d)$ are good pairs.
+
+Suppose that both searches get stuck after their first step. For the root
+$a$, let $x\in(a,b]$ be the first point added; the witness is
+$\{a,x,c,d\}$, and being stuck means: the next ccw point $X\in(x,c)$, the
+first point after $x$ at distance at least $r$ from $a$ and $x$, satisfies
+$|Xd|<r$; the next cw point $Y\in(d,a)$ satisfies $|Yc|<r$, and $|Ya|\ge r$.
+Likewise for the root $c$, with first point $x'\in(c,d]$: the next ccw point
+$X'\in(x',a)$ has $|X'c|\ge r$ and $|X'b|<r$, and the next cw point
+$Y'\in(b,c)$ has $|Y'a|<r$.
+
+First, $X\in(b,c)$: $X\ne b$ because $|bd|\ge r>|Xd|$, and if $X$ lay before
+$b$, then (Q) for $a,X,b,d$ would give $|ab|>|bd|+(|aX|-|Xd|)>|bd|$, contrary
+to $|ab|<|bd|$. Symmetrically $X'\in(d,a)$, using $|cd|<|bd|$. Second, $Y'$
+precedes $X$ in $(b,c)$: otherwise $a,X,Y',c,d$ would contradict
+\cref{lem:core}. Symmetrically, $Y$ precedes $X'$ in $(d,a)$ (apply
+\cref{lem:core} to $c,X',Y,a,b$). Hence the eight points
+$a,b,Y',X,c,d,Y,X'$ are in convex position in this order.
+
+Apply \cref{lem:opposite} to $X',a,b,Y'$ (with $|ab|\ge r>|X'b|,|aY'|$) and to
+$X,c,d,Y$ (with $|cd|\ge r>|Xd|,|cY|$): in these two quadrilaterals the angles
+at $X'$ and $Y'$, and at $X$ and $Y$, sum to at least $\pi$ each. The octagon
+is the union of these two quadrilaterals and the quadrilateral
+$Y',X,Y,X'$, glued along $X'Y'$ and $XY$. Its interior angles at
+$Y',X,Y,X'$ are therefore the sums of the corresponding angles of the pieces,
+and they add up to at least $\pi+\pi+2\pi=4\pi$. But each is smaller than
+$\pi$, a contradiction. So one of the two searches has a safe second step.
+\end{proof}
+
+Under the arc property the claim holds in a
+strong form.
+
+\begin{proposition}\label{prop:sbmarc}
+If $P$ has the $r$-arc property (\cref{sec:arc}) and $T$ is an $r$-far
+$k$-set, then from every root $q\in T$ the path of $k-1$ ccw steps
+succeeds. In particular $(\mathrm{SBM}_k)$ holds, and no branching is
+necessary.
+\end{proposition}
+\begin{proof}
+By \cref{thm:arc}(i) the greedy chain $x_0=q$, $x_{i+1}=a(x_i)$ is proper and
+$r$-far. We show by induction that the $i$-th ccw step adds $x_i$. The points
+strictly between $x_{i-1}$ and $x_i$ are closer than $r$ to $x_{i-1}$, so they
+are not eligible; $x_i$ is at distance at least $r$ from $x_0,\dots,x_{i-1}$
+because the chain is $r$-far; and $x_i$ does not pass the cw end $q$ because
+the chain is proper.
+\end{proof}
+
+\section{Natural choices of the root fail}
+The proof of \cref{thm:sbm4} fixes the root in terms of $T$. The natural
+candidates for such a rule do not work for larger $k$.
+
+\begin{proposition}\label{prop:rootrules}
+There are point sets in convex position, a radius $r$ and an $r$-far $k$-set
+$T$ such that
+\begin{enumerate}[label=(\alph*),itemsep=1pt,topsep=2pt]
+\item ($k=5$ and $k=6$) the two-sided search fails from an endpoint of a
+closest pair of $T$;
+\item ($k=7$) no sequence of safe steps from the vertex of $T$ with the
+smallest interior angle reaches $k$ points;
+\item ($k=7$) the same holds for the vertex of smallest angle over all $r$-far
+$k$-sets of $P$.
+\end{enumerate}
+In all these instances $(\mathrm{SBM}_k)$ holds.
+\end{proposition}
+\begin{proof}
+The instances have between $10$ and $14$ points with integer coordinates and
+are listed in \code{fpt/data/root_rule_instances.json}; each claim is verified
+by exhaustive search in exact arithmetic (\code{fpt/check_roots.py}).
+\end{proof}
+

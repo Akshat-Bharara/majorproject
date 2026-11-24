@@ -1,0 +1,30 @@
+\section{Point sets without tight pairs}\label{app:instances}
+
+\Cref{tab:instances} lists the instances behind \cref{thm:tightpair} for
+$k=5,6,7$, together with two small instances that separate weaker properties
+from $(\mathrm{TP}_k)$. All of them are contained in
+\code{convex/data/counterexamples.json} and are verified by
+\code{convex/experiments/check_counterexamples.py} by enumerating all
+$k$-subsets in exact integer arithmetic.
+
+\begin{table}[H]
+\centering
+\caption{Explicit instances (points in ccw order). In the first three, no
+$r$-far $k$-set contains a tight pair. In the last two an $r$-far $k$-set
+with a tight pair exists, but the stated rule fails.}
+\label{tab:instances}
+\small
+\begin{tabular}{@{}rrrp{0.72\textwidth}@{}}
+\toprule
+$k$ & $n$ & $r^2$ & points\\
+\midrule
+5 & 10 & 1000000 & \raggedright $(-512,859)$, $(-995,-25)$, $(-1009,-52)$, $(-10,-1)$, $(2,0)$, $(1006,163)$, $(1367,222)$, $(554,833)$, $(518,858)$, $(-492,864)$\tabularnewline\addlinespace
+6 & 12 & 418609 & \raggedright $(851,88)$, $(215,259)$, $(-175,352)$, $(-820,491)$, $(-1031,524)$, $(-687,-38)$, $(-649,-92)$, $(-13,-263)$, $(377,-356)$, $(1024,-495)$, $(1233,-528)$, $(889,34)$\tabularnewline\addlinespace
+7 & 14 & 13155129 & \raggedright $(5936,1558)$, $(2254,1872)$, $(-36,2004)$, $(-3872,2121)$, $(-4826,2102)$, $(-7427,-517)$, $(-8045,-1226)$, $(-4359,-1442)$, $(-3984,-1457)$, $(763,-1433)$, $(3767,-1353)$, $(7528,-1170)$, $(8805,-1040)$, $(6069,1446)$\tabularnewline
+\midrule
+4 & 8 & 50 & \raggedright $(\mathrm{TT}_4)$ fails, $(\mathrm{ST}_4)$ holds: $(-11,0)$, $(-9,-1)$, $(1,-2)$, $(3,-2)$, $(10,0)$, $(8,1)$, $(1,2)$, $(-4,2)$\tabularnewline\addlinespace
+6 & 10 & 26 & \raggedright $(\mathrm{AG}_6)$ fails, $(\mathrm{ST}_6)$ holds: $(-13,0)$, $(-9,-1)$, $(0,-2)$, $(2,-2)$, $(8,-1)$, $(13,0)$, $(11,1)$, $(1,2)$, $(-2,2)$, $(-8,1)$\tabularnewline
+\bottomrule
+\end{tabular}
+\end{table}
+

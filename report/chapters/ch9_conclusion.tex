@@ -1,0 +1,53 @@
+\chapter{Conclusion and Future Work}\label{ch:conclusion}
+
+\begin{chapterabstract}
+This chapter summarises the results of the project, states their
+limitations, and lists directions for future work.
+\end{chapterabstract}
+
+\section{Conclusions}
+
+The project studied $k$-dispersion for points in convex position, starting
+from the algorithms of Singireddy, Basappa and Mitchell~\citep{sbm}. Its main
+outcomes are the following.
+
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+\item The bounded search tree of~\citet{sbm} is correct for $k\le4$
+(\cref{thm:sbm4}). The proof combines a Delaunay ear argument, which makes the
+first step safe for every $k$ (\cref{thm:firststep}), with a lemma on convex
+quadrilaterals and a five-point lemma proved by angle chasing. Natural rules
+for choosing the starting point fail for $k=5,6,7$ (\cref{prop:rootrules}).
+\item The greedy properties behind the fast algorithms for $k=3$ hold for
+triples and fail for every $k\ge4$, with explicit small counterexamples
+(\cref{sec:greedy}).
+\item Under the arc property a single greedy chain is exact
+(\cref{thm:arc}); for unimodal point sets this gives an
+$O(n\log^2n)$ expected-time algorithm (\cref{thm:arcopt}), compared with the
+cubic bounds for general input.
+\item A Delaunay certificate for $r$-far sets yields a short correctness proof of
+a capped dynamic program that decides the problem in $O(n^3\log k)$ time and
+solves it in $O(n^3\log k\log n)$ time (\cref{ch:exact}).
+\item All algorithms were implemented with exact arithmetic and agreed with
+exhaustive search on every test instance (\cref{ch:results}).
+\end{itemize}
+
+\input{chapters/lim}
+
+\section{Future work}
+
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+\item Prove the claim of~\citet{sbm} for $k\ge5$, or find a counterexample.
+The conjectured strengthening stated in \cref{sec:limitations}, that some vertex
+of every $r$-far $k$-set is a good root for a search that only takes safe
+steps, would suffice.
+\item Close the gap between the arc property for all points and for the points
+of one solution for $k=4,5$, and find further classes of point sets, beyond
+unimodal ones, on which greedy is exact.
+\item Remove the remaining $\log n$ factor of the optimisation, for example by
+parametric search or by searching directly over the thresholds of the
+dynamic program.
+\item Extend the capped dynamic program to weighted dispersion and to the
+maximum-weight independent set of disks considered by~\citet{tw26}.
+\item Evaluate the algorithms on real data, such as candidate facility sites
+along a coastline.
+\end{itemize}
