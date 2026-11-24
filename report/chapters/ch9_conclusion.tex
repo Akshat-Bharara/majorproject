@@ -1,11 +1,8 @@
-\chapter{Conclusion and Future Work}\label{ch:conclusion}
+\chapter{Conclusion}\label{ch:conclusion}
 
 \begin{chapterabstract}
-This chapter summarises the results of the project, states their
-limitations, and lists directions for future work.
+This section summarises the results of the project.
 \end{chapterabstract}
-
-\section{Conclusions}
 
 The project studied $k$-dispersion for points in convex position, starting
 from the algorithms of Singireddy, Basappa and Mitchell~\citep{sbm}. Its main
@@ -29,25 +26,4 @@ a capped dynamic program that decides the problem in $O(n^3\log k)$ time and
 solves it in $O(n^3\log k\log n)$ time (\cref{ch:exact}).
 \item All algorithms were implemented with exact arithmetic and agreed with
 exhaustive search on every test instance (\cref{ch:results}).
-\end{itemize}
-
-\input{chapters/lim}
-
-\section{Future work}
-
-\begin{itemize}[leftmargin=*,itemsep=2pt]
-\item Prove the claim of~\citet{sbm} for $k\ge5$, or find a counterexample.
-The conjectured strengthening stated in \cref{sec:limitations}, that some vertex
-of every $r$-far $k$-set is a good root for a search that only takes safe
-steps, would suffice.
-\item Close the gap between the arc property for all points and for the points
-of one solution for $k=4,5$, and find further classes of point sets, beyond
-unimodal ones, on which greedy is exact.
-\item Remove the remaining $\log n$ factor of the optimisation, for example by
-parametric search or by searching directly over the thresholds of the
-dynamic program.
-\item Extend the capped dynamic program to weighted dispersion and to the
-maximum-weight independent set of disks considered by~\citet{tw26}.
-\item Evaluate the algorithms on real data, such as candidate facility sites
-along a coastline.
 \end{itemize}
