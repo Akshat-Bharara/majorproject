@@ -63,55 +63,40 @@ A Capped Delaunay Dynamic Program\\ and the Limits of Greedy Structure}
 \begin{abstract}
 Given $n$ points in convex position in the plane and an integer $k$, the
 \emph{$k$-dispersion} problem asks for $k$ of the points whose minimum pairwise
-distance $\rstar$ is as large as possible. The best known bound is
-$O(n^3\log^2 n)$ (Tkachenko and Wang, SWAT~2026), obtained by binary search over
-a maximum-independent-set procedure. We make four contributions.
+distance $\rstar$ is as large as possible. Singireddy, Basappa and Mitchell
+(DAM 2026) gave a fixed-parameter algorithm that grows a solution from a
+single point in both directions along the hull, and Tkachenko and Wang (SWAT
+2026) gave an $O(n^3\log^2n)$ algorithm. The correctness of the first
+algorithm rests on a claim whose published proof is informal.
 
-\emph{(1) A simple exact algorithm.} We show that a set in convex position has
-all pairwise distances at least $r$ if and only if it admits a triangulation
-whose edges all have length at least $r$ and whose diagonals are all locally
-Delaunay. This certificate turns the decision problem into a dynamic program
-over triangulations, and because a dispersion query only asks whether $k$
-points fit, every chord needs to remember just $k-2$ apex points. The
-resulting decision procedure runs in $O(n^2k+n^3/w+\Tr\log k)\subseteq
-O(n^3\log k)$ time and $O(n^2k)$ space, where $\Tr\le\binom n3$ is the number
-of triples with pairwise distances at least $r$ and $w$ is the word size; it
-uses no geometric data structure and only one geometric predicate, the
-in-circle test. Binary search inside a window $g\le \rstar\le\min\{2g,\per(P)/k\}$
-gives an $O(n^3\log k\log n)$ algorithm for $k$-dispersion, and the same
-program computes a maximum independent set of size $\alpha$ of the unit-disk
-graph of points in convex position in $O(n^3\log\alpha)$ time.
+\emph{(1) The two-sided search tree.} We prove the claim for $k\le4$; the
+proof for $k=4$ combines a Delaunay ``ear'' argument with two new
+lemmas on convex quadrilaterals and pentagons. For every $k$ we prove an
+attachment lemma that certifies individual steps and show that the first step
+can always be made safely, and we exhibit point sets showing that natural
+choices of the starting point (an endpoint of a closest pair, a vertex of
+smallest angle) fail for $k=5,6,7$. Underlying this is a structural picture:
+the properties that make $k=3$ easy (an arc characterisation, tight pairs and
+triples) all hold for $k=3$ and all fail for $k\ge4$, with small explicit
+counterexamples.
 
-\emph{(2) The limits of greedy structure.} Near-linear algorithms are known
-for $k=3$, and they rest on the fact that a solution can be grown from a point
-$q$ and the first points $a(q)$, $b(q)$ at distance at least $r$ on either
-side of it. We give short proofs of three such properties for $k=3$ and show
-that each of them fails for $k\ge 4$: the arc characterisation fails for every
-$k\ge4$, and the weakest property of this kind---some solution contains a
-\emph{tight pair} $\{q,a(q)\}$---fails for $k=4,5,6,7$, even at the optimal
-radius. The counterexample for $k=4$ has eight points and can be checked by
-hand. Finally, we study the two-sided bounded search tree of Singireddy,
-Basappa and Mitchell, whose correctness rests on an informally proved claim.
-We prove the claim for $k\le 4$ and under the arc property, prove that
-the first step of the search can always be made safely, and show that the
-natural choices of the starting point (an endpoint of a closest pair, or a
-vertex of smallest angle) do not work in general.
-
-\emph{(3) When greedy is exact.} The counterexamples are thin polygons. We
-show that thinness is the only obstruction: if for every point $q$ the points
-at distance at least $r$ from $q$ are contiguous along the hull (the
-\emph{arc property}), then an $r$-far $k$-set exists if and only if some
-greedy chain $q,a(q),a(a(q)),\dots$ closes up, which is decided in $O(n^2)$
-time. For \emph{unimodal} point sets, such as points on a circle, this yields
-an exact algorithm with expected running time $O(n\log^2n)$; it solves
+\emph{(2) When greedy is exact.} All counterexamples are thin polygons. We show
+that thinness is the only obstruction: if, for every point $q$, the points at
+distance at least $r$ from $q$ are contiguous along the hull (the \emph{arc
+property}), then an $r$-far $k$-set exists if and only if a single greedy
+chain closes up, and the claim above holds without any branching. For
+\emph{unimodal} point sets, which include perturbed points on a circle, this
+gives an exact algorithm with expected running time $O(n\log^2n)$; it solves
 instances with $10^6$ points in seconds.
 
-\emph{(4) Implementation and experiments.} Greedy rules remain useful as
-\emph{sound} heuristics: a certified variant runs a greedy search followed by
-a single exact decision and is exact on every input. All algorithms are
-implemented with exact integer arithmetic and cross-checked against exhaustive
-search and an independent solver; on instances with up to $400$ points the
-certified variant is typically several times faster than plain binary search.
+\emph{(3) A simple exact algorithm.} Using a Delaunay certificate for
+$r$-far sets and capping the monotone dynamic program of Tkachenko and Wang at
+$k-2$ thresholds per chord, we decide whether $\rstar\ge r$ in
+$O(n^2k+n^3/w+\Tr\log k)\subseteq O(n^3\log k)$ time with the in-circle
+predicate as the only geometric primitive, and solve $k$-dispersion in
+$O(n^3\log k\log n)$ time. All results are implemented in exact integer
+arithmetic and verified against exhaustive search; the experiments are
+reported in the appendix.
 \end{abstract}
 
 \section{Introduction}\label{sec:intro}
@@ -130,131 +115,120 @@ the problem is NP-hard~\cite{wangkuo}, and the best exact algorithms run in
 $n^{O(\sqrt k)}$ time~\cite{akagi}; see also~\cite{chendumitrescu} for recent
 simple algorithms for small~$k$. Convex position makes the problem polynomial.
 
+
 \paragraph{Known results for convex position.}
-\Cref{tab:known} summarises the state of the art. Singireddy, Basappa and
-Mitchell~\cite{sbm} gave a fixed-parameter algorithm and the first polynomial
-algorithm. Tkachenko and Wang~\cite{tw25} observed that the decision version
-(is $\rstar\ge r$?) is a maximum-independent-set problem in the unit-disk graph
-of points in convex position and solved it by dynamic programming over
-triangulations, accelerated by cuttings; their recent
-algorithm~\cite{tw26} computes a maximum-weight independent set of arbitrary
-disks in convex position in $O(n^3\log n)$ time, which yields
+\Cref{tab:known} summarises the exact algorithms we are aware of.
+Singireddy, Basappa and Mitchell~\cite{sbm} gave a bounded search tree that
+is fixed-parameter tractable in $k$, and the first polynomial algorithm, a
+dynamic program over Delaunay triangulations. Tkachenko and
+Wang~\cite{tw25} observed that the decision version (is $\rstar\ge r$?) is a
+maximum-independent-set problem in the unit-disk graph of points in convex
+position; their recent algorithm~\cite{tw26} computes a maximum-weight
+independent set of disks in convex position in $O(n^3\log n)$ time and yields
 $O(n^3\log^2 n)$ for dispersion. For $k=3$ much faster algorithms are
-known~\cite{kobayashi,tw25}.
+known~\cite{kobayashi,tw25}, and for points on a circle the problem is
+one-dimensional and solvable in linear time after sorting~\cite{akagi}.
 
 \begin{table}[tb]
 \centering
-\caption{Exact algorithms for $k$-dispersion of $n$ points in convex position.}
+\caption{Exact algorithms for $k$-dispersion of $n$ points in convex position.
+The general bound of~\cite{tw25} is as reported in~\cite{tw26}.}
 \label{tab:known}
 \small\setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}lll@{}}
 \toprule
 Reference & Time & Remarks\\
 \midrule
-Singireddy, Basappa, Mitchell~\cite{sbm} & $O(2^k n^2\log^2 n)$ & search tree; see \cref{sec:sbm}\\
-Singireddy, Basappa, Mitchell~\cite{sbm} & $O(n^4k^2)$ & first polynomial algorithm\\
-Tkachenko, Wang~\cite{tw25} & $O(n^{7/2}\log n)$ & cuttings; $O(n^{37/11}\log n)$ expected\\
+Singireddy, Basappa, Mitchell~\cite{sbm} & $O(2^k n^2\log^2 n)$ & search tree; correct for $k\le4$ by \cref{thm:sbm4}\\
+Singireddy, Basappa, Mitchell~\cite{sbm} & $O(n^4k^2)$ & Delaunay dynamic program\\
+Tkachenko, Wang~\cite{tw25} & $O(n^{37/11}\log n)$ & via unit-disk independent set\\
 Tkachenko, Wang~\cite{tw26} & $O(n^3\log^2 n)$ & via weighted independent set of disks\\
 Kobayashi et al.~\cite{kobayashi} & $O(n^2)$ & $k=3$\\
-Tkachenko, Wang~\cite{tw25} & $O(n\log^2 n)$ & $k=3$; $O(n\log n)$ expected\\
+Tkachenko, Wang~\cite{tw25} & $O(n\log n)$ & $k=3$, decision version\\
+Akagi et al.~\cite{akagi} & $O(n)$ after sorting & points on a circle\\
 \midrule
+\textbf{This work} (\cref{thm:arcopt}) & $O(n\log^2n)$ expected & unimodal point sets\\
 \textbf{This work} (\cref{thm:opt}) & $O(n^3\log k\log n)$ & decision in $O(n^2k+n^3/w+\Tr\log k)$\\
-\textbf{This work} (\cref{thm:cert}) & $O(n^2k\log n+n^3\log k)$ & when a greedy bound is tight; always exact\\
-\textbf{This work} (\cref{thm:arcopt}) & $O(n\log^2n)$ expected & unimodal sets, e.g.\ points on a circle\\
 \bottomrule
 \end{tabular}
 \end{table}
 
+
 \paragraph{Contributions.}
 \begin{enumerate}[leftmargin=*,itemsep=2pt]
-\item \textbf{Delaunay certificate} (\cref{thm:cert-delaunay}). A set $S$ in
-convex position is \emph{$r$-far} (all pairwise distances are at least $r$) if
-and only if it has a triangulation in which every edge has length at least $r$
-and every diagonal is locally Delaunay. Both conditions are local, which is
-what a dynamic program needs, and the proof is a few lines on top of the
-classical Delaunay lemma.
-
-\item \textbf{Capped Delaunay dynamic program} (\cref{sec:dp}). The value of a
-chord, as a function of the angle constraint imposed by its parent triangle, is
-a step function. For a dispersion query only its first $k-2$ steps matter
-(\cref{lem:thresholds}), and each step can be stored as the apex point that
-attains it, so that all comparisons become exact in-circle tests. The decision
-procedure (\cref{thm:decision-alg}) takes $O(n^2k+n^3/w+\Tr\log k)$ time and
-$O(n^2k)$ space. As a by-product, a maximum $r$-far subset of size $\alpha$ is
-found in $O(n^2\alpha+n^3/w+\Tr\log\alpha)$ time (\cref{cor:mis}).
-
-\item \textbf{Search window} (\cref{lem:window}).
-$g\le\rstar\le\min\{2g,\per(P)/k\}$, where $g$ is the value of a
-farthest-first greedy $k$-set and $\per(P)$ the perimeter of the hull. In our
-experiments the window keeps a few percent of the candidate distances.
-
-\item \textbf{Greedy structure: true for $k=3$, false for $k\ge4$}
-(\cref{sec:greedy}). For a radius $r$ let $a(q)$ and $b(q)$ be the first
-points at distance at least $r$ from $q$ in counterclockwise and clockwise
-order. We prove that for $k=3$ every $r$-far triple can be turned into an
-$r$-far triple of the form $\{q,a(q),b(q)\}$ and into one of the form
-$\{q,a(q),z\}$ by a single replacement (\cref{thm:k3}), and that the arc
-characterisation behind the $k=3$ algorithms holds
-(\cref{prop:g3}). For $k\ge4$ everything breaks: the arc characterisation fails
-for every $k\ge4$ (\cref{prop:gk}), and there are point sets in which no $r$-far
-$k$-set contains a tight pair $\{q,a(q)\}$ at all, for $k=4,\dots,7$
-(\cref{thm:tightpair}). Consequently no algorithm that grows a solution from a
-tight pair---alternating greedy or full search tree---is complete. These
-counterexamples were found only by adversarial optimisation; random instances
-(more than $\huntCone$ exact tests) never exhibit them.
-
 \item \textbf{The two-sided search tree} (\cref{sec:sbm}). The FPT algorithm
-of~\cite{sbm} grows a solution from a single point in both directions. Its
-correctness rests on a claim whose published proof is informal. We prove an
-attachment lemma that certifies individual steps, show via Delaunay ears that
-the first step can always be made safely (\cref{thm:firststep}), prove the
-claim for $k\le4$ (\cref{thm:sbm4}) and under the arc property, and show
-that the claim cannot be proved by
-fixing the starting point to an endpoint of a closest pair or to a vertex of
-smallest angle (\cref{prop:rootrules}). We state a sharper conjecture that
-is supported by more than $10^7$ exact tests.
+of~\cite{sbm} starts at a point, repeatedly adds the first point beyond one of
+the two ends of the chosen arc that is far from all chosen points, and
+branches on the end. Its correctness rests on a claim (Claim~2 of~\cite{sbm})
+whose published proof is a picture argument. We prove the claim for $k\le4$
+(\cref{thm:sbm4}), which makes the algorithm of~\cite{sbm} correct for these
+$k$; for $k=4$ this gives $O(n^2\log^2n)$. For every $k$ we prove an
+attachment lemma that certifies single steps and show, via Delaunay ears,
+that the first step can always be made safely (\cref{thm:firststep}). We also
+show that the root cannot be fixed by distances or angles alone
+(\cref{prop:rootrules}), and state a sharper conjecture that is supported by
+more than $10^7$ exact tests.
 
-\item \textbf{The arc property} (\cref{sec:arc}). All our counterexamples
-are thin. We show that if the set of points at distance at least $r$ from $q$
-is contiguous along the hull for every $q$, then the plain greedy chain
-$q,a(q),a(a(q)),\dots$ is exact (\cref{thm:arc}), and that for unimodal point
-sets $k$-dispersion can be solved in expected $O(n\log^2 n)$ time
-(\cref{thm:arcopt}). We also delimit the hypothesis: it cannot be weakened to
-the points of one solution (for $k=6$) or to the optimal radius alone.
+\item \textbf{Greedy structure} (\cref{sec:greedy}). For a radius $r$ let $a(q)$
+and $b(q)$ be the first points at distance at least $r$ from $q$ in ccw and cw
+order. For $k=3$, every $r$-far triple can be turned into one of the form
+$\{q,a(q),b(q)\}$ or $\{q,a(q),z\}$ by a single replacement, and the arc
+characterisation of $r$-far triples holds (\cref{thm:k3,prop:g3}).
+For $k\ge4$ the arc characterisation fails for every $k$ (\cref{prop:gk}) and
+there are point sets in which no solution contains a pair $\{q,a(q)\}$, for
+$k=4,\dots,7$, even at the optimal radius (\cref{thm:tightpair}); the
+$8$-point example for $k=4$ can be checked by hand. Consequently a proof of the
+claim must use both directions.
 
-\item \textbf{Certified algorithm and experiments} (\cref{sec:certified,sec:experiments}).
-Greedy rules only ever output $r$-far sets. \Cref{alg:certified} uses them to
-find a lower bound and certifies it with one exact decision; it is exact on
-every input and takes $O(n^2k\log n+n^3\log k)$ time whenever the greedy bound
-is tight. We provide a complete implementation with exact $128$-bit
-predicates, an exhaustive cross-validation, and a running-time study.
+\item \textbf{The arc property} (\cref{sec:arc}). If for every $q$ the points
+at distance at least $r$ from $q$ are contiguous along the hull, then an
+$r$-far $k$-set exists iff some greedy chain $q,a(q),a(a(q)),\dots$ closes up
+(\cref{thm:arc}); the search of~\cite{sbm} then succeeds along a single path.
+For unimodal point sets the decision takes $O(n\log n)$ time and the
+optimisation expected $O(n\log^2n)$ time (\cref{thm:arcopt}), without ever
+listing the $\Theta(n^2)$ distances. The hypothesis cannot be weakened to the
+points of one solution, or to the optimal radius alone.
+
+\item \textbf{A simple exact algorithm} (\cref{sec:certificate,sec:dp,sec:opt}).
+A set in convex position is $r$-far iff it has a triangulation with all edges
+of length at least $r$ and all diagonals locally Delaunay
+(\cref{thm:cert-delaunay}). This certificate gives a short correctness proof
+for a dynamic program over chords. Capping the per-chord step function at its
+first $k-2$ steps gives a decision procedure in $O(n^3\log k)$ time and
+$O(n^2k)$ space (\cref{thm:decision-alg}), and an $O(n^3\log k\log n)$ algorithm
+for $k$-dispersion. A certified variant uses greedy search as a sound
+heuristic and is always exact.
 \end{enumerate}
+All algorithms are implemented in exact integer arithmetic and validated
+against exhaustive search and independent code; the experiments are in the
+appendix.
 
 \paragraph{Relation to previous work.}
-The subproblems of our dynamic program---a chord together with a constraint
-coming from the triangle on its other side---are in substance those of
-Tkachenko and Wang~\cite{tw25}. What is new on the algorithmic side is the
-certificate-based correctness proof, the $k$-capped threshold representation
-with its exact, predicate-only evaluation, and the search window. In the worst
-case our optimisation bound improves on $O(n^3\log^2 n)$~\cite{tw26} by a
-factor $\log n/\log k$, and the decision bound $O(n^3\log k)$ improves on
-$O(n^3\log n)$ whenever $k=n^{o(1)}$; the algorithm of~\cite{tw26} is more
-general (weighted disks of arbitrary radii). Compared with the search-tree
-bound $O(2^kn^2\log^2n)$ of~\cite{sbm}, ours is better once
-$2^k\gtrsim n\log k/\log n$; moreover, the correctness of that bound depends
-on the claim discussed in \cref{sec:sbm}. We stress that the main merits of the algorithm are
-its simplicity and exactness: the whole decision procedure is a triple loop
-with a binary search inside. The structural results of \cref{sec:greedy} are
-new.
+Our dynamic program has the subproblems of~\cite{tw25,tw26}: a chord
+together with the constraint imposed by the triangle on its other side.
+Tkachenko and Wang~\cite[Lemma~12]{tw26} show that, for a fixed chord, these
+constraints are monotone along the bisector of the chord, and they evaluate
+all subproblems of a chord by sorting and binary search in $O(n\log n)$ time.
+Our threshold representation (\cref{lem:thresholds}) is the same monotonicity,
+specialised to points and stated with the in-circle predicate; what is new is
+the cap at $k-2$ thresholds, which replaces $\log n$ by $\log k$ in the
+decision procedure and $O(n^3)$ space by $O(n^2k)$, and the correctness proof
+via the Delaunay certificate. The algorithm of~\cite{tw26} is more general
+(weighted disks of arbitrary radii). For points on a circle a linear-time
+algorithm is known~\cite{akagi}; our near-linear algorithm covers all
+unimodal point sets, which need not be cocircular, and the arc property, to
+our knowledge, has not been studied before. Neither~\cite{tw25,tw26}
+nor~\cite{sbm} treats these classes separately. \Cref{lem:opposite}, an
+elementary fact about convex quadrilaterals, appears in a proof
+in~\cite{diametral}; we include a proof for completeness.
 
 \paragraph{Organisation.}
-\Cref{sec:prelim} fixes notation. \Cref{sec:certificate} proves the Delaunay
-certificate, \cref{sec:dp} develops the dynamic program, and
-\cref{sec:opt} treats optimisation. \Cref{sec:greedy} studies greedy
-structure and the two-sided search tree, \cref{sec:arc} treats point sets
-with the arc property,
-\cref{sec:experiments} reports experiments, and
-\cref{sec:conclusion} lists open problems.
+\Cref{sec:prelim} fixes notation and \cref{sec:certificate} proves the
+Delaunay certificate. \Cref{sec:greedy} studies greedy structure,
+\cref{sec:sbm} the two-sided search tree and \cref{sec:arc} point sets with
+the arc property. \Cref{sec:dp,sec:opt} present the exact algorithm, and
+\cref{sec:conclusion} lists open problems. The appendix contains the
+experiments, the explicit instances and detailed running times.
 
 \section{Preliminaries}\label{sec:prelim}
 
@@ -359,10 +333,684 @@ set~$S$.
 
 Conditions (a) and (b) are \emph{local}: (a) concerns single edges and (b)
 pairs of adjacent triangles. The dynamic program of
-Tkachenko and Wang~\cite{tw25} is built on the same idea of gluing triangles
-under a local compatibility condition; \cref{thm:cert-delaunay} isolates the
+Tkachenko and Wang~\cite{tw26} is built on the same idea of gluing triangles
+under a local compatibility condition (for disks it is phrased with
+Voronoi vertices of triples); \cref{thm:cert-delaunay} isolates the
 statement that makes such a program correct and reduces its proof to the
 Delaunay lemma.
+
+\section{Greedy structure: true for \texorpdfstring{$k=3$}{k=3}, false for \texorpdfstring{$k\ge4$}{k>=4}}\label{sec:greedy}
+
+For $k=3$ the decision problem can be solved in near-linear
+time~\cite{tw25}, and $O(n^2)$ time suffices for the optimisation
+problem~\cite{kobayashi}. These algorithms exploit that an $r$-far triple, if
+one exists, can be found next to the ``first far points'' of some point. It is
+natural to ask how much of this structure survives for larger $k$, because any
+property of this kind immediately yields a fast greedy or bounded-search
+algorithm. This section gives a complete answer for the properties we are
+aware of.
+
+Fix $r>0$. For $q\in P$ let $a(q)$ be the first point after $q$ in ccw order
+with $|q\,a(q)|\ge r$, and $b(q)$ the first such point in clockwise order;
+both are undefined if no point is at distance at least $r$ from $q$. Note that
+the distance from $q$ is in general not unimodal along the hull, so points
+after $a(q)$ may again be close to $q$. Let $\Arc(q)$ be the set of points on
+the ccw arc from $a(q)$ to $b(q)$ (which does not contain $q$). We call
+$\{q,a(q)\}$ a \emph{tight pair}.
+
+\begin{lemma}\label{lem:arcbasic}
+Let $S$ be an $r$-far set with $|S|\ge2$, and let $s,s'$ be consecutive points
+of $S$ in ccw order. Then $a(s)$ lies in $P(s,s')\cup\{s'\}$, and
+$S\setminus\{s\}\subseteq\Arc(s)$.
+\end{lemma}
+\begin{proof}
+All points of $S\setminus\{s\}$ are at distance at least $r$ from $s$; the first
+of them in ccw order is $s'$ and the first in clockwise order is the
+predecessor of $s$ in $S$.
+\end{proof}
+
+We consider the following properties of $(P,k,r)$.
+\begin{description}[leftmargin=3.2em,labelwidth=2.6em,itemsep=2pt]
+\item[$(\mathrm{G}_k)$] \emph{Arc characterisation:} $P$ has an $r$-far $k$-set
+if and only if $\Arc(q)$ contains an $r$-far $(k-1)$-set for some $q\in P$.
+\item[$(\mathrm{TT}_k)$] \emph{Tight triple:} if $P$ has an $r$-far $k$-set,
+then it has one that contains $q$, $a(q)$ and $b(q)$ for some $q$.
+\item[$(\mathrm{TP}_k)$] \emph{Tight pair:} if $P$ has an $r$-far $k$-set, then
+it has one that contains a tight pair $\{q,a(q)\}$.
+\item[$(\mathrm{ST}_k)$] \emph{Seeded search tree:} if $P$ has an $r$-far $k$-set, then
+for some $q$ the following search reaches $k$ points: start with
+$\{q,a(q)\}$, a ccw frontier at $a(q)$ and a clockwise frontier at $q$, and
+repeatedly add, on a side of the search's choice, the first point beyond that
+side's frontier (and before the other frontier) that is at distance at least
+$r$ from all chosen points; the added point becomes the new frontier.
+\item[$(\mathrm{AG}_k)$] \emph{Alternating greedy:} as $(\mathrm{ST}_k)$, but
+the sides strictly alternate (either side may start).
+\end{description}
+Every set produced by a search of $(\mathrm{ST}_k)$ is $r$-far and contains
+$\{q,a(q)\}$, so
+$(\mathrm{AG}_k)\Rightarrow(\mathrm{ST}_k)\Rightarrow(\mathrm{TP}_k)$, and
+trivially $(\mathrm{TT}_k)\Rightarrow(\mathrm{TP}_k)$. If $(\mathrm{ST}_k)$ held
+for all point sets, the decision problem could be solved in $O(2^kn^2k)$ time
+by exploring, for each of the $n$ seeds, a binary tree of depth $k-2$ whose
+nodes cost $O(nk)$; $(\mathrm{AG}_k)$ would even give $O(n^2k)$. Property
+$(\mathrm{TP}_k)$ is the weakest statement that ties a solution to the first
+far points, and therefore the most robust candidate. The bounded search tree
+of Singireddy, Basappa and Mitchell~\cite{sbm} is a two-sided variant of
+$(\mathrm{ST}_k)$ that is seeded with a single point; we study it separately
+in \cref{sec:sbm}.
+
+\subsection{Triples}\label{sec:k3}
+
+\begin{theorem}\label{thm:k3}
+Let $\{x,y,z\}$ be an $r$-far triple of $P$, in ccw order.
+\begin{enumerate}[label=(\roman*),itemsep=1pt,topsep=2pt]
+\item At least one of $\{x,a(x),b(x)\}$, $\{y,a(y),b(y)\}$,
+$\{z,a(z),b(z)\}$ is an $r$-far triple.
+\item At least one of $\{x,a(x),z\}$, $\{y,a(y),x\}$, $\{z,a(z),y\}$ is an
+$r$-far triple.
+\end{enumerate}
+In particular $(\mathrm{TT}_3)$, $(\mathrm{TP}_3)$, $(\mathrm{ST}_3)$ and
+$(\mathrm{AG}_3)$ hold for every point set in convex position and every $r$.
+\end{theorem}
+\begin{proof}
+(i) By \cref{lem:arcbasic}, the ccw order around the hull is
+$x,a(x),y,z,b(x)$, where $a(x)=y$ and $b(x)=z$ are allowed, and
+$a(x)\ne b(x)$. Suppose that $|a(x)b(x)|<r$. In the triangle $x\,a(x)\,b(x)$
+the side $a(x)b(x)$ is then strictly shorter than the other two, so the
+opposite angle is smaller than $\pi/3$, and by (A),
+$\ang yxz\le\ang a(x)\,x\,b(x)<\pi/3$. If the triples of $y$ and $z$ also
+failed to be $r$-far, the same argument would give $\ang zyx<\pi/3$ and
+$\ang xzy<\pi/3$, and the angles of the triangle $xyz$ would sum to less than
+$\pi$.
+
+(ii) If $a(x)=y$ the first triple is $\{x,y,z\}$. Otherwise $a(x)\in P(x,y)$
+and $|x\,a(x)|\ge r$, so the first triple is $r$-far unless $|a(x)z|<r$. In
+that case $a(x)z$ is the strictly shortest side of the triangle $x\,a(x)\,z$,
+hence $\ang a(x)\,x\,z<\pi/3$, and by (A) applied to $x,a(x),y,z$ we get
+$\ang yxz<\pi/3$. Likewise, failure of the second triple gives
+$\ang zyx<\pi/3$ and failure of the third gives $\ang xzy<\pi/3$. All three
+cannot fail.
+
+The tight triple of (i) contains the tight pair $\{q,a(q)\}$. For
+$(\mathrm{ST}_3)$ and $(\mathrm{AG}_3)$, take the triple $\{q,a(q),z'\}$
+provided by (ii): the search started from $\{q,a(q)\}$ needs a single step,
+and its ccw step succeeds because the arc beyond $a(q)$ contains a point,
+namely $z'$, at distance at least $r$ from both seeds.
+\end{proof}
+
+Part~(i) says that $P$ has an $r$-far triple if and only if
+$|a(q)b(q)|\ge r$ for some $q$, a characterisation in the spirit of the
+fast algorithms for $k=3$~\cite{kobayashi,tw25}; we include the proof
+because it is short and because part~(ii) uses the same idea. The arc
+characterisation holds for triples as well.
+
+\begin{proposition}\label{prop:g3}
+The implication ``$\Rightarrow$'' of $(\mathrm{G}_k)$ holds for every
+$k\ge2$, and $(\mathrm{G}_3)$ holds.
+\end{proposition}
+\begin{proof}
+If $S$ is an $r$-far $k$-set and $q\in S$, then $S\setminus\{q\}$ is an
+$r$-far $(k-1)$-set contained in $\Arc(q)$ by \cref{lem:arcbasic}.
+
+For $k=3$, let $x,y\in\Arc(q)$ with $|xy|\ge r$, write $a=a(q)$, $b=b(q)$,
+and let the ccw order be $q,a,x,y,b$ with $a=x$ or $y=b$ allowed. Suppose that
+$P$ has no $r$-far triple. Since $a\ne b$ and $|qa|,|qb|\ge r$, we have
+$|ab|<r$. We distinguish cases according to the distances from $q$.
+If $|qx|\ge r$ and $|qy|\ge r$, then $\{q,x,y\}$ is an $r$-far triple.
+If $|qx|<r\le|qy|$, then $x\ne a$, and $|ay|<r$ because $\{q,a,y\}$ is not
+$r$-far. In the convex quadrilateral $q,a,x,y$ the diagonals satisfy
+$|qx|+|ay|<2r\le|qa|+|xy|$, contradicting~(Q). The case $|qy|<r\le|qx|$ is
+symmetric: $y\neq b$, $|xb|<r$, and the quadrilateral $q,x,y,b$ has diagonals
+$|qy|+|xb|<2r\le|xy|+|bq|$. Finally, if $|qx|<r$ and $|qy|<r$, then, as in the
+proof of \cref{thm:k3}, $\ang xqy\le\ang aqb<\pi/3$, so $xy$ is not a longest
+side of the triangle $qxy$ and $|xy|<\max\{|qx|,|qy|\}<r$, a contradiction.
+\end{proof}
+
+\subsection{Four or more points}\label{sec:k4}
+
+\begin{proposition}\label{prop:gk}
+$(\mathrm{G}_k)$ fails for every $k\ge4$: there is a set of $k$ points in
+convex position and a radius $r$ such that no $r$-far $k$-set exists although
+$\Arc(u)$ contains an $r$-far $(k-1)$-set for some point $u$.
+\end{proposition}
+\begin{proof}
+Let $k\ge4$, choose $k-2$ distinct non-zero integers $j$ with $|j|\le k$, at
+least one positive and one negative, and let $H=3(k+1)$. Let
+\[
+u=(-H^2,0),\qquad v=(H^2,0),\qquad w_j=\bigl(H^2-9j^2,\ 3jH^2\bigr),
+\]
+and $r=3H^2$. All points lie on the boundary of the strictly convex region
+$\{(x,y):|x|\le H^2-y^2/H^4\}$ and are therefore in strictly convex position;
+$u$ is alone on the left boundary arc, and the right arc carries $v$ and the
+$w_j$, with points above and below $v$. We have $|uv|=2H^2<r$, while any two
+other points differ by at least $3H^2=r$ in their $y$-coordinates. So the
+point set itself, the only $k$-subset, is not $r$-far. The two hull neighbours
+of $u$ are the lowest and the highest $w_j$; they are at distance at least
+$r$ from $u$, so they are $a(u)$ and $b(u)$, and $\Arc(u)$ consists of all
+points except $u$, which form an $r$-far $(k-1)$-set.
+\end{proof}
+
+\noindent For $k=4$ the idea is visible in the rhombus $(-1,0)$, $(0,-3)$,
+$(1,0)$, $(0,3)$ with $r^2=10$: the short diagonal is the only close pair.
+
+\begin{figure}[tb]
+\centering
+\begin{tikzpicture}[scale=0.047]
+  \coordinate (p0) at (16,48);   \coordinate (p1) at (-83,26);
+  \coordinate (p2) at (-114,18); \coordinate (p3) at (-30,-39);
+  \coordinate (p4) at (-16,-48); \coordinate (p5) at (83,-26);
+  \coordinate (p6) at (114,-18); \coordinate (p7) at (30,39);
+  \draw[gray!60] (p0)--(p1)--(p2)--(p3)--(p4)--(p5)--(p6)--(p7)--cycle;
+  \draw[blue!70!black,thick] (p0)--(p2)--(p4)--(p6)--cycle;
+  \draw[blue!70!black,thick] (p0)--(p4);
+  \draw[blue!70!black] (p2)--(p6);
+  \draw[red!75!black,densely dashed,thick] (p1)--(p4) (p5)--(p0) (p3)--(p0) (p7)--(p4);
+  \foreach \p/\pos/\lab in {p0/above/{$p_0=(16,48)$}, p2/left/{$p_2=(-114,18)$}, p4/below/{$p_4=(-16,-48)$}, p6/right/{$p_6=(114,-18)$}}
+    {\fill[blue!70!black] (\p) circle (38pt); \node[\pos] at (\p) {\small \lab};}
+  \foreach \p/\pos/\lab in {p1/above left/{$p_1=(-83,26)$}, p3/below left/{$p_3=(-30,-39)$}, p5/below right/{$p_5=(83,-26)$}, p7/above right/{$p_7=(30,39)$}}
+    {\draw[fill=white] (\p) circle (38pt); \node[\pos] at (\p) {\small \lab};}
+\end{tikzpicture}
+\caption{The point set $P_\star$ of \cref{thm:tightpair} (to scale),
+$r^2=10240$. Solid blue: the only $r$-far $4$-set $\{p_0,p_2,p_4,p_6\}$ and
+its six distances; $|p_0p_4|=r$. Each white point is the first far point
+$a(\cdot)$ of the blue point before it and is closer than $r$ to another blue
+point (dashed red), so it cannot replace anything.}
+\label{fig:pstar}
+\end{figure}
+
+\begin{theorem}\label{thm:tightpair}
+$(\mathrm{TP}_4)$ is false, even at the optimal radius. Let $P_\star$ be the
+eight points
+\begin{align*}
+&p_0=(16,48), &&p_1=(-83,26), &&p_2=(-114,18), &&p_3=(-30,-39),\\
+&p_4=(-16,-48), &&p_5=(83,-26), &&p_6=(114,-18), &&p_7=(30,39),
+\end{align*}
+which are in strictly convex position in this ccw order, and let
+$r^2=10240$. Then $\rstar_4(P_\star)=r$, the set $\{p_0,p_2,p_4,p_6\}$ is the
+only $r$-far $4$-set, and it contains no tight pair. Consequently
+$(\mathrm{TT}_4)$, $(\mathrm{ST}_4)$ and $(\mathrm{AG}_4)$ are false as well.
+Moreover, $(\mathrm{TP}_k)$ is false for $k=5$, $6$ and $7$; point sets with
+$2k$ points are listed in \cref{app:instances}.
+\end{theorem}
+\begin{proof}
+$P_\star$ is symmetric under $p\mapsto-p$, which maps $p_i$ to $p_{i+4}$. The
+squared distances from $p_0,\dots,p_3$ are
+\begin{center}\small
+\begin{tabular}{@{}c|cccccccc@{}}
+ & $p_0$ & $p_1$ & $p_2$ & $p_3$ & $p_4$ & $p_5$ & $p_6$ & $p_7$\\\midrule
+$p_0$ & -- & \textbf{10285} & \textbf{17800} & 9685 & \textbf{10240} & 9965 & \textbf{13960} & 277\\
+$p_1$ &  & -- & 1025 & 7034 & 9965 & \textbf{30260} & \textbf{40745} & \textbf{12938}\\
+$p_2$ &  &  & -- & \textbf{10305} & \textbf{13960} & \textbf{40745} & \textbf{53280} & \textbf{21177}\\
+$p_3$ &  &  &  & -- & 277 & \textbf{12938} & \textbf{21177} & 9684\\
+\end{tabular}
+\end{center}
+and the remaining ones follow by symmetry; entries of at least $r^2$ are in
+bold. The points at distance at least $r$ from $p_1$ are $p_0,p_5,p_6,p_7$,
+and the only pairs among these at distance at least $r$ are $\{p_0,p_6\}$ and
+$\{p_6,p_7\}$, so $p_1$ lies in no $r$-far $4$-set; by symmetry neither does
+$p_5$. The points at distance at least $r$ from $p_3$ are $p_2,p_5,p_6$, and
+$|p_5p_6|<r$, so $p_3$ and, by symmetry, $p_7$ lie in no $r$-far $4$-set
+either. Hence the only candidate is $\{p_0,p_2,p_4,p_6\}$, which is $r$-far
+with minimum distance $|p_0p_4|=r$; in particular $\rstar_4(P_\star)=r$. From
+the table, $a(p_0)=p_1$, $a(p_2)=p_3$, $a(p_4)=p_5$ and $a(p_6)=p_7$. None of
+these belongs to the set, so it contains no tight pair.
+
+For $k=5,6,7$ the instances of \cref{app:instances} were verified by
+exhaustive enumeration of all $k$-subsets in exact integer arithmetic.
+\end{proof}
+
+\paragraph{Anatomy of the counterexample.}
+The mechanism is easy to describe (\cref{fig:pstar}). The quadrilateral
+$p_0p_2p_4p_6$ is a parallelogram whose short diagonal $p_0p_4$ has length
+exactly $r$ and makes an angle of less than $\pi/3$ with the sides $p_0p_2$
+and $p_4p_6$. The first far point $a(p_0)=p_1$ sits just outside the side
+$p_0p_2$ at distance slightly more than $r$ from $p_0$; the triangle
+$p_0p_1p_4$ has two sides of length about $r$ enclosing an angle below
+$\pi/3$, so $|p_1p_4|<r$ and $p_1$ is blocked by $p_4$. The point
+$a(p_2)=p_3$ sits just before $p_4$ and is slightly closer to $p_0$ than
+$p_4$ is, so it is blocked by $p_0$.
+
+More generally, suppose $(\mathrm{TP}_k)$ fails for $(P,r)$ and let
+$S=\{s_1,\dots,s_k\}$ be an $r$-far $k$-set in ccw order. By
+\cref{lem:arcbasic}, $a_i=a(s_i)$ lies strictly between $s_i$ and $s_{i+1}$,
+and since $(S\setminus\{s_{i+1}\})\cup\{a_i\}$ would contain the tight pair
+$\{s_i,a_i\}$, each $a_i$ must be closer than $r$ to some $s_j$ with
+$j\notin\{i,i+1\}$. So every counterexample contains a convex $2k$-gon
+$s_1a_1s_2a_2\cdots s_ka_k$ with $\{s_1,\dots,s_k\}$ $r$-far, $|s_ia_i|\ge r$,
+and every $a_i$ blocked in this way; in particular it has at least $2k$
+points, and our instances are smallest possible. For $k=3$ no such hexagon
+exists by \cref{thm:k3}(ii). For $k=4$ the blocked configurations occupy a
+tiny part of the configuration space: the short diagonal must lie within
+about $1\%$ of $r$, which explains why random instances never contain them.
+
+The properties above were also tested on large numbers of random and perturbed
+instances; \cref{app:greedytests} reports the tests and explains why random
+testing never found the counterexamples of \cref{thm:tightpair}.
+
+\section{The two-sided search tree}\label{sec:sbm}
+
+The fixed-parameter algorithm of Singireddy, Basappa and Mitchell~\cite{sbm}
+decides whether an $r$-far $k$-set exists by the following search. A
+\emph{state} is a set $C$ of chosen points that occupies a contiguous arc of
+the hull, together with the complementary open arc $F$ (the \emph{free arc}).
+Initially $C=\{q\}$ for a \emph{root} $q$, and $F=P\setminus\{q\}$. A
+\emph{ccw step} adds the first point of $F$, in ccw order from the ccw end of
+$C$, that is at distance at least $r$ from every point of $C$; a \emph{cw
+step} is the mirror image. The search branches on the side, so that each root
+spawns a binary tree of depth $k-1$; it succeeds if some root and some
+sequence of sides reaches $|C|=k$. Every set it reaches is $r$-far, so the
+search is sound. Its completeness is the following claim (Claim~2
+of~\cite{sbm}, rephrased).
+
+\begin{description}[leftmargin=3.2em,labelwidth=2.6em,itemsep=2pt]
+\item[$(\mathrm{SBM}_k)$] If $P$ has an $r$-far $k$-set, the two-sided search
+succeeds from some root.
+\end{description}
+
+\noindent The proof in~\cite{sbm} argues from a figure with three centres of a
+Delaunay triangle and does not specify which points block which; we have not
+been able to complete it. By \cref{thm:tightpair}, a proof must use both
+sides: on $P_\star$ every search that starts with a ccw step fails, whereas
+the two-sided search succeeds. In this subsection we give rigorous partial
+results.
+
+\paragraph{Witnesses.}
+Fix an $r$-far $k$-set $T$. We follow the search together with a
+\emph{witness} $W$: an $r$-far $k$-set with $C\subseteq W$ and $W\setminus
+C\subseteq F$. Write $W\setminus C=\{t_1,\dots,t_m\}$ in ccw order from the
+ccw end of $C$. Let $x$ be the point that a ccw step would add. Since $t_1$ is
+at distance at least $r$ from $C$, $x$ is $t_1$ or lies before $t_1$. We call
+the ccw step \emph{safe} if $(W\setminus\{t_1\})\cup\{x\}$ is $r$-far; then it
+is the new witness, and the state after the step again has a witness.
+Symmetrically for cw steps with $t_m$.
+
+\begin{lemma}[attachment]\label{lem:attach}
+If some $c\in C$ satisfies $|c\,t_1|\le|t_1t_j|$ for all $2\le j\le m$, then
+the ccw step is safe. Symmetrically, if some $c\in C$ satisfies
+$|c\,t_m|\le|t_mt_i|$ for all $1\le i\le m-1$, then the cw step is safe.
+\end{lemma}
+\begin{proof}
+If $x=t_1$ there is nothing to show. Otherwise $x$ lies strictly between the
+ccw end of $C$ and $t_1$, and it is at distance at least $r$ from all of $C$.
+Suppose that $|x\,t_j|<r$ for some $2\le j\le m$. The points $c,x,t_1,t_j$ are
+in convex position in this ccw order, so by (Q),
+$|c\,t_1|+|x\,t_j|>|c\,x|+|t_1t_j|$, that is,
+$|c\,t_1|>|t_1t_j|+(|c\,x|-|x\,t_j|)>|t_1t_j|$, a contradiction. Hence $x$ is
+at distance at least $r$ from $t_2,\dots,t_m$ and from $C$, and
+$(W\setminus\{t_1\})\cup\{x\}$ is $r$-far.
+\end{proof}
+
+\Cref{lem:attach} says that a step is safe whenever the next point of the
+witness has a chosen point among its nearest neighbours in the witness. At the
+root this can always be arranged.
+
+\begin{lemma}\label{lem:nnadjacent}
+Let $\mathcal T$ be a Delaunay triangulation of a set $S$ in strictly convex
+position. Every $p\in S$ has a nearest neighbour in $S$ that is adjacent to $p$
+in $\mathcal T$. Consequently, if $|S|\ge3$, some $p\in S$ has a nearest
+neighbour among its two neighbours on the hull of $S$.
+\end{lemma}
+\begin{proof}
+Let $q$ be a nearest neighbour of $p$, and suppose that no nearest neighbour
+of $p$ is adjacent to it. As in the proof of \cref{lem:closest}, the segment
+$pq$ crosses an edge $uv$ of a triangle $puv$ of $\mathcal T$, $p,u,q,v$ form a
+convex quadrilateral, $\ang puq+\ang pvq\ge\pi$ because $\mathcal T$ is
+Delaunay, and say $\ang puq\ge\pi/2$; then $|pu|<|pq|$, a contradiction. For
+the second claim, a triangulation of a convex polygon with at least four
+vertices has an \emph{ear}, a vertex of degree two whose neighbours in the
+triangulation are its two hull neighbours; for $|S|=3$ every vertex is such a
+vertex.
+\end{proof}
+
+\begin{theorem}[safe first step]\label{thm:firststep}
+Let $T$ be an $r$-far $k$-set, $k\ge2$. There are adjacent points $e,\rho$ of
+$T$ (adjacent on the hull of $T$) such that the first step of the search from
+root $\rho$ towards $e$ is safe with respect to the witness $T$.
+\end{theorem}
+\begin{proof}
+For $k=2$ every step is safe. Otherwise, by \cref{lem:nnadjacent} some $e\in T$
+has a hull neighbour $\rho$ in $T$ as a nearest neighbour in $T$. Start at
+$\rho$ and step towards $e$; then $e$ is $t_1$ (or $t_m$) and $c=\rho$
+satisfies the hypothesis of \cref{lem:attach}.
+\end{proof}
+
+For $k=3$ a safe first step leaves a single point to add, and the next step
+is trivially safe, so $(\mathrm{SBM}_3)$ follows; this is a short proof of a
+special case of \cref{thm:k3}.
+
+\subsection{Four points}
+For $k=4$ the claim holds. The proof needs two geometric lemmas.
+
+\begin{lemma}\label{lem:opposite}
+Let $p,q,s,t$ be in convex position in this ccw order. If
+$|qs|\ge\max\{|ps|,|qt|\}$, then the interior angles of the quadrilateral at
+$p$ and $t$ sum to at least $\pi$.
+\end{lemma}
+\begin{proof}
+In the triangle $pqs$, $|qs|\ge|ps|$ gives $\ang qps\ge\ang pqs$; in the
+triangle $qst$, $|qs|\ge|qt|$ gives $\ang qts\ge\ang qst$. The interior angle
+at $p$ is at least $\ang qps$ and the one at $t$ at least $\ang qts$, while
+the interior angles at $q$ and $s$ are $\ang pqs$ and $\ang qst$. Hence
+$\ang p+\ang t\ge\ang q+\ang s=2\pi-\ang p-\ang t$.
+\end{proof}
+
+\begin{lemma}\label{lem:core}
+There are no points $a,X,Y,c,d$ in strictly convex position in this ccw order
+with $|aX|,|ad|,|cd|\ge r$ and $|aY|,|Xd|<r$.
+\end{lemma}
+\begin{proof}
+The chords $aY$ and $Xd$ cross, so by (Q) applied to $a,X,Y,d$,
+$|Yd|<|aY|+|Xd|-|aX|<r$. Write $\alpha_1=\ang cYd$, $\alpha_2=\ang dYa$,
+$\alpha_3=\ang aYX$, $\varepsilon_1=\ang Yad$, $\varepsilon_2=\ang XaY$,
+$\eta=\ang adX$, $\mu=\ang XdY$, $\delta_1=\ang Ydc$, $\gamma=\ang Ycd$,
+$\lambda=\ang YXd$, $\zeta=\ang dXa$ and $\xi=\ang aXY$. By (A),
+$\ang aXY=\lambda+\zeta$, $\ang adY=\eta+\mu$, $\ang XYd=\alpha_2+\alpha_3$
+and $\ang Xad=\varepsilon_1+\varepsilon_2$. We use: convexity at $Y$,
+$\alpha_1+\alpha_2+\alpha_3<\pi$; the angle sums of the triangles $XYd$,
+$aXd$, $aYd$, $Ycd$, $acd$; and, comparing opposite sides,
+$\xi<\alpha_3$ (triangle $aXY$: $|aY|<|aX|$),
+$\gamma<\alpha_1$ (triangle $Ycd$: $|Yd|<|cd|$),
+$\eta+\mu<\alpha_2$ (triangle $aYd$: $|aY|<|ad|$), and
+$\varepsilon_1+\varepsilon_2<\min\{\eta,\zeta\}$ (triangle $aXd$:
+$|Xd|<|aX|,|ad|$), which gives $\varepsilon_1+\varepsilon_2<\pi/3$.
+
+From the triangles $XYd$ and $aXd$,
+$\xi+\eta+\mu=(\lambda+\mu)+(\zeta+\eta)
+=(\pi-\alpha_2-\alpha_3)+(\pi-\varepsilon_1-\varepsilon_2)$, hence with
+$\xi<\alpha_3$,
+\[\eta+\mu>2\pi-\alpha_2-2\alpha_3-\varepsilon_1-\varepsilon_2.\]
+In the triangle $acd$ the angle at $d$ is $\eta+\mu+\delta_1<\pi$, and in
+$Ycd$, $\delta_1=\pi-\alpha_1-\gamma>\pi-2\alpha_1$; so $\eta+\mu<2\alpha_1<
+2(\pi-\alpha_2-\alpha_3)$. Together, $\alpha_2<\varepsilon_1+\varepsilon_2$.
+Finally, in the triangle $aYd$,
+$\pi-\varepsilon_1=\alpha_2+(\eta+\mu)<2\alpha_2<2\varepsilon_1+2\varepsilon_2$,
+so $\pi<3(\varepsilon_1+\varepsilon_2)<\pi$, a contradiction.
+\end{proof}
+
+\begin{theorem}\label{thm:sbm4}
+$(\mathrm{SBM}_4)$ holds: if $P$ has an $r$-far $4$-set $T$, the two-sided
+search succeeds from a vertex of $T$, and even a witness-preserving search does.
+\end{theorem}
+\begin{proof}
+Let $T=(a,b,c,d)$ in ccw order. Call $(u,v)$ a \emph{good pair} if $u,v$ are
+hull neighbours in $T$ and $u$ is a nearest neighbour of $v$ in $T$. Start at
+$u$ and step towards $v$; by \cref{lem:attach} the step is safe. Let $w$ be
+the other neighbour of $u$ and $z$ the other neighbour of $v$; they are the
+two remaining witness points, and $wz$ is an edge of $T$. By \cref{lem:attach},
+applied with the chosen point $u$, one of the two next steps is safe unless $|wz|<|uw|$ and
+$|wz|<|uz|$; after a safe second step one witness point remains, and the last
+step always succeeds. So it suffices to find a good pair whose opposite edge
+$wz$ is not the strictly shortest side of the triangle $uwz$.
+
+Let a closest pair of $T$ be given. If it is a diagonal, say $ac$, then $ac$
+is the diagonal of every Delaunay triangulation of $T$ (\cref{lem:closest}),
+so $b$ is an ear and by \cref{lem:nnadjacent} a nearest neighbour of $b$ is
+$a$ or $c$. For the good pair $(a,b)$ the triangle is $adc$ and $|dc|\ge|ac|$;
+for $(c,b)$ it is $cda$ and $|da|\ge|ca|$. Either way we are done. If the
+closest pair is an edge, say $ab$, then $(a,b)$ and $(b,a)$ are good pairs,
+with triangles $adc$ and $bcd$. Unless $|cd|<|ad|,|ac|,|bc|,|bd|$, we are done.
+In that remaining case $|ab|\le|cd|$, so $|ab|$ and $|cd|$ are both strictly
+smaller than $|ac|,|ad|,|bc|,|bd|$, and $(a,b)$ and $(c,d)$ are good pairs.
+
+Suppose that both searches get stuck after their first step. For the root
+$a$, let $x\in(a,b]$ be the first point added; the witness is
+$\{a,x,c,d\}$, and being stuck means: the next ccw point $X\in(x,c)$, the
+first point after $x$ at distance at least $r$ from $a$ and $x$, satisfies
+$|Xd|<r$; the next cw point $Y\in(d,a)$ satisfies $|Yc|<r$, and $|Ya|\ge r$.
+Likewise for the root $c$, with first point $x'\in(c,d]$: the next ccw point
+$X'\in(x',a)$ has $|X'c|\ge r$ and $|X'b|<r$, and the next cw point
+$Y'\in(b,c)$ has $|Y'a|<r$.
+
+First, $X\in(b,c)$: $X\ne b$ because $|bd|\ge r>|Xd|$, and if $X$ lay before
+$b$, then (Q) for $a,X,b,d$ would give $|ab|>|bd|+(|aX|-|Xd|)>|bd|$, contrary
+to $|ab|<|bd|$. Symmetrically $X'\in(d,a)$, using $|cd|<|bd|$. Second, $Y'$
+precedes $X$ in $(b,c)$: otherwise $a,X,Y',c,d$ would contradict
+\cref{lem:core}. Symmetrically, $Y$ precedes $X'$ in $(d,a)$ (apply
+\cref{lem:core} to $c,X',Y,a,b$). Hence the eight points
+$a,b,Y',X,c,d,Y,X'$ are in convex position in this order.
+
+Apply \cref{lem:opposite} to $X',a,b,Y'$ (with $|ab|\ge r>|X'b|,|aY'|$) and to
+$X,c,d,Y$ (with $|cd|\ge r>|Xd|,|cY|$): in these two quadrilaterals the angles
+at $X'$ and $Y'$, and at $X$ and $Y$, sum to at least $\pi$ each. The octagon
+is the union of these two quadrilaterals and the quadrilateral
+$Y',X,Y,X'$, glued along $X'Y'$ and $XY$. Its interior angles at
+$Y',X,Y,X'$ are therefore the sums of the corresponding angles of the pieces,
+and they add up to at least $\pi+\pi+2\pi=4\pi$. But each is smaller than
+$\pi$, a contradiction. So one of the two searches has a safe second step.
+\end{proof}
+
+We also checked \cref{thm:sbm4} and its case analysis computationally: on
+$2.9\cdot10^7$ pairs $(T,r)$ from random and perturbed thin instances, some good
+pair led to success, and in the $9.5\cdot10^6$ instances of the last case one of
+the roots $a$ and $c$ did. Under the arc property the claim holds in a
+strong form.
+
+\begin{proposition}\label{prop:sbmarc}
+If $P$ has the $r$-arc property (\cref{sec:arc}) and $T$ is an $r$-far
+$k$-set, then from every root $q\in T$ the path of $k-1$ ccw steps
+succeeds. In particular $(\mathrm{SBM}_k)$ holds, and no branching is
+necessary.
+\end{proposition}
+\begin{proof}
+By \cref{thm:arc}(i) the greedy chain $x_0=q$, $x_{i+1}=a(x_i)$ is proper and
+$r$-far. We show by induction that the $i$-th ccw step adds $x_i$. The points
+strictly between $x_{i-1}$ and $x_i$ are closer than $r$ to $x_{i-1}$, so they
+are not eligible; $x_i$ is at distance at least $r$ from $x_0,\dots,x_{i-1}$
+because the chain is $r$-far; and $x_i$ does not pass the cw end $q$ because
+the chain is proper.
+\end{proof}
+
+\subsection{Natural choices of the root fail}
+A proof of $(\mathrm{SBM}_k)$ along the lines of \cref{thm:firststep} would fix
+the root in terms of $T$ and show that the search, from that root, never runs
+out of safe steps. Our experiments suggest that this is true for \emph{some}
+vertex of every $T$, but not for the vertices one would pick first.
+
+\begin{proposition}\label{prop:rootrules}
+There are point sets in convex position, a radius $r$ and an $r$-far $k$-set
+$T$ such that
+\begin{enumerate}[label=(\alph*),itemsep=1pt,topsep=2pt]
+\item ($k=5$ and $k=6$) the two-sided search fails from an endpoint of a
+closest pair of $T$;
+\item ($k=7$) no sequence of safe steps from the vertex of $T$ with the
+smallest interior angle reaches $k$ points;
+\item ($k=7$) the same holds for the vertex of smallest angle over all $r$-far
+$k$-sets of $P$.
+\end{enumerate}
+In all these instances $(\mathrm{SBM}_k)$ holds.
+\end{proposition}
+\begin{proof}
+The instances have between $10$ and $14$ points with integer coordinates and
+are listed in \code{fpt/data/root_rule_instances.json}; each claim is verified
+by exhaustive search in exact arithmetic (\code{fpt/check_roots.py}).
+\end{proof}
+
+\subsection{Evidence and a sharper conjecture}
+Call a search from root $q\in T$ \emph{witness-preserving} if it only takes
+safe steps (with respect to the witness obtained from $T$ by the previous
+steps). Such a search is a sub-search of the two-sided search, so the
+following statement implies $(\mathrm{SBM}_k)$.
+
+\begin{conjecture}\label{conj:sbm}
+For every $r$-far $k$-set $T$ there is a vertex $q\in T$ from which a
+witness-preserving search reaches $k$ points.
+\end{conjecture}
+
+\noindent By \cref{thm:sbm4} the conjecture holds for $k\le4$.
+
+We tested \cref{conj:sbm} on more than $1.2\cdot10^7$ pairs $(T,r)$ from random
+convex sets with up to $12$ points and $k\le7$, and under simulated annealing
+that minimises the number of good vertices for $k\le7$ and up to $14$
+points; it never failed. Not every vertex is good, however: the last instance
+in \code{fpt/data/root_rule_instances.json} has $k=4$ and a vertex of $T$ from
+which both first steps are unsafe. The two-sided search itself
+($(\mathrm{SBM}_k)$) succeeded in all $532{,}833$ random decision tests of our
+re-implementation and in about $3{,}000$ annealing runs designed to break it,
+for $k\le10$. So a proof must choose the root with care;
+\cref{prop:rootrules} rules out the obvious choices. We leave \cref{conj:sbm} and $(\mathrm{SBM}_k)$ open for $k\ge5$; until they are
+settled, the bound $O(2^kn^2\log^2n)$ of~\cite{sbm} should be regarded as
+conditional for $k\ge5$, and
+\cref{alg:certified} below uses the search only as a sound heuristic.
+
+\section{When greedy is exact: the arc property}\label{sec:arc}
+
+The counterexamples of \cref{sec:greedy} are thin polygons in which the
+distance from a point is far from unimodal along the hull. This section shows
+that this is the only obstruction: if the set of points far from $q$ is always
+contiguous, the simplest greedy rule is exact, and for unimodal point sets it
+gives a near-linear algorithm.
+
+For $r>0$ and $q\in P$ let $\mathrm{Far}_r(q)=\{x\in P\setminus\{q\}:|qx|\ge r\}$.
+We say that $P$ has the \emph{$r$-arc property} if for every $q$ the set
+$\mathrm{Far}_r(q)$ consists of consecutive points in the order
+$p_{q+1},\dots,p_{q-1}$; then $\mathrm{Far}_r(q)$ is exactly the ccw arc from
+$a(q)$ to $b(q)$. We call $P$ \emph{unimodal} if for every $q$ the sequence
+$|p_qp_{q+t}|$, $t=1,\dots,n-1$, is strictly increasing and then strictly
+decreasing, where the maximum may be attained at two consecutive values of
+$t$. A unimodal set has the $r$-arc property for every $r$. Points on a circle
+are unimodal, since the chord length is $2R\sin(\theta/2)$ for the ccw angle
+$\theta\in(0,2\pi)$; the tie at the top occurs, for instance, in every regular
+polygon with an odd number of vertices, which is why it has to be admitted.
+
+\begin{lemma}[Exchange]\label{lem:a1}
+Assume the $r$-arc property. Let $S$ be an $r$-far set and let $s,s'$ be
+consecutive points of $S$ in ccw order. Then $(S\setminus\{s'\})\cup\{a(s)\}$
+is $r$-far.
+\end{lemma}
+\begin{proof}
+By \cref{lem:arcbasic}, $a(s)$ lies on the ccw arc from $s$ to $s'$, and
+$|s\,a(s)|\ge r$. Let $t\in S\setminus\{s,s'\}$. The set $\mathrm{Far}_r(t)$
+is a set of consecutive points in the order that starts and ends next to $t$,
+and it contains $s$ and $s'$. The ccw arc from $s$ to $s'$ does not contain
+$t$, so all its points lie between $s$ and $s'$ in that order and belong to
+$\mathrm{Far}_r(t)$. Hence $|t\,a(s)|\ge r$.
+\end{proof}
+
+For $q\in P$ and $k\ge2$ the \emph{greedy chain} of $q$ is $x_0=q$,
+$x_{i+1}=a(x_i)$ for $i<k-1$. It is \emph{proper} if all $a(x_i)$ are defined
+and the chain does not wrap around, i.e.\ the ccw offsets of $x_0,\dots,x_{k-1}$
+from $q$ are strictly increasing and smaller than $n$.
+
+\begin{theorem}\label{thm:arc}
+Assume the $r$-arc property and let $k\ge2$.
+\begin{enumerate}[label=(\roman*),itemsep=1pt,topsep=2pt]
+\item If $S$ is an $r$-far $k$-set and $q\in S$, then the greedy chain of $q$
+is proper and $r$-far.
+\item A proper greedy chain is $r$-far if and only if $|x_0x_{k-1}|\ge r$.
+\end{enumerate}
+Hence $P$ has an $r$-far $k$-set if and only if some $q$ has a proper greedy
+chain with $|x_0x_{k-1}|\ge r$.
+\end{theorem}
+\begin{proof}
+(i) Let $S=\{s_1,\dots,s_k\}$ in ccw order with $s_1=q$. Applying
+\cref{lem:a1} to the consecutive pair $(x_0,s_2)$ replaces $s_2$ by $x_1$;
+then $(x_1,s_3)$ is a consecutive pair of the new $r$-far set, and we replace
+$s_3$ by $x_2$, and so on. After $k-1$ steps the set is the chain, which is
+$r$-far, and since $x_i$ lies on the ccw arc from $x_{i-1}$ to $s_{i+1}$, the
+chain is proper.
+
+(ii) Only ``if'' needs a proof. Fix $i$. Starting after $x_i$, the other
+chain points appear in the order
+$x_{i+1},\dots,x_{k-1},x_0,\dots,x_{i-1}$. The first of them is $a(x_i)$ and
+lies in $\mathrm{Far}_r(x_i)$. The last one also does: for $i\ge1$ because
+$x_i=a(x_{i-1})$, and for $i=0$ by assumption. Since $\mathrm{Far}_r(x_i)$ is
+contiguous, it contains all of them.
+\end{proof}
+
+Part~(ii) is the difference to \cref{sec:greedy}: without the arc property a
+greedy chain can close up and still contain a close pair, and by
+\cref{thm:tightpair} there may be no $r$-far chain at all. Indeed the set
+$P_\star$ violates the arc property at $r^2=10240$ ($\mathrm{Far}_r(p_0)$
+consists of the three runs $\{p_1,p_2\}$, $\{p_4\}$, $\{p_6\}$).
+
+\paragraph{Decision.}
+Given the offsets of $a(q)$ for all $q$, the function $a^{k-1}$ together with
+the offset travelled is obtained by repeated squaring in $O(n\log k)$ time and
+$O(n)$ space, after which \cref{thm:arc} is tested in $O(1)$ per seed. (The
+obvious $O(nk)$ walk works as well.) Computing $a(q)$ takes $O(n)$ time by
+scanning. For unimodal $P$ we first find, for every row $q$, the position of
+its maximum by binary search; then $a(q)$ is found by binary search on the
+increasing part of the row.
+
+\begin{theorem}\label{thm:arcdecision}
+Under the $r$-arc property, the decision problem can be solved in
+$O(n^2)$ time, and in $O(n\log n)$ time if $P$ is unimodal. A witness is
+reported within the same bounds.
+\end{theorem}
+
+\paragraph{Optimisation.}
+For unimodal $P$, sorting the $\binom n2$ distances and binary search gives
+$O(n^2\log n)$ time; we call this variant \textsc{O1}. To avoid generating
+all distances, observe that every row splits at its maximum into an increasing
+and a decreasing list, so that the candidates are available as $2n$ implicit
+sorted lists. Algorithm \textsc{O2} maintains an open interval $(lo,hi)$ with
+$lo$ feasible and $hi$ infeasible and, for each list, the range of its entries
+inside the interval. In each round it picks one of the remaining entries
+uniformly at random, tests it, and shrinks all ranges by binary search.
+
+\begin{theorem}\label{thm:arcopt}
+For $n$ points in convex position that form a unimodal set, $k$-dispersion can
+be solved exactly in expected $O(n\log^2n)$ time and $O(n)$ space.
+\end{theorem}
+\begin{proof}
+A round costs $O(n\log n)$: $O(n)$ to select the pivot, $O(n\log n)$ for the
+decision (\cref{thm:arcdecision}) and $O(n\log n)$ to update the ranges. All
+remaining entries equal to the pivot are removed, and with probability at
+least $1/2$ the pivot has rank between $1/4$ and $3/4$ among the remaining
+entries, in which case at least a quarter of them are removed. So the expected
+number of rounds is $O(\log n)$. When no entry is left, $lo=\rstar$, because
+$\rstar$ is a pairwise distance and is feasible.
+\end{proof}
+
+\paragraph{Recognising the hypotheses.}
+The arc property at a given $r$ is checked in $O(n^2)$ time by counting runs.
+Unimodality can be verified faster.
+
+\begin{lemma}\label{lem:unitest}
+Whether $P$ is unimodal can be decided in $O(n\log n)$ time.
+\end{lemma}
+\begin{proof}
+Fix $j$. The points strictly closer to $p_j$ than to $p_{j+1}$ are the points
+of $P$ in an open half-plane bounded by the perpendicular bisector of
+$p_jp_{j+1}$. Since $P$ is in strictly convex position, they form a run of
+consecutive points; it contains $p_j$ and not $p_{j+1}$, so it is
+$p_j,p_{j-1},\dots,p_{j-c_j+1}$ for some $1\le c_j\le n-1$. At most two points
+of $P$ lie on the bisector; one boundary crossing of the bisector is inside the
+edge $p_jp_{j+1}$, so the only candidate for a point equidistant from $p_j$ and
+$p_{j+1}$ is $p_{j-c_j}$. Let $z_j=1$ if it is equidistant and $z_j=0$
+otherwise. The predicate ``$p_{j-s}$ is strictly closer to $p_j$ than to
+$p_{j+1}$'' is monotone in $s$, so $c_j$ is found by binary search with
+$O(\log n)$ distance comparisons, and $z_j$ with one more.
+
+Now fix a row $q$ and $1\le t\le n-2$, and put $j=q+t$. The step from
+$p_{q+t}$ to $p_{q+t+1}$ increases the distance to $p_q$ iff $p_q=p_{j-t}$ is
+strictly closer to $p_j$ than to $p_{j+1}$, that is, iff $t<c_j$; it leaves the
+distance unchanged iff $t=c_j$ and $z_j=1$; otherwise it decreases. A row is
+unimodal (with at most one tie, at the top) iff no step that is not an
+increase is followed by a step that is not a decrease. Step $t$ is not an
+increase iff $t\ge c_j$, and step $t+1$ (whose edge is $p_{j}p_{j+1}$ shifted
+by one, i.e.\ index $j+1$) is not a decrease iff $t+1\le c_{j+1}-1+z_{j+1}$.
+Hence some row fails iff for some $j$ there is an integer
+$t\in[1,n-3]$ with $c_j\le t\le c_{j+1}+z_{j+1}-2$. As $c_j\ge1$, this is the
+case iff $c_j\le\min\{c_{j+1}+z_{j+1}-2,\;n-3\}$ for some $j$, which is
+checked in $O(n)$ time once all $c_j,z_j$ are known.
+\end{proof}
+
+For general convex input we use an \emph{adaptive} variant of \textsc{O1}: it
+checks the arc property at every radius it tests and reports ``not
+applicable'' if the check fails. It takes $O(n^2\log n)$ time, is exact
+whenever it answers, and never answers incorrectly.
+
+\paragraph{How far does the hypothesis reach?}
+The arc property cannot be weakened in the two obvious ways. If only the
+points of one $r$-far $k$-set have contiguous far sets, greedy chains can all
+fail ($k=6$, ten points); if the arc property holds only at $r=\rstar$, the
+closing test of \cref{thm:arc}(ii) is unreliable at other radii and a binary
+search with it can return a wrong value ($k=4$, six points). On the other
+hand, at the optimal radius the arc property held in all our tests on hulls of
+random point clouds and on near-circular sets, and never on thin ellipses and
+lenses. Details, the counterexamples and running times are in
+\cref{app:arcexp}.
 
 \section{The capped Delaunay dynamic program}\label{sec:dp}
 
@@ -638,554 +1286,6 @@ is known to be feasible. The witness of the last positive call, or $G$ if there
 is none, is an optimal set.
 \end{proof}
 
-\section{Greedy structure: true for \texorpdfstring{$k=3$}{k=3}, false for \texorpdfstring{$k\ge4$}{k>=4}}\label{sec:greedy}
-
-For $k=3$ the decision problem can be solved in near-linear
-time~\cite{tw25}, and $O(n^2)$ time suffices for the optimisation
-problem~\cite{kobayashi}. These algorithms exploit that an $r$-far triple, if
-one exists, can be found next to the ``first far points'' of some point. It is
-natural to ask how much of this structure survives for larger $k$, because any
-property of this kind immediately yields a fast greedy or bounded-search
-algorithm. This section gives a complete answer for the properties we are
-aware of.
-
-Fix $r>0$. For $q\in P$ let $a(q)$ be the first point after $q$ in ccw order
-with $|q\,a(q)|\ge r$, and $b(q)$ the first such point in clockwise order;
-both are undefined if no point is at distance at least $r$ from $q$. Note that
-the distance from $q$ is in general not unimodal along the hull, so points
-after $a(q)$ may again be close to $q$. Let $\Arc(q)$ be the set of points on
-the ccw arc from $a(q)$ to $b(q)$ (which does not contain $q$). We call
-$\{q,a(q)\}$ a \emph{tight pair}.
-
-\begin{lemma}\label{lem:arcbasic}
-Let $S$ be an $r$-far set with $|S|\ge2$, and let $s,s'$ be consecutive points
-of $S$ in ccw order. Then $a(s)$ lies in $P(s,s')\cup\{s'\}$, and
-$S\setminus\{s\}\subseteq\Arc(s)$.
-\end{lemma}
-\begin{proof}
-All points of $S\setminus\{s\}$ are at distance at least $r$ from $s$; the first
-of them in ccw order is $s'$ and the first in clockwise order is the
-predecessor of $s$ in $S$.
-\end{proof}
-
-We consider the following properties of $(P,k,r)$.
-\begin{description}[leftmargin=3.2em,labelwidth=2.6em,itemsep=2pt]
-\item[$(\mathrm{G}_k)$] \emph{Arc characterisation:} $P$ has an $r$-far $k$-set
-if and only if $\Arc(q)$ contains an $r$-far $(k-1)$-set for some $q\in P$.
-\item[$(\mathrm{TT}_k)$] \emph{Tight triple:} if $P$ has an $r$-far $k$-set,
-then it has one that contains $q$, $a(q)$ and $b(q)$ for some $q$.
-\item[$(\mathrm{TP}_k)$] \emph{Tight pair:} if $P$ has an $r$-far $k$-set, then
-it has one that contains a tight pair $\{q,a(q)\}$.
-\item[$(\mathrm{ST}_k)$] \emph{Seeded search tree:} if $P$ has an $r$-far $k$-set, then
-for some $q$ the following search reaches $k$ points: start with
-$\{q,a(q)\}$, a ccw frontier at $a(q)$ and a clockwise frontier at $q$, and
-repeatedly add, on a side of the search's choice, the first point beyond that
-side's frontier (and before the other frontier) that is at distance at least
-$r$ from all chosen points; the added point becomes the new frontier.
-\item[$(\mathrm{AG}_k)$] \emph{Alternating greedy:} as $(\mathrm{ST}_k)$, but
-the sides strictly alternate (either side may start).
-\end{description}
-Every set produced by a search of $(\mathrm{ST}_k)$ is $r$-far and contains
-$\{q,a(q)\}$, so
-$(\mathrm{AG}_k)\Rightarrow(\mathrm{ST}_k)\Rightarrow(\mathrm{TP}_k)$, and
-trivially $(\mathrm{TT}_k)\Rightarrow(\mathrm{TP}_k)$. If $(\mathrm{ST}_k)$ held
-for all point sets, the decision problem could be solved in $O(2^kn^2k)$ time
-by exploring, for each of the $n$ seeds, a binary tree of depth $k-2$ whose
-nodes cost $O(nk)$; $(\mathrm{AG}_k)$ would even give $O(n^2k)$. Property
-$(\mathrm{TP}_k)$ is the weakest statement that ties a solution to the first
-far points, and therefore the most robust candidate. The bounded search tree
-of Singireddy, Basappa and Mitchell~\cite{sbm} is a two-sided variant of
-$(\mathrm{ST}_k)$ that is seeded with a single point; we study it separately
-in \cref{sec:sbm}.
-
-\subsection{Triples}\label{sec:k3}
-
-\begin{theorem}\label{thm:k3}
-Let $\{x,y,z\}$ be an $r$-far triple of $P$, in ccw order.
-\begin{enumerate}[label=(\roman*),itemsep=1pt,topsep=2pt]
-\item At least one of $\{x,a(x),b(x)\}$, $\{y,a(y),b(y)\}$,
-$\{z,a(z),b(z)\}$ is an $r$-far triple.
-\item At least one of $\{x,a(x),z\}$, $\{y,a(y),x\}$, $\{z,a(z),y\}$ is an
-$r$-far triple.
-\end{enumerate}
-In particular $(\mathrm{TT}_3)$, $(\mathrm{TP}_3)$, $(\mathrm{ST}_3)$ and
-$(\mathrm{AG}_3)$ hold for every point set in convex position and every $r$.
-\end{theorem}
-\begin{proof}
-(i) By \cref{lem:arcbasic}, the ccw order around the hull is
-$x,a(x),y,z,b(x)$, where $a(x)=y$ and $b(x)=z$ are allowed, and
-$a(x)\ne b(x)$. Suppose that $|a(x)b(x)|<r$. In the triangle $x\,a(x)\,b(x)$
-the side $a(x)b(x)$ is then strictly shorter than the other two, so the
-opposite angle is smaller than $\pi/3$, and by (A),
-$\ang yxz\le\ang a(x)\,x\,b(x)<\pi/3$. If the triples of $y$ and $z$ also
-failed to be $r$-far, the same argument would give $\ang zyx<\pi/3$ and
-$\ang xzy<\pi/3$, and the angles of the triangle $xyz$ would sum to less than
-$\pi$.
-
-(ii) If $a(x)=y$ the first triple is $\{x,y,z\}$. Otherwise $a(x)\in P(x,y)$
-and $|x\,a(x)|\ge r$, so the first triple is $r$-far unless $|a(x)z|<r$. In
-that case $a(x)z$ is the strictly shortest side of the triangle $x\,a(x)\,z$,
-hence $\ang a(x)\,x\,z<\pi/3$, and by (A) applied to $x,a(x),y,z$ we get
-$\ang yxz<\pi/3$. Likewise, failure of the second triple gives
-$\ang zyx<\pi/3$ and failure of the third gives $\ang xzy<\pi/3$. All three
-cannot fail.
-
-The tight triple of (i) contains the tight pair $\{q,a(q)\}$. For
-$(\mathrm{ST}_3)$ and $(\mathrm{AG}_3)$, take the triple $\{q,a(q),z'\}$
-provided by (ii): the search started from $\{q,a(q)\}$ needs a single step,
-and its ccw step succeeds because the arc beyond $a(q)$ contains a point,
-namely $z'$, at distance at least $r$ from both seeds.
-\end{proof}
-
-Part~(i) says that $P$ has an $r$-far triple if and only if
-$|a(q)b(q)|\ge r$ for some $q$, which is the kind of characterisation used by
-the fast algorithms for $k=3$~\cite{kobayashi,tw25}; we include the proof
-because it is short and because part~(ii) uses the same idea. The arc
-characterisation holds for triples as well.
-
-\begin{proposition}\label{prop:g3}
-The implication ``$\Rightarrow$'' of $(\mathrm{G}_k)$ holds for every
-$k\ge2$, and $(\mathrm{G}_3)$ holds.
-\end{proposition}
-\begin{proof}
-If $S$ is an $r$-far $k$-set and $q\in S$, then $S\setminus\{q\}$ is an
-$r$-far $(k-1)$-set contained in $\Arc(q)$ by \cref{lem:arcbasic}.
-
-For $k=3$, let $x,y\in\Arc(q)$ with $|xy|\ge r$, write $a=a(q)$, $b=b(q)$,
-and let the ccw order be $q,a,x,y,b$ with $a=x$ or $y=b$ allowed. Suppose that
-$P$ has no $r$-far triple. Since $a\ne b$ and $|qa|,|qb|\ge r$, we have
-$|ab|<r$. We distinguish cases according to the distances from $q$.
-If $|qx|\ge r$ and $|qy|\ge r$, then $\{q,x,y\}$ is an $r$-far triple.
-If $|qx|<r\le|qy|$, then $x\ne a$, and $|ay|<r$ because $\{q,a,y\}$ is not
-$r$-far. In the convex quadrilateral $q,a,x,y$ the diagonals satisfy
-$|qx|+|ay|<2r\le|qa|+|xy|$, contradicting~(Q). The case $|qy|<r\le|qx|$ is
-symmetric: $y\neq b$, $|xb|<r$, and the quadrilateral $q,x,y,b$ has diagonals
-$|qy|+|xb|<2r\le|xy|+|bq|$. Finally, if $|qx|<r$ and $|qy|<r$, then, as in the
-proof of \cref{thm:k3}, $\ang xqy\le\ang aqb<\pi/3$, so $xy$ is not a longest
-side of the triangle $qxy$ and $|xy|<\max\{|qx|,|qy|\}<r$, a contradiction.
-\end{proof}
-
-\subsection{Four or more points}\label{sec:k4}
-
-\begin{proposition}\label{prop:gk}
-$(\mathrm{G}_k)$ fails for every $k\ge4$: there is a set of $k$ points in
-convex position and a radius $r$ such that no $r$-far $k$-set exists although
-$\Arc(u)$ contains an $r$-far $(k-1)$-set for some point $u$.
-\end{proposition}
-\begin{proof}
-Let $k\ge4$, choose $k-2$ distinct non-zero integers $j$ with $|j|\le k$, at
-least one positive and one negative, and let $H=3(k+1)$. Let
-\[
-u=(-H^2,0),\qquad v=(H^2,0),\qquad w_j=\bigl(H^2-9j^2,\ 3jH^2\bigr),
-\]
-and $r=3H^2$. All points lie on the boundary of the strictly convex region
-$\{(x,y):|x|\le H^2-y^2/H^4\}$ and are therefore in strictly convex position;
-$u$ is alone on the left boundary arc, and the right arc carries $v$ and the
-$w_j$, with points above and below $v$. We have $|uv|=2H^2<r$, while any two
-other points differ by at least $3H^2=r$ in their $y$-coordinates. So the
-point set itself, the only $k$-subset, is not $r$-far. The two hull neighbours
-of $u$ are the lowest and the highest $w_j$; they are at distance at least
-$r$ from $u$, so they are $a(u)$ and $b(u)$, and $\Arc(u)$ consists of all
-points except $u$, which form an $r$-far $(k-1)$-set.
-\end{proof}
-
-\noindent For $k=4$ the idea is visible in the rhombus $(-1,0)$, $(0,-3)$,
-$(1,0)$, $(0,3)$ with $r^2=10$: the short diagonal is the only close pair.
-
-\begin{figure}[tb]
-\centering
-\begin{tikzpicture}[scale=0.047]
-  \coordinate (p0) at (16,48);   \coordinate (p1) at (-83,26);
-  \coordinate (p2) at (-114,18); \coordinate (p3) at (-30,-39);
-  \coordinate (p4) at (-16,-48); \coordinate (p5) at (83,-26);
-  \coordinate (p6) at (114,-18); \coordinate (p7) at (30,39);
-  \draw[gray!60] (p0)--(p1)--(p2)--(p3)--(p4)--(p5)--(p6)--(p7)--cycle;
-  \draw[blue!70!black,thick] (p0)--(p2)--(p4)--(p6)--cycle;
-  \draw[blue!70!black,thick] (p0)--(p4);
-  \draw[blue!70!black] (p2)--(p6);
-  \draw[red!75!black,densely dashed,thick] (p1)--(p4) (p5)--(p0) (p3)--(p0) (p7)--(p4);
-  \foreach \p/\pos/\lab in {p0/above/{$p_0=(16,48)$}, p2/left/{$p_2=(-114,18)$}, p4/below/{$p_4=(-16,-48)$}, p6/right/{$p_6=(114,-18)$}}
-    {\fill[blue!70!black] (\p) circle (38pt); \node[\pos] at (\p) {\small \lab};}
-  \foreach \p/\pos/\lab in {p1/above left/{$p_1=(-83,26)$}, p3/below left/{$p_3=(-30,-39)$}, p5/below right/{$p_5=(83,-26)$}, p7/above right/{$p_7=(30,39)$}}
-    {\draw[fill=white] (\p) circle (38pt); \node[\pos] at (\p) {\small \lab};}
-\end{tikzpicture}
-\caption{The point set $P_\star$ of \cref{thm:tightpair} (to scale),
-$r^2=10240$. Solid blue: the only $r$-far $4$-set $\{p_0,p_2,p_4,p_6\}$ and
-its six distances; $|p_0p_4|=r$. Each white point is the first far point
-$a(\cdot)$ of the blue point before it and is closer than $r$ to another blue
-point (dashed red), so it cannot replace anything.}
-\label{fig:pstar}
-\end{figure}
-
-\begin{theorem}\label{thm:tightpair}
-$(\mathrm{TP}_4)$ is false, even at the optimal radius. Let $P_\star$ be the
-eight points
-\begin{align*}
-&p_0=(16,48), &&p_1=(-83,26), &&p_2=(-114,18), &&p_3=(-30,-39),\\
-&p_4=(-16,-48), &&p_5=(83,-26), &&p_6=(114,-18), &&p_7=(30,39),
-\end{align*}
-which are in strictly convex position in this ccw order, and let
-$r^2=10240$. Then $\rstar_4(P_\star)=r$, the set $\{p_0,p_2,p_4,p_6\}$ is the
-only $r$-far $4$-set, and it contains no tight pair. Consequently
-$(\mathrm{TT}_4)$, $(\mathrm{ST}_4)$ and $(\mathrm{AG}_4)$ are false as well.
-Moreover, $(\mathrm{TP}_k)$ is false for $k=5$, $6$ and $7$; point sets with
-$2k$ points are listed in \cref{app:instances}.
-\end{theorem}
-\begin{proof}
-$P_\star$ is symmetric under $p\mapsto-p$, which maps $p_i$ to $p_{i+4}$. The
-squared distances from $p_0,\dots,p_3$ are
-\begin{center}\small
-\begin{tabular}{@{}c|cccccccc@{}}
- & $p_0$ & $p_1$ & $p_2$ & $p_3$ & $p_4$ & $p_5$ & $p_6$ & $p_7$\\\midrule
-$p_0$ & -- & \textbf{10285} & \textbf{17800} & 9685 & \textbf{10240} & 9965 & \textbf{13960} & 277\\
-$p_1$ &  & -- & 1025 & 7034 & 9965 & \textbf{30260} & \textbf{40745} & \textbf{12938}\\
-$p_2$ &  &  & -- & \textbf{10305} & \textbf{13960} & \textbf{40745} & \textbf{53280} & \textbf{21177}\\
-$p_3$ &  &  &  & -- & 277 & \textbf{12938} & \textbf{21177} & 9684\\
-\end{tabular}
-\end{center}
-and the remaining ones follow by symmetry; entries of at least $r^2$ are in
-bold. The points at distance at least $r$ from $p_1$ are $p_0,p_5,p_6,p_7$,
-and the only pairs among these at distance at least $r$ are $\{p_0,p_6\}$ and
-$\{p_6,p_7\}$, so $p_1$ lies in no $r$-far $4$-set; by symmetry neither does
-$p_5$. The points at distance at least $r$ from $p_3$ are $p_2,p_5,p_6$, and
-$|p_5p_6|<r$, so $p_3$ and, by symmetry, $p_7$ lie in no $r$-far $4$-set
-either. Hence the only candidate is $\{p_0,p_2,p_4,p_6\}$, which is $r$-far
-with minimum distance $|p_0p_4|=r$; in particular $\rstar_4(P_\star)=r$. From
-the table, $a(p_0)=p_1$, $a(p_2)=p_3$, $a(p_4)=p_5$ and $a(p_6)=p_7$. None of
-these belongs to the set, so it contains no tight pair.
-
-For $k=5,6,7$ the instances of \cref{app:instances} were verified by
-exhaustive enumeration of all $k$-subsets in exact integer arithmetic.
-\end{proof}
-
-\paragraph{Anatomy of the counterexample.}
-The mechanism is easy to describe (\cref{fig:pstar}). The quadrilateral
-$p_0p_2p_4p_6$ is a parallelogram whose short diagonal $p_0p_4$ has length
-exactly $r$ and makes an angle of less than $\pi/3$ with the sides $p_0p_2$
-and $p_4p_6$. The first far point $a(p_0)=p_1$ sits just outside the side
-$p_0p_2$ at distance slightly more than $r$ from $p_0$; the triangle
-$p_0p_1p_4$ has two sides of length about $r$ enclosing an angle below
-$\pi/3$, so $|p_1p_4|<r$ and $p_1$ is blocked by $p_4$. The point
-$a(p_2)=p_3$ sits just before $p_4$ and is slightly closer to $p_0$ than
-$p_4$ is, so it is blocked by $p_0$.
-
-More generally, suppose $(\mathrm{TP}_k)$ fails for $(P,r)$ and let
-$S=\{s_1,\dots,s_k\}$ be an $r$-far $k$-set in ccw order. By
-\cref{lem:arcbasic}, $a_i=a(s_i)$ lies strictly between $s_i$ and $s_{i+1}$,
-and since $(S\setminus\{s_{i+1}\})\cup\{a_i\}$ would contain the tight pair
-$\{s_i,a_i\}$, each $a_i$ must be closer than $r$ to some $s_j$ with
-$j\notin\{i,i+1\}$. So every counterexample contains a convex $2k$-gon
-$s_1a_1s_2a_2\cdots s_ka_k$ with $\{s_1,\dots,s_k\}$ $r$-far, $|s_ia_i|\ge r$,
-and every $a_i$ blocked in this way; in particular it has at least $2k$
-points, and our instances are smallest possible. For $k=3$ no such hexagon
-exists by \cref{thm:k3}(ii). For $k=4$ the blocked configurations occupy a
-tiny part of the configuration space: the short diagonal must lie within
-about $1\%$ of $r$, which explains why random instances never contain them.
-
-\paragraph{Random tests versus adversarial search.}
-Before finding $P_\star$ we tested all properties on random instances, in
-exact arithmetic (\cref{tab:hunt}): hulls of random point clouds, points on
-circles and thin ellipses, thin ``two-chain'' polygons bounded by two flat
-arcs, small integer grids with many cocircular points, and random
-perturbations (jitter, deletion and insertion of points) of every
-counterexample to a weaker property. On instances with at most $13$ points
-all radii and all $k$-sets were examined exhaustively; on larger ones
-$(\mathrm{TP}_k)$ was decided by the dynamic program of \cref{sec:dp} run on
-cyclic chords, since a tight pair $\{q,a(q)\}$ is contained in an $r$-far
-$k$-set iff $F(a(q),q\mid\pi)\ge k-2$. Counterexamples to $(\mathrm{G}_k)$
-and $(\mathrm{TT}_k)$ for $k\ge4$ and to $(\mathrm{AG}_k)$ for $k\ge6$ appear
-quickly, always on thin polygons in which the cyclic order is far from
-geometric proximity. In contrast, $(\mathrm{TP}_k)$ and $(\mathrm{ST}_k)$
-passed all $\huntCone$ tests. The counterexamples of \cref{thm:tightpair} were
-found only when we switched to an adversarial search: a penalty method that
-moves the $2k$ points of the polygon $s_1a_1\cdots s_ka_k$ so as to satisfy
-all constraints of the previous paragraph with a positive margin, followed by
-rounding to integers and exact verification. For $k=4$ this search succeeds
-within seconds.
-
-\begin{table}[tb]
-\centering
-\caption{Randomised tests of the properties of \cref{sec:greedy}. A test is a
-triple $(P,k,r)$ (for all properties except $(\mathrm{G}_k)$: one for which an
-$r$-far $k$-set exists). $(\mathrm{AG}'_k)$ and $(\mathrm{ST}'_k)$ are the
-variants seeded with $\{q,a(q),b(q)\}$. The last two properties are false
-(\cref{thm:tightpair}) although no random test detected it.}
-\label{tab:hunt}
-\small
-\begin{tabular}{@{}lrrrr@{}}
-\toprule
-Property & $k$ & tests & failures & fails for $k$\\
-\midrule
-\tabinput{generated/table_hunt}
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{The two-sided search tree}\label{sec:sbm}
-
-The fixed-parameter algorithm of Singireddy, Basappa and Mitchell~\cite{sbm}
-decides whether an $r$-far $k$-set exists by the following search. A
-\emph{state} is a set $C$ of chosen points that occupies a contiguous arc of
-the hull, together with the complementary open arc $F$ (the \emph{free arc}).
-Initially $C=\{q\}$ for a \emph{root} $q$, and $F=P\setminus\{q\}$. A
-\emph{ccw step} adds the first point of $F$, in ccw order from the ccw end of
-$C$, that is at distance at least $r$ from every point of $C$; a \emph{cw
-step} is the mirror image. The search branches on the side, so that each root
-spawns a binary tree of depth $k-1$; it succeeds if some root and some
-sequence of sides reaches $|C|=k$. Every set it reaches is $r$-far, so the
-search is sound. Its completeness is the following claim (Claim~2
-of~\cite{sbm}, rephrased).
-
-\begin{description}[leftmargin=3.2em,labelwidth=2.6em,itemsep=2pt]
-\item[$(\mathrm{SBM}_k)$] If $P$ has an $r$-far $k$-set, the two-sided search
-succeeds from some root.
-\end{description}
-
-\noindent The proof in~\cite{sbm} argues from a figure with three centres of a
-Delaunay triangle and does not specify which points block which; we have not
-been able to complete it. By \cref{thm:tightpair}, a proof must use both
-sides: on $P_\star$ every search that starts with a ccw step fails, whereas
-the two-sided search succeeds. In this subsection we give rigorous partial
-results.
-
-\paragraph{Witnesses.}
-Fix an $r$-far $k$-set $T$. We follow the search together with a
-\emph{witness} $W$: an $r$-far $k$-set with $C\subseteq W$ and $W\setminus
-C\subseteq F$. Write $W\setminus C=\{t_1,\dots,t_m\}$ in ccw order from the
-ccw end of $C$. Let $x$ be the point that a ccw step would add. Since $t_1$ is
-at distance at least $r$ from $C$, $x$ is $t_1$ or lies before $t_1$. We call
-the ccw step \emph{safe} if $(W\setminus\{t_1\})\cup\{x\}$ is $r$-far; then it
-is the new witness, and the state after the step again has a witness.
-Symmetrically for cw steps with $t_m$.
-
-\begin{lemma}[attachment]\label{lem:attach}
-If some $c\in C$ satisfies $|c\,t_1|\le|t_1t_j|$ for all $2\le j\le m$, then
-the ccw step is safe. Symmetrically, if some $c\in C$ satisfies
-$|c\,t_m|\le|t_mt_i|$ for all $1\le i\le m-1$, then the cw step is safe.
-\end{lemma}
-\begin{proof}
-If $x=t_1$ there is nothing to show. Otherwise $x$ lies strictly between the
-ccw end of $C$ and $t_1$, and it is at distance at least $r$ from all of $C$.
-Suppose that $|x\,t_j|<r$ for some $2\le j\le m$. The points $c,x,t_1,t_j$ are
-in convex position in this ccw order, so by (Q),
-$|c\,t_1|+|x\,t_j|>|c\,x|+|t_1t_j|$, that is,
-$|c\,t_1|>|t_1t_j|+(|c\,x|-|x\,t_j|)>|t_1t_j|$, a contradiction. Hence $x$ is
-at distance at least $r$ from $t_2,\dots,t_m$ and from $C$, and
-$(W\setminus\{t_1\})\cup\{x\}$ is $r$-far.
-\end{proof}
-
-\Cref{lem:attach} says that a step is safe whenever the next point of the
-witness has a chosen point among its nearest neighbours in the witness. At the
-root this can always be arranged.
-
-\begin{lemma}\label{lem:nnadjacent}
-Let $\mathcal T$ be a Delaunay triangulation of a set $S$ in strictly convex
-position. Every $p\in S$ has a nearest neighbour in $S$ that is adjacent to $p$
-in $\mathcal T$. Consequently, if $|S|\ge3$, some $p\in S$ has a nearest
-neighbour among its two neighbours on the hull of $S$.
-\end{lemma}
-\begin{proof}
-Let $q$ be a nearest neighbour of $p$, and suppose that no nearest neighbour
-of $p$ is adjacent to it. As in the proof of \cref{lem:closest}, the segment
-$pq$ crosses an edge $uv$ of a triangle $puv$ of $\mathcal T$, $p,u,q,v$ form a
-convex quadrilateral, $\ang puq+\ang pvq\ge\pi$ because $\mathcal T$ is
-Delaunay, and say $\ang puq\ge\pi/2$; then $|pu|<|pq|$, a contradiction. For
-the second claim, a triangulation of a convex polygon with at least four
-vertices has an \emph{ear}, a vertex of degree two whose neighbours in the
-triangulation are its two hull neighbours; for $|S|=3$ every vertex is such a
-vertex.
-\end{proof}
-
-\begin{theorem}[safe first step]\label{thm:firststep}
-Let $T$ be an $r$-far $k$-set, $k\ge2$. There are adjacent points $e,\rho$ of
-$T$ (adjacent on the hull of $T$) such that the first step of the search from
-root $\rho$ towards $e$ is safe with respect to the witness $T$.
-\end{theorem}
-\begin{proof}
-For $k=2$ every step is safe. Otherwise, by \cref{lem:nnadjacent} some $e\in T$
-has a hull neighbour $\rho$ in $T$ as a nearest neighbour in $T$. Start at
-$\rho$ and step towards $e$; then $e$ is $t_1$ (or $t_m$) and $c=\rho$
-satisfies the hypothesis of \cref{lem:attach}.
-\end{proof}
-
-For $k=3$ a safe first step leaves a single point to add, and the next step
-is trivially safe, so $(\mathrm{SBM}_3)$ follows; this is a short proof of a
-special case of \cref{thm:k3}.
-
-\paragraph{Four points.}
-For $k=4$ the claim holds. The proof needs two geometric lemmas.
-
-\begin{lemma}\label{lem:opposite}
-Let $p,q,s,t$ be in convex position in this ccw order. If
-$|qs|\ge\max\{|ps|,|qt|\}$, then the interior angles of the quadrilateral at
-$p$ and $t$ sum to at least $\pi$.
-\end{lemma}
-\begin{proof}
-In the triangle $pqs$, $|qs|\ge|ps|$ gives $\ang qps\ge\ang pqs$; in the
-triangle $qst$, $|qs|\ge|qt|$ gives $\ang qts\ge\ang qst$. The interior angle
-at $p$ is at least $\ang qps$ and the one at $t$ at least $\ang qts$, while
-the interior angles at $q$ and $s$ are $\ang pqs$ and $\ang qst$. Hence
-$\ang p+\ang t\ge\ang q+\ang s=2\pi-\ang p-\ang t$.
-\end{proof}
-
-\begin{lemma}\label{lem:core}
-There are no points $a,X,Y,c,d$ in strictly convex position in this ccw order
-with $|aX|,|ad|,|cd|\ge r$ and $|aY|,|Xd|<r$.
-\end{lemma}
-\begin{proof}
-The chords $aY$ and $Xd$ cross, so by (Q) applied to $a,X,Y,d$,
-$|Yd|<|aY|+|Xd|-|aX|<r$. Write $\alpha_1=\ang cYd$, $\alpha_2=\ang dYa$,
-$\alpha_3=\ang aYX$, $\varepsilon_1=\ang Yad$, $\varepsilon_2=\ang XaY$,
-$\eta=\ang adX$, $\mu=\ang XdY$, $\delta_1=\ang Ydc$, $\gamma=\ang Ycd$,
-$\lambda=\ang YXd$, $\zeta=\ang dXa$ and $\xi=\ang aXY$. By (A),
-$\ang aXY=\lambda+\zeta$, $\ang adY=\eta+\mu$, $\ang XYd=\alpha_2+\alpha_3$
-and $\ang Xad=\varepsilon_1+\varepsilon_2$. We use: convexity at $Y$,
-$\alpha_1+\alpha_2+\alpha_3<\pi$; the angle sums of the triangles $XYd$,
-$aXd$, $aYd$, $Ycd$, $acd$; and, comparing opposite sides,
-$\xi<\alpha_3$ (triangle $aXY$: $|aY|<|aX|$),
-$\gamma<\alpha_1$ (triangle $Ycd$: $|Yd|<|cd|$),
-$\eta+\mu<\alpha_2$ (triangle $aYd$: $|aY|<|ad|$), and
-$\varepsilon_1+\varepsilon_2<\min\{\eta,\zeta\}$ (triangle $aXd$:
-$|Xd|<|aX|,|ad|$), which gives $\varepsilon_1+\varepsilon_2<\pi/3$.
-
-From the triangles $XYd$ and $aXd$,
-$\xi+\eta+\mu=(\lambda+\mu)+(\zeta+\eta)
-=(\pi-\alpha_2-\alpha_3)+(\pi-\varepsilon_1-\varepsilon_2)$, hence with
-$\xi<\alpha_3$,
-\[\eta+\mu>2\pi-\alpha_2-2\alpha_3-\varepsilon_1-\varepsilon_2.\]
-In the triangle $acd$ the angle at $d$ is $\eta+\mu+\delta_1<\pi$, and in
-$Ycd$, $\delta_1=\pi-\alpha_1-\gamma>\pi-2\alpha_1$; so $\eta+\mu<2\alpha_1<
-2(\pi-\alpha_2-\alpha_3)$. Together, $\alpha_2<\varepsilon_1+\varepsilon_2$.
-Finally, in the triangle $aYd$,
-$\pi-\varepsilon_1=\alpha_2+(\eta+\mu)<2\alpha_2<2\varepsilon_1+2\varepsilon_2$,
-so $\pi<3(\varepsilon_1+\varepsilon_2)<\pi$, a contradiction.
-\end{proof}
-
-\begin{theorem}\label{thm:sbm4}
-$(\mathrm{SBM}_4)$ holds: if $P$ has an $r$-far $4$-set $T$, the two-sided
-search succeeds from a vertex of $T$, and even a witness-preserving search does.
-\end{theorem}
-\begin{proof}
-Let $T=(a,b,c,d)$ in ccw order. Call $(u,v)$ a \emph{good pair} if $u,v$ are
-hull neighbours in $T$ and $u$ is a nearest neighbour of $v$ in $T$. Start at
-$u$ and step towards $v$; by \cref{lem:attach} the step is safe. Let $w$ be
-the other neighbour of $u$ and $z$ the other neighbour of $v$; they are the
-two remaining witness points, and $wz$ is an edge of $T$. By \cref{lem:attach},
-applied with the chosen point $u$, one of the two next steps is safe unless $|wz|<|uw|$ and
-$|wz|<|uz|$; after a safe second step one witness point remains, and the last
-step always succeeds. So it suffices to find a good pair whose opposite edge
-$wz$ is not the strictly shortest side of the triangle $uwz$.
-
-Let a closest pair of $T$ be given. If it is a diagonal, say $ac$, then $ac$
-is the diagonal of every Delaunay triangulation of $T$ (\cref{lem:closest}),
-so $b$ is an ear and by \cref{lem:nnadjacent} a nearest neighbour of $b$ is
-$a$ or $c$. For the good pair $(a,b)$ the triangle is $adc$ and $|dc|\ge|ac|$;
-for $(c,b)$ it is $cda$ and $|da|\ge|ca|$. Either way we are done. If the
-closest pair is an edge, say $ab$, then $(a,b)$ and $(b,a)$ are good pairs,
-with triangles $adc$ and $bcd$. Unless $|cd|<|ad|,|ac|,|bc|,|bd|$, we are done.
-In that remaining case $|ab|\le|cd|$, so $|ab|$ and $|cd|$ are both strictly
-smaller than $|ac|,|ad|,|bc|,|bd|$, and $(a,b)$ and $(c,d)$ are good pairs.
-
-Suppose that both searches get stuck after their first step. For the root
-$a$, let $x\in(a,b]$ be the first point added; the witness is
-$\{a,x,c,d\}$, and being stuck means: the next ccw point $X\in(x,c)$, the
-first point after $x$ at distance at least $r$ from $a$ and $x$, satisfies
-$|Xd|<r$; the next cw point $Y\in(d,a)$ satisfies $|Yc|<r$, and $|Ya|\ge r$.
-Likewise for the root $c$, with first point $x'\in(c,d]$: the next ccw point
-$X'\in(x',a)$ has $|X'c|\ge r$ and $|X'b|<r$, and the next cw point
-$Y'\in(b,c)$ has $|Y'a|<r$.
-
-First, $X\in(b,c)$: $X\ne b$ because $|bd|\ge r>|Xd|$, and if $X$ lay before
-$b$, then (Q) for $a,X,b,d$ would give $|ab|>|bd|+(|aX|-|Xd|)>|bd|$, contrary
-to $|ab|<|bd|$. Symmetrically $X'\in(d,a)$, using $|cd|<|bd|$. Second, $Y'$
-precedes $X$ in $(b,c)$: otherwise $a,X,Y',c,d$ would contradict
-\cref{lem:core}. Symmetrically, $Y$ precedes $X'$ in $(d,a)$ (apply
-\cref{lem:core} to $c,X',Y,a,b$). Hence the eight points
-$a,b,Y',X,c,d,Y,X'$ are in convex position in this order.
-
-Apply \cref{lem:opposite} to $X',a,b,Y'$ (with $|ab|\ge r>|X'b|,|aY'|$) and to
-$X,c,d,Y$ (with $|cd|\ge r>|Xd|,|cY|$): in these two quadrilaterals the angles
-at $X'$ and $Y'$, and at $X$ and $Y$, sum to at least $\pi$ each. The octagon
-is the union of these two quadrilaterals and the quadrilateral
-$Y',X,Y,X'$, glued along $X'Y'$ and $XY$. Its interior angles at
-$Y',X,Y,X'$ are therefore the sums of the corresponding angles of the pieces,
-and they add up to at least $\pi+\pi+2\pi=4\pi$. But each is smaller than
-$\pi$, a contradiction. So one of the two searches has a safe second step.
-\end{proof}
-
-We also checked \cref{thm:sbm4} and its case analysis computationally: on
-$2.9\cdot10^7$ pairs $(T,r)$ from random and perturbed thin instances, some good
-pair led to success, and in the $9.5\cdot10^6$ instances of the last case one of
-the roots $a$ and $c$ did. Under the arc property the claim holds in a
-strong form.
-
-\begin{proposition}\label{prop:sbmarc}
-If $P$ has the $r$-arc property (\cref{sec:arc}) and $T$ is an $r$-far
-$k$-set, then from every root $q\in T$ the path of $k-1$ ccw steps
-succeeds. In particular $(\mathrm{SBM}_k)$ holds, and no branching is
-necessary.
-\end{proposition}
-\begin{proof}
-By \cref{thm:arc}(i) the greedy chain $x_0=q$, $x_{i+1}=a(x_i)$ is proper and
-$r$-far. We show by induction that the $i$-th ccw step adds $x_i$. The points
-strictly between $x_{i-1}$ and $x_i$ are closer than $r$ to $x_{i-1}$, so they
-are not eligible; $x_i$ is at distance at least $r$ from $x_0,\dots,x_{i-1}$
-because the chain is $r$-far; and $x_i$ does not pass the cw end $q$ because
-the chain is proper.
-\end{proof}
-
-\paragraph{Natural choices of the root fail.}
-A proof of $(\mathrm{SBM}_k)$ along the lines of \cref{thm:firststep} would fix
-the root in terms of $T$ and show that the search, from that root, never runs
-out of safe steps. Our experiments suggest that this is true for \emph{some}
-vertex of every $T$, but not for the vertices one would pick first.
-
-\begin{proposition}\label{prop:rootrules}
-There are point sets in convex position, a radius $r$ and an $r$-far $k$-set
-$T$ such that
-\begin{enumerate}[label=(\alph*),itemsep=1pt,topsep=2pt]
-\item ($k=5$ and $k=6$) the two-sided search fails from an endpoint of a
-closest pair of $T$;
-\item ($k=7$) no sequence of safe steps from the vertex of $T$ with the
-smallest interior angle reaches $k$ points;
-\item ($k=7$) the same holds for the vertex of smallest angle over all $r$-far
-$k$-sets of $P$.
-\end{enumerate}
-In all these instances $(\mathrm{SBM}_k)$ holds.
-\end{proposition}
-\begin{proof}
-The instances have between $10$ and $14$ points with integer coordinates and
-are listed in \code{fpt/data/root_rule_instances.json}; each claim is verified
-by exhaustive search in exact arithmetic (\code{fpt/check_roots.py}).
-\end{proof}
-
-\paragraph{Evidence and a sharper conjecture.}
-Call a search from root $q\in T$ \emph{witness-preserving} if it only takes
-safe steps (with respect to the witness obtained from $T$ by the previous
-steps). Such a search is a sub-search of the two-sided search, so the
-following statement implies $(\mathrm{SBM}_k)$.
-
-\begin{conjecture}\label{conj:sbm}
-For every $r$-far $k$-set $T$ there is a vertex $q\in T$ from which a
-witness-preserving search reaches $k$ points.
-\end{conjecture}
-
-\noindent By \cref{thm:sbm4} the conjecture holds for $k\le4$.
-
-We tested \cref{conj:sbm} on more than $1.2\cdot10^7$ pairs $(T,r)$ from random
-convex sets with up to $12$ points and $k\le7$, and under simulated annealing
-that minimises the number of good vertices for $k\le7$ and up to $14$
-points; it never failed. Not every vertex is good, however: the last instance
-in \code{fpt/data/root_rule_instances.json} has $k=4$ and a vertex of $T$ from
-which both first steps are unsafe. The two-sided search itself
-($(\mathrm{SBM}_k)$) succeeded in all $532{,}833$ random decision tests of our
-re-implementation and in about $3{,}000$ annealing runs designed to break it,
-for $k\le10$. So a proof must choose the root with care;
-\cref{prop:rootrules} rules out the obvious choices. We leave \cref{conj:sbm} and $(\mathrm{SBM}_k)$ open for $k\ge5$; until they are
-settled, the bound $O(2^kn^2\log^2n)$ of~\cite{sbm} should be regarded as
-conditional for $k\ge5$, and
-\cref{alg:certified} below uses the search only as a sound heuristic.
-
 \subsection{A certified algorithm}\label{sec:certified}
 
 Although no seeded rule is complete, all of them are \emph{sound}: they only
@@ -1225,278 +1325,128 @@ per evaluation of $H$ and $O(\log n)$ evaluations, followed by a single call
 to \cref{alg:capped} if $\rho=\rstar$.
 \end{proof}
 
-\section{When greedy is exact: the arc property}\label{sec:arc}
+\section{Conclusion and open problems}\label{sec:conclusion}
 
-The counterexamples of \cref{sec:greedy} are thin polygons in which the
-distance from a point is far from unimodal along the hull. This section shows
-that this is the only obstruction: if the set of points far from $q$ is always
-contiguous, the simplest greedy rule is exact, and for unimodal point sets it
-gives a near-linear algorithm.
-
-For $r>0$ and $q\in P$ let $\mathrm{Far}_r(q)=\{x\in P\setminus\{q\}:|qx|\ge r\}$.
-We say that $P$ has the \emph{$r$-arc property} if for every $q$ the set
-$\mathrm{Far}_r(q)$ consists of consecutive points in the order
-$p_{q+1},\dots,p_{q-1}$; then $\mathrm{Far}_r(q)$ is exactly the ccw arc from
-$a(q)$ to $b(q)$. We call $P$ \emph{unimodal} if for every $q$ the sequence
-$|p_qp_{q+t}|$, $t=1,\dots,n-1$, is strictly increasing and then strictly
-decreasing, where the maximum may be attained at two consecutive values of
-$t$. A unimodal set has the $r$-arc property for every $r$. Points on a circle
-are unimodal, since the chord length is $2R\sin(\theta/2)$ for the ccw angle
-$\theta\in(0,2\pi)$; the tie at the top occurs, for instance, in every regular
-polygon with an odd number of vertices, which is why it has to be admitted.
-
-\begin{lemma}[Exchange]\label{lem:a1}
-Assume the $r$-arc property. Let $S$ be an $r$-far set and let $s,s'$ be
-consecutive points of $S$ in ccw order. Then $(S\setminus\{s'\})\cup\{a(s)\}$
-is $r$-far.
-\end{lemma}
-\begin{proof}
-By \cref{lem:arcbasic}, $a(s)$ lies on the ccw arc from $s$ to $s'$, and
-$|s\,a(s)|\ge r$. Let $t\in S\setminus\{s,s'\}$. The set $\mathrm{Far}_r(t)$
-is a set of consecutive points in the order that starts and ends next to $t$,
-and it contains $s$ and $s'$. The ccw arc from $s$ to $s'$ does not contain
-$t$, so all its points lie between $s$ and $s'$ in that order and belong to
-$\mathrm{Far}_r(t)$. Hence $|t\,a(s)|\ge r$.
-\end{proof}
-
-For $q\in P$ and $k\ge2$ the \emph{greedy chain} of $q$ is $x_0=q$,
-$x_{i+1}=a(x_i)$ for $i<k-1$. It is \emph{proper} if all $a(x_i)$ are defined
-and the chain does not wrap around, i.e.\ the ccw offsets of $x_0,\dots,x_{k-1}$
-from $q$ are strictly increasing and smaller than $n$.
-
-\begin{theorem}\label{thm:arc}
-Assume the $r$-arc property and let $k\ge2$.
-\begin{enumerate}[label=(\roman*),itemsep=1pt,topsep=2pt]
-\item If $S$ is an $r$-far $k$-set and $q\in S$, then the greedy chain of $q$
-is proper and $r$-far.
-\item A proper greedy chain is $r$-far if and only if $|x_0x_{k-1}|\ge r$.
+We proved that the two-sided search tree of Singireddy, Basappa and
+Mitchell is complete for $k\le4$, identified the obstacles to a general proof,
+and showed that greedy structure, which fails for $k\ge4$ in general, becomes
+exact once the far sets are contiguous; for unimodal point sets this gives a
+near-linear algorithm. We also gave a simple exact algorithm that needs
+nothing but the in-circle predicate. Several questions remain.
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \emph{The two-sided search tree.} Prove $(\mathrm{SBM}_k)$, or the
+stronger \cref{conj:sbm}, for $k\ge5$. \Cref{lem:attach,thm:firststep} handle the first
+step and \cref{thm:sbm4} the case $k=4$; the difficulty in general is that replaced points move away from the remaining
+witness points, so the attachment condition is not inherited, and
+\cref{prop:rootrules} shows that the root must be chosen with more care than
+by distances or angles alone.
+\item \emph{Subcubic algorithms for fixed $k\ge4$.} For $k=3$ the problem is
+solvable in near-linear time. Is there an $O(n^{3-\varepsilon})$ algorithm for
+$k=4$? By \cref{prop:gk,thm:tightpair}, such an algorithm cannot rely on the
+arc characterisation or on tight pairs, and a conditional lower bound seems
+equally plausible.
+\item \emph{Larger $k$.} We exhibited point sets without tight pairs for
+$k\le7$ and found blocked $2k$-gons by search in each of these cases. We expect
+that $(\mathrm{TP}_k)$ fails for every $k\ge4$, but have no uniform
+construction.
+\item \emph{Between the arc property and the general case.} Is the greedy
+chain exact for $k=4,5$ when only the points of some solution have contiguous
+far sets? Is $k$-dispersion fixed-parameter tractable in the number $\beta$ of
+excess runs of the far sets (\cref{sec:arc}), so that the near-linear
+algorithm for unimodal sets degrades gracefully towards the cubic one?
+\item \emph{Removing logarithms.} Can the $\log n$ factor of the binary search
+be avoided, for instance by a parametric search over the threshold
+representation, or the $\log k$ factor by amortising the in-circle queries of
+a chord over its parents?
+\item \emph{Certification.} The certified algorithm is fast when a cheap
+heuristic already attains the optimum. Which additional sound heuristics make
+this the common case on hard instances such as thin lenses?
+\item \emph{Weights and disks.} The algorithm of~\cite{tw26} handles weighted
+disks of arbitrary radii. Does capping help for the weighted problem, where
+values are no longer small integers?
 \end{enumerate}
-Hence $P$ has an $r$-far $k$-set if and only if some $q$ has a proper greedy
-chain with $|x_0x_{k-1}|\ge r$.
-\end{theorem}
-\begin{proof}
-(i) Let $S=\{s_1,\dots,s_k\}$ in ccw order with $s_1=q$. Applying
-\cref{lem:a1} to the consecutive pair $(x_0,s_2)$ replaces $s_2$ by $x_1$;
-then $(x_1,s_3)$ is a consecutive pair of the new $r$-far set, and we replace
-$s_3$ by $x_2$, and so on. After $k-1$ steps the set is the chain, which is
-$r$-far, and since $x_i$ lies on the ccw arc from $x_{i-1}$ to $s_{i+1}$, the
-chain is proper.
 
-(ii) Only ``if'' needs a proof. Fix $i$. Starting after $x_i$, the other
-chain points appear in the order
-$x_{i+1},\dots,x_{k-1},x_0,\dots,x_{i-1}$. The first of them is $a(x_i)$ and
-lies in $\mathrm{Far}_r(x_i)$. The last one also does: for $i\ge1$ because
-$x_i=a(x_{i-1})$, and for $i=0$ by assumption. Since $\mathrm{Far}_r(x_i)$ is
-contiguous, it contains all of them.
-\end{proof}
+\paragraph{Reproducibility.}
+The source code, the instance generators, all instances and counterexamples,
+and the scripts that produce every table and figure of this paper are
+available in the directories \code{convex/} and \code{arc/} (for
+\cref{sec:arc}) of the project repository; the \code{README.md} files
+describe how to rebuild everything.
 
-Part~(ii) is the difference to \cref{sec:greedy}: without the arc property a
-greedy chain can close up and still contain a close pair, and by
-\cref{thm:tightpair} there may be no $r$-far chain at all. Indeed the set
-$P_\star$ violates the arc property at $r^2=10240$ ($\mathrm{Far}_r(p_0)$
-consists of the three runs $\{p_1,p_2\}$, $\{p_4\}$, $\{p_6\}$).
+\begin{thebibliography}{99}\itemsep=1pt
 
-\paragraph{Decision.}
-Given the offsets of $a(q)$ for all $q$, the function $a^{k-1}$ together with
-the offset travelled is obtained by repeated squaring in $O(n\log k)$ time and
-$O(n)$ space, after which \cref{thm:arc} is tested in $O(1)$ per seed. (The
-obvious $O(nk)$ walk works as well.) Computing $a(q)$ takes $O(n)$ time by
-scanning. For unimodal $P$ we first find, for every row $q$, the position of
-its maximum by binary search; then $a(q)$ is found by binary search on the
-increasing part of the row.
+\bibitem{akagi}
+T.~Akagi, T.~Araki, T.~Horiyama, S.-I.~Nakano, Y.~Okamoto, Y.~Otachi,
+T.~Saitoh, R.~Uehara, T.~Uno, K.~Wasa.
+\newblock Exact algorithms for the max-min dispersion problem.
+\newblock In \emph{Frontiers in Algorithmics (FAW 2018)}, LNCS 10823,
+pp.~263--272. Springer, 2018.
 
-\begin{theorem}\label{thm:arcdecision}
-Under the $r$-arc property, the decision problem can be solved in
-$O(n^2)$ time, and in $O(n\log n)$ time if $P$ is unimodal. A witness is
-reported within the same bounds.
-\end{theorem}
+\bibitem{chendumitrescu}
+K.~Chen, A.~Dumitrescu.
+\newblock A couple of simple algorithms for $k$-dispersion.
+\newblock arXiv:2511.00692, 2025.
 
-\paragraph{Optimisation.}
-For unimodal $P$, sorting the $\binom n2$ distances and binary search gives
-$O(n^2\log n)$ time; we call this variant \textsc{O1}. To avoid generating
-all distances, observe that every row splits at its maximum into an increasing
-and a decreasing list, so that the candidates are available as $2n$ implicit
-sorted lists. Algorithm \textsc{O2} maintains an open interval $(lo,hi)$ with
-$lo$ feasible and $hi$ infeasible and, for each list, the range of its entries
-inside the interval. In each round it picks one of the remaining entries
-uniformly at random, tests it, and shrinks all ranges by binary search.
+\bibitem{delaunay}
+B.~Delaunay.
+\newblock Sur la sph\`ere vide.
+\newblock \emph{Bulletin de l'Acad\'emie des Sciences de l'URSS, Classe des
+sciences math\'ematiques et naturelles}, 6:793--800, 1934.
 
-\begin{theorem}\label{thm:arcopt}
-For $n$ points in convex position that form a unimodal set, $k$-dispersion can
-be solved exactly in expected $O(n\log^2n)$ time and $O(n)$ space.
-\end{theorem}
-\begin{proof}
-A round costs $O(n\log n)$: $O(n)$ to select the pivot, $O(n\log n)$ for the
-decision (\cref{thm:arcdecision}) and $O(n\log n)$ to update the ranges. All
-remaining entries equal to the pivot are removed, and with probability at
-least $1/2$ the pivot has rank between $1/4$ and $3/4$ among the remaining
-entries, in which case at least a quarter of them are removed. So the expected
-number of rounds is $O(\log n)$. When no entry is left, $lo=\rstar$, because
-$\rstar$ is a pairwise distance and is feasible.
-\end{proof}
+\bibitem{diametral}
+J.~Itoh, C.~V\^{\i}lcu, L.~Yuan, T.~Zamfirescu.
+\newblock Locating diametral points.
+\newblock \emph{Results in Mathematics}, 75:68, 2020. arXiv:1910.11638.
 
-\paragraph{Recognising the hypotheses.}
-The arc property at a given $r$ is checked in $O(n^2)$ time by counting runs.
-Unimodality can be verified faster.
+\bibitem{edelsbrunner}
+H.~Edelsbrunner.
+\newblock \emph{Geometry and Topology for Mesh Generation}.
+\newblock Cambridge University Press, 2001.
 
-\begin{lemma}\label{lem:unitest}
-Whether $P$ is unimodal can be decided in $O(n\log n)$ time.
-\end{lemma}
-\begin{proof}
-Fix $j$. The points strictly closer to $p_j$ than to $p_{j+1}$ are the points
-of $P$ in an open half-plane bounded by the perpendicular bisector of
-$p_jp_{j+1}$. Since $P$ is in strictly convex position, they form a run of
-consecutive points; it contains $p_j$ and not $p_{j+1}$, so it is
-$p_j,p_{j-1},\dots,p_{j-c_j+1}$ for some $1\le c_j\le n-1$. At most two points
-of $P$ lie on the bisector; one boundary crossing of the bisector is inside the
-edge $p_jp_{j+1}$, so the only candidate for a point equidistant from $p_j$ and
-$p_{j+1}$ is $p_{j-c_j}$. Let $z_j=1$ if it is equidistant and $z_j=0$
-otherwise. The predicate ``$p_{j-s}$ is strictly closer to $p_j$ than to
-$p_{j+1}$'' is monotone in $s$, so $c_j$ is found by binary search with
-$O(\log n)$ distance comparisons, and $z_j$ with one more.
+\bibitem{gonzalez}
+T.~F.~Gonzalez.
+\newblock Clustering to minimize the maximum intercluster distance.
+\newblock \emph{Theoretical Computer Science}, 38:293--306, 1985.
 
-Now fix a row $q$ and $1\le t\le n-2$, and put $j=q+t$. The step from
-$p_{q+t}$ to $p_{q+t+1}$ increases the distance to $p_q$ iff $p_q=p_{j-t}$ is
-strictly closer to $p_j$ than to $p_{j+1}$, that is, iff $t<c_j$; it leaves the
-distance unchanged iff $t=c_j$ and $z_j=1$; otherwise it decreases. A row is
-unimodal (with at most one tie, at the top) iff no step that is not an
-increase is followed by a step that is not a decrease. Step $t$ is not an
-increase iff $t\ge c_j$, and step $t+1$ (whose edge is $p_{j}p_{j+1}$ shifted
-by one, i.e.\ index $j+1$) is not a decrease iff $t+1\le c_{j+1}-1+z_{j+1}$.
-Hence some row fails iff for some $j$ there is an integer
-$t\in[1,n-3]$ with $c_j\le t\le c_{j+1}+z_{j+1}-2$. As $c_j\ge1$, this is the
-case iff $c_j\le\min\{c_{j+1}+z_{j+1}-2,\;n-3\}$ for some $j$, which is
-checked in $O(n)$ time once all $c_j,z_j$ are known.
-\end{proof}
+\bibitem{kobayashi}
+Y.~Kobayashi, S.-I.~Nakano, K.~Uchizawa, T.~Uno, Y.~Yamaguchi, K.~Yamanaka.
+\newblock An $O(n^2)$-time algorithm for computing a max-min 3-dispersion on a
+point set in convex position.
+\newblock \emph{IEICE Transactions on Information and Systems},
+E105-D(3):503--507, 2022. Preliminary version: Max-min 3-dispersion on a
+convex polygon, \emph{EuroCG 2021}.
 
-For general convex input we use an \emph{adaptive} variant of \textsc{O1}: it
-checks the arc property at every radius it tests and reports ``not
-applicable'' if the check fails. It takes $O(n^2\log n)$ time, is exact
-whenever it answers, and never answers incorrectly.
+\bibitem{sbm}
+V.~R.~Singireddy, M.~Basappa, J.~S.~B.~Mitchell.
+\newblock Algorithms for $k$-dispersion for points in convex position in the
+plane.
+\newblock \emph{Discrete Applied Mathematics}, 386:205--216, 2026. Preliminary version in
+\emph{Algorithms and Discrete Applied Mathematics (CALDAM 2023)}, LNCS 13947,
+pp.~59--70, 2023.
 
-\paragraph{How far do the hypotheses go?}
-We searched for counterexamples to weaker hypotheses, exhaustively on random
-and perturbed instances with at most $13$ points and $k\le6$
-(\cref{tab:archyp}); all counterexamples were re-verified by an independent
-script.
-\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
-\item \emph{Arc-shaped far sets only for the points of some $r$-far $k$-set.}
-For $k=3$ this suffices, since the proof of \cref{thm:arc}(i) then only uses
-points of $S$. For $k=6$ it does not: there is a $10$-point set with an
-$r$-far $6$-set whose points all have contiguous far sets, yet no greedy
-chain is $r$-far. For $k=4,5$ the random search found no counterexample in
-$\arcHoneFourFive$ cases; in view of \cref{sec:greedy} we do not regard this as
-evidence and leave the question open.
-\item \emph{Arc property only at $r=\rstar$.} Then the chain of every point
-of an optimal set is $\rstar$-far, but the test of \cref{thm:arc}(ii) is
-unreliable at other radii, and a binary search with it can return a wrong
-value; a $6$-point example exists for $k=4$. Binary search with chains that
-are verified pairwise returned $\rstar$ in all $\arcHtwo$ cases.
-\item \emph{No hypothesis.} As expected from \cref{thm:tightpair}, no greedy
-chain needs to be $\rstar$-far for $k\ge4$; this happens in $6$--$9\%$ of
-the instances of this search, most of which are thin.
-\end{itemize}
+\bibitem{tw25}
+A.~Tkachenko, H.~Wang.
+\newblock Dominating set, independent set, discrete $k$-center, dispersion,
+and related problems for planar points in convex position.
+\newblock In \emph{42nd International Symposium on Theoretical Aspects of
+Computer Science (STACS 2025)}, LIPIcs 327, pp.~73:1--73:20, 2025.
+arXiv:2501.00207.
 
-\begin{table}[tb]
-\centering
-\caption{Search for counterexamples to weakened hypotheses ($n\le13$,
-exhaustive over radii and $k$-sets). H1: some $r$-far $k$-set has only
-arc-shaped far sets $\Rightarrow$ some greedy chain is $r$-far. H2: arc
-property at $\rstar$ $\Rightarrow$ binary search with pairwise-verified chains
-returns $\rstar$; H2u: the same with the test of \cref{thm:arc}(ii). H3: some
-greedy chain is $\rstar$-far.}
-\label{tab:archyp}
-\small
-\begin{tabular}{@{}lrrrr@{}}
-\toprule
- & \multicolumn{4}{c}{cases in which the premise holds / violations}\\
-hypothesis & $k=3$ & $k=4$ & $k=5$ & $k=6$\\
-\midrule
-\tabinput{generated/arc_hyp}
-\bottomrule
-\end{tabular}
-\end{table}
+\bibitem{tw26}
+A.~Tkachenko, H.~Wang.
+\newblock Maximum independent sets in disk graphs with disks in convex
+position.
+\newblock In \emph{20th Scandinavian Symposium on Algorithm Theory (SWAT
+2026)}, LIPIcs 370, article 40, 2026. arXiv:2604.10828.
 
-\paragraph{How common is the arc property?}
-\Cref{tab:arcstats} reports, for instances with $20\le n\le60$ and
-$k\in\{4,8\}$, the structure at the optimal radius (computed by
-\cref{alg:capped}). Let $\beta=\sum_q(\#\text{runs of }\mathrm{Far}_{\rstar}(q)-1)$,
-so that $\beta=0$ is the arc property at $\rstar$. For all hulls of random
-point clouds, for cocircular points and for jittered regular polygons we
-found $\beta=0$ in every test, and the adaptive algorithm answered on all of
-them except for about a third of the instances drawn from a square and two
-Gaussian ones, where the arc
-property fails at some smaller radius visited by the binary search. On thin
-ellipses and two-chain lenses the arc property always fails. Greedy chains
-succeed at $\rstar$ in all tests with $\beta\le2$, and their success rate
-drops as $\beta$ grows, which suggests looking for algorithms that are
-fixed-parameter tractable in $\beta$.
+\bibitem{wangkuo}
+D.~W.~Wang, Y.-S.~Kuo.
+\newblock A study on two geometric location problems.
+\newblock \emph{Information Processing Letters}, 28(6):281--286, 1988.
 
-\begin{table}[tb]
-\centering
-\caption{Structure at the optimal radius ($20\le n\le60$, $k\in\{4,8\}$).
-``arc pts'': mean fraction of points with a contiguous far set; ``greedy'':
-some greedy chain is $\rstar$-far; ``adaptive'': the adaptive algorithm
-answers (and is then correct).}
-\label{tab:arcstats}
-\small
-\begin{tabular}{@{}lrrrrrr@{}}
-\toprule
-group & tests & arc pts & mean $\beta$ & $\beta=0$ & greedy & adaptive\\
-\midrule
-\tabinput{generated/arc_stats}
-\bottomrule
-\end{tabular}
-\end{table}
+\end{thebibliography}
 
-\paragraph{Verification.}
-The implementation (\code{arc/arcdisp.hpp}) was validated before any timing.
-On $\arcSmallInst$ instances with $n\le16$ from ten families, at every
-candidate radius $r$ (and at $r^2+1$) at which the arc property holds, three
-implementations of the decision procedure agree with exhaustive search for
-all $k=2,\dots,n$ ($\arcDchecks$ comparisons), and \textsc{O1}, \textsc{O2}
-and the adaptive variant return the exhaustive optimum with a valid witness
-($\arcOptChecks$ instance--$k$ pairs). On $\arcBigInst$ instances with
-$20\le n\le150$ they agree with \cref{alg:capped} ($\arcBigChecks$ checks).
-An independent Python script recomputes the optima of exported instances by
-brute force and checks \cref{thm:arc} directly ($\arcPyAtwo$ checks). No
-discrepancy occurred. When the decision procedure is applied \emph{without}
-the arc property, it is wrong in $\arcUncheckedWrong\%$ of the cases on the
-thin families, so the hypothesis cannot be dropped.
-
-\paragraph{Running time.}
-Unimodal instances are points at jittered equally spaced angles on a circle,
-rounded to integers; every instance is verified to be strictly convex and
-unimodal by the exact $O(n\log n)$ test. With coordinates bounded by $2^{29}$
-such instances exist for $n\le50000$ but not for $n=10^5$, where rounding
-destroys convexity; convex lattice polygons with $10^6$ vertices do fit into
-this box (take all primitive vectors of norm at most $724$ as edges), but they
-are not unimodal. For $n\ge10^5$ we therefore use a circle of radius $2^{60}$
-and $128$-bit squared distances (``wide'' mode); \textsc{O1} needs
-$\Theta(n^2)$ memory and was run for $n\le10^4$. Every reported witness was
-checked by an exact closest-pair computation. \Cref{tab:arcscaling} shows the
-medians over three instances. \textsc{O2} solves instances with a million
-points in about $\arcMillion$ seconds, and its running time grows like
-$n^{\arcSlope}$ between $n=10^3$ and $n=10^6$, compared with
-$n^{\arcSlopeOone}$ for \textsc{O1}. At $n=400$ it is between $300$ ($k=4$) and $40\,000$ ($k=64$) times faster
-than the cubic dynamic program, which of course does not need the hypothesis.
-
-\begin{table}[tb]
-\centering
-\caption{Median running time [ms] on unimodal instances (three instances per
-cell). \textsc{DP}: \cref{alg:capped} with binary search. ``--'': not run.}
-\label{tab:arcscaling}
-\small
-\begin{tabular}{@{}rr|rrr|r@{}}
-\toprule
- & & \multicolumn{3}{c|}{$64$-bit distances} & $128$-bit\\
-$n$ & $k$ & \textsc{DP} & \textsc{O1} & \textsc{O2} & \textsc{O2}\\
-\midrule
-\tabinput{generated/arc_scaling}
-\bottomrule
-\end{tabular}
-\end{table}
-
+\appendix
 \section{Experiments with the general algorithms}\label{sec:experiments}
 
 \paragraph{Implementation.}
@@ -1683,122 +1633,173 @@ distribution & instances & FF optimal & certified & rate & mean gap & max gap\\
 \end{table}
 
 
-\section{Conclusion and open problems}\label{sec:conclusion}
+\section{Experiments for the arc property}\label{app:arcexp}
 
-We presented a simple exact algorithm for $k$-dispersion in convex position
-that needs nothing but the in-circle predicate, and we mapped out which of the
-structural properties behind the fast algorithms for $k=3$ extend to larger
-$k$: none of those tied to first far points does in general, but all of them
-do once the far sets are contiguous, which gives a near-linear algorithm for
-unimodal point sets. Several questions remain.
-\begin{enumerate}[leftmargin=*,itemsep=2pt]
-\item \emph{The two-sided search tree.} Prove $(\mathrm{SBM}_k)$, or the
-stronger \cref{conj:sbm}, for $k\ge5$. \Cref{lem:attach,thm:firststep} handle the first
-step and \cref{thm:sbm4} the case $k=4$; the difficulty in general is that replaced points move away from the remaining
-witness points, so the attachment condition is not inherited, and
-\cref{prop:rootrules} shows that the root must be chosen with more care than
-by distances or angles alone.
-\item \emph{Subcubic algorithms for fixed $k\ge4$.} For $k=3$ the problem is
-solvable in near-linear time. Is there an $O(n^{3-\varepsilon})$ algorithm for
-$k=4$? By \cref{prop:gk,thm:tightpair}, such an algorithm cannot rely on the
-arc characterisation or on tight pairs, and a conditional lower bound seems
-equally plausible.
-\item \emph{Larger $k$.} We exhibited point sets without tight pairs for
-$k\le7$ and found blocked $2k$-gons by search in each of these cases. We expect
-that $(\mathrm{TP}_k)$ fails for every $k\ge4$, but have no uniform
-construction.
-\item \emph{Between the arc property and the general case.} Is the greedy
-chain exact for $k=4,5$ when only the points of some solution have contiguous
-far sets? Is $k$-dispersion fixed-parameter tractable in the number $\beta$ of
-excess runs of the far sets (\cref{sec:arc}), so that the near-linear
-algorithm for unimodal sets degrades gracefully towards the cubic one?
-\item \emph{Removing logarithms.} Can the $\log n$ factor of the binary search
-be avoided, for instance by a parametric search over the threshold
-representation, or the $\log k$ factor by amortising the in-circle queries of
-a chord over its parents?
-\item \emph{Certification.} The certified algorithm is fast when a cheap
-heuristic already attains the optimum. Which additional sound heuristics make
-this the common case on hard instances such as thin lenses?
-\item \emph{Weights and disks.} The algorithm of~\cite{tw26} handles weighted
-disks of arbitrary radii. Does capping help for the weighted problem, where
-values are no longer small integers?
-\end{enumerate}
+\paragraph{How far do the hypotheses go?}
+We searched for counterexamples to weaker hypotheses, exhaustively on random
+and perturbed instances with at most $13$ points and $k\le6$
+(\cref{tab:archyp}); all counterexamples were re-verified by an independent
+script.
+\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
+\item \emph{Arc-shaped far sets only for the points of some $r$-far $k$-set.}
+For $k=3$ this suffices, since the proof of \cref{thm:arc}(i) then only uses
+points of $S$. For $k=6$ it does not: there is a $10$-point set with an
+$r$-far $6$-set whose points all have contiguous far sets, yet no greedy
+chain is $r$-far. For $k=4,5$ the random search found no counterexample in
+$\arcHoneFourFive$ cases; in view of \cref{sec:greedy} we do not regard this as
+evidence and leave the question open.
+\item \emph{Arc property only at $r=\rstar$.} Then the chain of every point
+of an optimal set is $\rstar$-far, but the test of \cref{thm:arc}(ii) is
+unreliable at other radii, and a binary search with it can return a wrong
+value; a $6$-point example exists for $k=4$. Binary search with chains that
+are verified pairwise returned $\rstar$ in all $\arcHtwo$ cases.
+\item \emph{No hypothesis.} As expected from \cref{thm:tightpair}, no greedy
+chain needs to be $\rstar$-far for $k\ge4$; this happens in $6$--$9\%$ of
+the instances of this search, most of which are thin.
+\end{itemize}
 
-\paragraph{Reproducibility.}
-The source code, the instance generators, all instances and counterexamples,
-and the scripts that produce every table and figure of this paper are
-available in the directories \code{convex/} and \code{arc/} (for
-\cref{sec:arc}) of the project repository; the \code{README.md} files
-describe how to rebuild everything.
+\begin{table}[tb]
+\centering
+\caption{Search for counterexamples to weakened hypotheses ($n\le13$,
+exhaustive over radii and $k$-sets). H1: some $r$-far $k$-set has only
+arc-shaped far sets $\Rightarrow$ some greedy chain is $r$-far. H2: arc
+property at $\rstar$ $\Rightarrow$ binary search with pairwise-verified chains
+returns $\rstar$; H2u: the same with the test of \cref{thm:arc}(ii). H3: some
+greedy chain is $\rstar$-far.}
+\label{tab:archyp}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+ & \multicolumn{4}{c}{cases in which the premise holds / violations}\\
+hypothesis & $k=3$ & $k=4$ & $k=5$ & $k=6$\\
+\midrule
+\tabinput{generated/arc_hyp}
+\bottomrule
+\end{tabular}
+\end{table}
 
-\begin{thebibliography}{99}\itemsep=1pt
+\paragraph{How common is the arc property?}
+\Cref{tab:arcstats} reports, for instances with $20\le n\le60$ and
+$k\in\{4,8\}$, the structure at the optimal radius (computed by
+\cref{alg:capped}). Let $\beta=\sum_q(\#\text{runs of }\mathrm{Far}_{\rstar}(q)-1)$,
+so that $\beta=0$ is the arc property at $\rstar$. For all hulls of random
+point clouds, for cocircular points and for jittered regular polygons we
+found $\beta=0$ in every test, and the adaptive algorithm answered on all of
+them except for about a third of the instances drawn from a square and two
+Gaussian ones, where the arc
+property fails at some smaller radius visited by the binary search. On thin
+ellipses and two-chain lenses the arc property always fails. Greedy chains
+succeed at $\rstar$ in all tests with $\beta\le2$, and their success rate
+drops as $\beta$ grows, which suggests looking for algorithms that are
+fixed-parameter tractable in $\beta$.
 
-\bibitem{akagi}
-T.~Akagi, T.~Araki, T.~Horiyama, S.-I.~Nakano, Y.~Okamoto, Y.~Otachi,
-T.~Saitoh, R.~Uehara, T.~Uno, K.~Wasa.
-\newblock Exact algorithms for the max-min dispersion problem.
-\newblock In \emph{Frontiers in Algorithmics (FAW 2018)}, LNCS 10823,
-pp.~263--272. Springer, 2018.
+\begin{table}[tb]
+\centering
+\caption{Structure at the optimal radius ($20\le n\le60$, $k\in\{4,8\}$).
+``arc pts'': mean fraction of points with a contiguous far set; ``greedy'':
+some greedy chain is $\rstar$-far; ``adaptive'': the adaptive algorithm
+answers (and is then correct).}
+\label{tab:arcstats}
+\small
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+group & tests & arc pts & mean $\beta$ & $\beta=0$ & greedy & adaptive\\
+\midrule
+\tabinput{generated/arc_stats}
+\bottomrule
+\end{tabular}
+\end{table}
 
-\bibitem{chendumitrescu}
-K.~Chen, A.~Dumitrescu.
-\newblock A couple of simple algorithms for $k$-dispersion.
-\newblock arXiv:2511.00692, 2025.
+\paragraph{Verification.}
+The implementation (\code{arc/arcdisp.hpp}) was validated before any timing.
+On $\arcSmallInst$ instances with $n\le16$ from ten families, at every
+candidate radius $r$ (and at $r^2+1$) at which the arc property holds, three
+implementations of the decision procedure agree with exhaustive search for
+all $k=2,\dots,n$ ($\arcDchecks$ comparisons), and \textsc{O1}, \textsc{O2}
+and the adaptive variant return the exhaustive optimum with a valid witness
+($\arcOptChecks$ instance--$k$ pairs). On $\arcBigInst$ instances with
+$20\le n\le150$ they agree with \cref{alg:capped} ($\arcBigChecks$ checks).
+An independent Python script recomputes the optima of exported instances by
+brute force and checks \cref{thm:arc} directly ($\arcPyAtwo$ checks). No
+discrepancy occurred. When the decision procedure is applied \emph{without}
+the arc property, it is wrong in $\arcUncheckedWrong\%$ of the cases on the
+thin families, so the hypothesis cannot be dropped.
 
-\bibitem{delaunay}
-B.~Delaunay.
-\newblock Sur la sph\`ere vide.
-\newblock \emph{Bulletin de l'Acad\'emie des Sciences de l'URSS, Classe des
-sciences math\'ematiques et naturelles}, 6:793--800, 1934.
+\paragraph{Running time.}
+Unimodal instances are points at jittered equally spaced angles on a circle,
+rounded to integers; every instance is verified to be strictly convex and
+unimodal by the exact $O(n\log n)$ test. With coordinates bounded by $2^{29}$
+such instances exist for $n\le50000$ but not for $n=10^5$, where rounding
+destroys convexity; convex lattice polygons with $10^6$ vertices do fit into
+this box (take all primitive vectors of norm at most $724$ as edges), but they
+are not unimodal. For $n\ge10^5$ we therefore use a circle of radius $2^{60}$
+and $128$-bit squared distances (``wide'' mode); \textsc{O1} needs
+$\Theta(n^2)$ memory and was run for $n\le10^4$. Every reported witness was
+checked by an exact closest-pair computation. \Cref{tab:arcscaling} shows the
+medians over three instances. \textsc{O2} solves instances with a million
+points in about $\arcMillion$ seconds, and its running time grows like
+$n^{\arcSlope}$ between $n=10^3$ and $n=10^6$, compared with
+$n^{\arcSlopeOone}$ for \textsc{O1}. At $n=400$ it is between $300$ ($k=4$) and $40\,000$ ($k=64$) times faster
+than the cubic dynamic program, which of course does not need the hypothesis.
 
-\bibitem{edelsbrunner}
-H.~Edelsbrunner.
-\newblock \emph{Geometry and Topology for Mesh Generation}.
-\newblock Cambridge University Press, 2001.
+\begin{table}[tb]
+\centering
+\caption{Median running time [ms] on unimodal instances (three instances per
+cell). \textsc{DP}: \cref{alg:capped} with binary search. ``--'': not run.}
+\label{tab:arcscaling}
+\small
+\begin{tabular}{@{}rr|rrr|r@{}}
+\toprule
+ & & \multicolumn{3}{c|}{$64$-bit distances} & $128$-bit\\
+$n$ & $k$ & \textsc{DP} & \textsc{O1} & \textsc{O2} & \textsc{O2}\\
+\midrule
+\tabinput{generated/arc_scaling}
+\bottomrule
+\end{tabular}
+\end{table}
 
-\bibitem{gonzalez}
-T.~F.~Gonzalez.
-\newblock Clustering to minimize the maximum intercluster distance.
-\newblock \emph{Theoretical Computer Science}, 38:293--306, 1985.
+\section{Tests of the greedy properties}\label{app:greedytests}
 
-\bibitem{kobayashi}
-Y.~Kobayashi, S.-I.~Nakano, K.~Uchizawa, T.~Uno, Y.~Yamaguchi, K.~Yamanaka.
-\newblock An $O(n^2)$-time algorithm for computing a max-min 3-dispersion on a
-point set in convex position.
-\newblock \emph{IEICE Transactions on Information and Systems},
-E105-D(3):503--507, 2022.
+\paragraph{Random tests versus adversarial search.}
+Before finding $P_\star$ we tested all properties on random instances, in
+exact arithmetic (\cref{tab:hunt}): hulls of random point clouds, points on
+circles and thin ellipses, thin ``two-chain'' polygons bounded by two flat
+arcs, small integer grids with many cocircular points, and random
+perturbations (jitter, deletion and insertion of points) of every
+counterexample to a weaker property. On instances with at most $13$ points
+all radii and all $k$-sets were examined exhaustively; on larger ones
+$(\mathrm{TP}_k)$ was decided by the dynamic program of \cref{sec:dp} run on
+cyclic chords, since a tight pair $\{q,a(q)\}$ is contained in an $r$-far
+$k$-set iff $F(a(q),q\mid\pi)\ge k-2$. Counterexamples to $(\mathrm{G}_k)$
+and $(\mathrm{TT}_k)$ for $k\ge4$ and to $(\mathrm{AG}_k)$ for $k\ge6$ appear
+quickly, always on thin polygons in which the cyclic order is far from
+geometric proximity. In contrast, $(\mathrm{TP}_k)$ and $(\mathrm{ST}_k)$
+passed all $\huntCone$ tests. The counterexamples of \cref{thm:tightpair} were
+found only when we switched to an adversarial search: a penalty method that
+moves the $2k$ points of the polygon $s_1a_1\cdots s_ka_k$ so as to satisfy
+all constraints of the previous paragraph with a positive margin, followed by
+rounding to integers and exact verification. For $k=4$ this search succeeds
+within seconds.
 
-\bibitem{sbm}
-V.~R.~Singireddy, M.~Basappa, J.~S.~B.~Mitchell.
-\newblock Algorithms for $k$-dispersion for points in convex position in the
-plane.
-\newblock In \emph{Algorithms and Discrete Applied Mathematics (CALDAM 2023)},
-LNCS 13947, pp.~59--70. Springer, 2023. Journal version in \emph{Discrete
-Applied Mathematics}.
+\begin{table}[tb]
+\centering
+\caption{Randomised tests of the properties of \cref{sec:greedy}. A test is a
+triple $(P,k,r)$ (for all properties except $(\mathrm{G}_k)$: one for which an
+$r$-far $k$-set exists). $(\mathrm{AG}'_k)$ and $(\mathrm{ST}'_k)$ are the
+variants seeded with $\{q,a(q),b(q)\}$. The last two properties are false
+(\cref{thm:tightpair}) although no random test detected it.}
+\label{tab:hunt}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Property & $k$ & tests & failures & fails for $k$\\
+\midrule
+\tabinput{generated/table_hunt}
+\bottomrule
+\end{tabular}
+\end{table}
 
-\bibitem{tw25}
-A.~Tkachenko, H.~Wang.
-\newblock Dominating set, independent set, discrete $k$-center, dispersion,
-and related problems for planar points in convex position.
-\newblock In \emph{42nd International Symposium on Theoretical Aspects of
-Computer Science (STACS 2025)}, LIPIcs 327, pp.~73:1--73:20, 2025.
-arXiv:2501.00207.
 
-\bibitem{tw26}
-A.~Tkachenko, H.~Wang.
-\newblock Maximum independent sets in disk graphs with disks in convex
-position.
-\newblock In \emph{20th Scandinavian Symposium on Algorithm Theory (SWAT
-2026)}, LIPIcs 370, article 40, 2026. arXiv:2604.10828.
-
-\bibitem{wangkuo}
-D.~W.~Wang, Y.-S.~Kuo.
-\newblock A study on two geometric location problems.
-\newblock \emph{Information Processing Letters}, 28(6):281--286, 1988.
-
-\end{thebibliography}
-
-\appendix
 \section{Point sets without tight pairs}\label{app:instances}
 
 \Cref{tab:instances} lists the instances behind \cref{thm:tightpair} for
